@@ -2,11 +2,13 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.core.config import Settings, get_settings
+from src.core.exceptions import register_exception_handlers
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
     config = settings if settings is not None else get_settings()
     app = FastAPI(title=config.app_name)
+    register_exception_handlers(app)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=config.cors_origins,
