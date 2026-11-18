@@ -1,12 +1,12 @@
 # Progresso
 
 - Atualizado: 2026-11-18.
-- Fase atual: Fase 3 — execução do bloco F1 (C01–C09), plano aprovado.
-- Último commit: nenhum; branch main ainda sem commits. AGENTS.md e docs/spec já estavam não rastreados no início.
-- Aprovação recebida: “Aprovado pode prosseguir, pode usar o plugin do context7 se necessário”. Fase 1 aprovada e propostas padrão Q2–Q4 aceitas; limites registrados em DECISIONS.md (ADR-002). O dono aprovou depois o plano: “Aprovo o plano para iniciar” (ADR-003).
-- Realizado nesta etapa: PLANO_COMMITS.md com 46 commits previstos, organização inicial, blocos F1–F6 em ordem, correções separadas, testes/gates, rastreio P01–P35 e tags propostas. Corrigidos vínculos WBS de i18n/MSW na análise, sem acrescentar funcionalidade; WBS_STATUS refinado para o plano mínimo.
-- Evidência: análise estática e documentação oficial. Sem execução em dispositivo, conexão a Supabase/projeto remoto, importação ou código de produto. Nenhum conteúdo pessoal foi copiado. `_legacy/` permanece somente leitura e ignorado pelo git.
-- Próximo item: executar somente C01–C09 (fundação) e parar no portão F1 com suíte completa, tag e log.
-- Decisões abertas: aparelhos Android/iOS para S1; licença pública ainda não escolhida (não atribuir automaticamente); matriz definitiva de versões e ambiente descartável de integração a verificar nos spikes/blocos respectivos. Escolhas técnicas do plano aprovadas, condicionadas aos spikes.
-- Aprovado: escopo de paridade do AGENTS.md, em resposta explícita do dono. WBS-S completo não autorizado.
-- Verificação: conferência estática de caminhos/endpoints/IDs WBS e documentos; suítes backend/mobile não existem nesta raiz e não foram instaladas. Não houve commit/tag, neste registro inicial da execução.
+- Fase atual: Fase 3 — bloco F1 (C01–C09), fechamento no portão de aprovação.
+- Último marco: C09, identificado por HEAD e tag fase-3-f1 após o registro deste fechamento. Predecessor: f040ca0 (C08). Tags fase-1 e fase-2 também registradas. Não avançar para C10 automaticamente.
+- Autorização: dono aprovou o plano (“Aprovo o plano para iniciar”) e reiterou “Pode continuar”; escopo desta execução permanece C01–C09, conforme o portão do plano aprovado.
+- Entregue: higiene/licença sem concessão pública, specs/decisões/plano versionados, base FastAPI com config por ambiente e erros tipados, base Expo Router/TS strict, aliases, boundaries/regras de hooks e lint testadas, lockfiles, scripts comuns e CI mínimo. Nenhuma função extra da WBS, acesso Supabase ou migração pessoal.
+- Gate de fechamento: 23 testes backend; Ruff/mypy/checker AST/compileall; 20 casos das regras de lint mobile; tsc/Jest; exportação Hermes Android e iOS; Gitleaks de candidatos e histórico, com valores redigidos. A tag só é criada depois de todos esses checks passarem. Workflows tiveram YAML e shell verificados localmente; CI remoto não foi executado.
+- S2: prebuild Android concluído. assembleDebug executou 63 tarefas e falhou ao obter dependências do Maven Central por erro de resolução de rede (ADR-004). Sem APK validado; limitação explicitada conforme autorização do portão F1 no plano. Não trocar SDK/motor por esse erro ambiental.
+- Pendências: repetir compilação Android quando Maven estiver acessível; iOS nativo requer ambiente Apple; aparelhos Android/iOS ainda não informados para S1 de voz/background em F4. Licença pública continua não escolhida; integração Supabase exige ambiente descartável em F2, nunca o projeto pessoal como banco de teste.
+- Próximo item: aguardar aprovação do bloco F1; depois C10–C14 (persistência), com novo portão ao final.
+- Continuidade: consultar AGENTS.md e este arquivo. FUNDACAO.md contém instalação, matriz de versões e limites. WBS_STATUS diferencia fundação adaptada de pacotes completos; P01–P35 continuam sem validação final de paridade. `_legacy/` permanece ignorado e somente leitura; hashes conferidos sem copiar conteúdo pessoal ao git.

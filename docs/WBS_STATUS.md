@@ -1,6 +1,6 @@
 # Status individual dos pacotes WBS
 
-Data: 2026-11-18. Nenhuma implementação iniciada. Análise aprovada; refinamento técnico vinculado ao plano da Fase 2, ainda aguardando aprovação. Nenhum pacote está feito.
+Data: 2026-11-18. Fundação implementada; produto ainda sem paridade validada. Análise aprovada; refinamento técnico vinculado ao plano da Fase 2, ainda aguardando aprovação. Estados da fundação atualizados; pacotes compostos não contam como integralmente entregues.
 
 “Não iniciado — adaptar” cobre apenas a parte de paridade descrita em ANALISE.md; não autoriza executar o pacote inteiro. “Fora de escopo” não significa funcionalidade implementada nem infra aprovada. Misturas de áudio/texto devem seguir a seção 6 da análise.
 
@@ -8,30 +8,30 @@ Data: 2026-11-18. Nenhuma implementação iniciada. Análise aprovada; refinamen
 
 | ID | Pacote original | Estado | Motivo/limite |
 |---|---|---|---|
-| 1.1.1 | Inicializar monorepo raiz com Yarn Workspaces | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
-| 1.1.2 | Criar `apps/mobile/` e `apps/backend/` como workspaces | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
-| 1.1.3 | Configurar `.gitignore` global | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
-| 1.2.1 | Inicializar Poetry no backend (`pyproject.toml`) | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
+| 1.1.1 | Inicializar monorepo raiz com Yarn Workspaces | Feito — fundação adaptada | C01–C08; evidências em FUNDACAO.md. Somente base e camadas usadas, sem funções extras da WBS. |
+| 1.1.2 | Criar `apps/mobile/` e `apps/backend/` como workspaces | Feito — fundação adaptada | C01–C08; evidências em FUNDACAO.md. Somente base e camadas usadas, sem funções extras da WBS. |
+| 1.1.3 | Configurar `.gitignore` global | Feito — fundação adaptada | C01–C08; evidências em FUNDACAO.md. Somente base e camadas usadas, sem funções extras da WBS. |
+| 1.2.1 | Inicializar Poetry no backend (`pyproject.toml`) | Feito — fundação adaptada | C01–C08; evidências em FUNDACAO.md. Somente base e camadas usadas, sem funções extras da WBS. |
 | 1.2.2 | Instalar dependências core: FastAPI, SQLModel, HTTPX, ARQ, python-jose, Pydantic Settings | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
-| 1.2.3 | Criar estrutura de pastas `src/` | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
-| 1.2.4 | Configurar `src/main.py` com FastAPI + CORS | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
-| 1.2.5 | Criar `src/core/config.py` com variáveis de ambiente (Pydantic BaseSettings) | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
-| 1.2.6 | Criar `.env.example` documentado | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
-| 1.2.7 | Criar `src/core/exceptions.py` com handlers RFC 7807 | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
+| 1.2.3 | Criar estrutura de pastas `src/` | Feito — fundação adaptada | C01–C08; evidências em FUNDACAO.md. Somente base e camadas usadas, sem funções extras da WBS. |
+| 1.2.4 | Configurar `src/main.py` com FastAPI + CORS | Feito — fundação adaptada | C01–C08; evidências em FUNDACAO.md. Somente base e camadas usadas, sem funções extras da WBS. |
+| 1.2.5 | Criar `src/core/config.py` com variáveis de ambiente (Pydantic BaseSettings) | Feito — fundação adaptada | C01–C08; evidências em FUNDACAO.md. Somente base e camadas usadas, sem funções extras da WBS. |
+| 1.2.6 | Criar `.env.example` documentado | Feito — fundação adaptada | C01–C08; evidências em FUNDACAO.md. Somente base e camadas usadas, sem funções extras da WBS. |
+| 1.2.7 | Criar `src/core/exceptions.py` com handlers RFC 7807 | Feito — fundação adaptada | C01–C08; evidências em FUNDACAO.md. Somente base e camadas usadas, sem funções extras da WBS. |
 | 1.3.1 | Criar `Dockerfile` (Python 3.12, Poetry, multi-stage) | Fora de escopo por padrão | Infra ausente/dispensável; exigir necessidade de paridade e decisão antes de adotar. Em 2.4.3, AudioCache eliminado (v2.2). |
 | 1.3.2 | Criar `compose.yml` com `api`, `worker`, `redis` | Fora de escopo por padrão | Infra ausente/dispensável; exigir necessidade de paridade e decisão antes de adotar. Em 2.4.3, AudioCache eliminado (v2.2). |
 | 1.3.3 | Configurar volumes `sessions/`, `models/`, `media/` | Fora de escopo por padrão | Infra ausente/dispensável; exigir necessidade de paridade e decisão antes de adotar. Em 2.4.3, AudioCache eliminado (v2.2). |
-| 1.4.1 | Criar projeto Expo (TypeScript) | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
-| 1.4.2 | Configurar `tsconfig.json` strict + path aliases | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
-| 1.4.3 | Configurar `babel.config.js` com module-resolver | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
-| 1.4.4 | Instalar ESLint + `eslint-plugin-boundaries` | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
+| 1.4.1 | Criar projeto Expo (TypeScript) | Feito — fundação adaptada | C01–C08; evidências em FUNDACAO.md. Somente base e camadas usadas, sem funções extras da WBS. |
+| 1.4.2 | Configurar `tsconfig.json` strict + path aliases | Feito — fundação adaptada | C01–C08; evidências em FUNDACAO.md. Somente base e camadas usadas, sem funções extras da WBS. |
+| 1.4.3 | Configurar `babel.config.js` com module-resolver | Feito — fundação adaptada | C01–C08; evidências em FUNDACAO.md. Somente base e camadas usadas, sem funções extras da WBS. |
+| 1.4.4 | Instalar ESLint + `eslint-plugin-boundaries` | Feito — fundação adaptada | C01–C08; evidências em FUNDACAO.md. Somente base e camadas usadas, sem funções extras da WBS. |
 | 1.4.5 | Instalar TanStack Query, Zustand, Zod, react-hook-form, axios | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
 | 1.4.6 | Instalar WatermelonDB + native bindings | Fora de escopo por padrão | Infra ausente/dispensável; exigir necessidade de paridade e decisão antes de adotar. Em 2.4.3, AudioCache eliminado (v2.2). |
 | 1.4.7 | Instalar MMKV + native bindings | Fora de escopo por padrão | Infra ausente/dispensável; exigir necessidade de paridade e decisão antes de adotar. Em 2.4.3, AudioCache eliminado (v2.2). |
 | 1.4.8 | Instalar react-native-track-player + configurar serviço nativo | Eliminado (v2.2) | Somente áudio remoto; sem objeto no fluxo de texto + fala local. |
 | 1.4.9 | Instalar expo-background-fetch, expo-task-manager, expo-file-system | Não iniciado — adaptar | FileSystem já necessário; não adicionar background-fetch/task-manager sem função existente. |
-| 1.4.10 | Criar estrutura de pastas `src/core/`, `ui/`, `pattern/`, `features/`, `screens/` | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
-| 1.4.11 | Configurar Expo Router + layouts base | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
+| 1.4.10 | Criar estrutura de pastas `src/core/`, `ui/`, `pattern/`, `features/`, `screens/` | Feito — fundação adaptada | C01–C08; evidências em FUNDACAO.md. Somente base e camadas usadas, sem funções extras da WBS. |
+| 1.4.11 | Configurar Expo Router + layouts base | Parcial — base feita | C07: Router e entrada mínima; jornada P01 completa permanece em C44. |
 | 2.1.1 | Criar `src/database/connection.py` (engine + session, SQLite/PostgreSQL compatível) | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
 | 2.1.2 | Modelo `User` | Fora de escopo | Capacidade nova ou motor diferente; não consta da paridade. |
 | 2.1.3 | Modelo `Obra` (incl. `idioma_original`, `canonical_base_index`) | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
@@ -199,8 +199,8 @@ Data: 2026-11-18. Nenhuma implementação iniciada. Análise aprovada; refinamen
 | 8.2.5 | Testes unitários mobile: core/ (task-queue, storage-manager, event-bus, stores) | Não iniciado — melhoria quality | Antecipar controles/testes necessários aos módulos existentes; não criar workers ou libs só para testar a spec. |
 | 8.2.6 | Testes componentes: ui/ com Testing Library RN | Não iniciado — melhoria quality | Antecipar controles/testes necessários aos módulos existentes; não criar workers ou libs só para testar a spec. |
 | 8.2.7 | Testes integração mobile: busca, leitura, player, downloads (MSW) | Não iniciado — melhoria quality | Antecipar controles/testes necessários aos módulos existentes; não criar workers ou libs só para testar a spec. |
-| 8.3.1 | `.github/workflows/backend.yml`: ruff + mypy + pytest em cada push | Não iniciado — melhoria quality | Antecipar controles/testes necessários aos módulos existentes; não criar workers ou libs só para testar a spec. |
-| 8.3.2 | `.github/workflows/mobile.yml`: ESLint + tsc + Jest em cada push | Não iniciado — melhoria quality | Antecipar controles/testes necessários aos módulos existentes; não criar workers ou libs só para testar a spec. |
+| 8.3.1 | `.github/workflows/backend.yml`: ruff + mypy + pytest em cada push | Feito — CI mínimo definido | C09: workflow e comandos validados localmente; execução remota ainda não realizada. Sem deploy. |
+| 8.3.2 | `.github/workflows/mobile.yml`: ESLint + tsc + Jest em cada push | Feito — CI mínimo definido | C09: workflow e comandos validados localmente; execução remota ainda não realizada. Sem deploy. |
 | 8.3.3 | Workflow build Docker + push registry em merge main | Fora de escopo | Beta/Launch novo; tratamento interno de falhas já existentes pode entrar como melhoria separada. |
 | 8.3.4 | Workflow deploy Railway/Fly.io em merge main | Fora de escopo | Beta/Launch novo; tratamento interno de falhas já existentes pode entrar como melhoria separada. |
 | 8.3.5 | EAS Build profile `preview` (build automático em PRs) | Fora de escopo | Beta/Launch novo; tratamento interno de falhas já existentes pode entrar como melhoria separada. |

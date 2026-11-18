@@ -29,3 +29,11 @@ As escolhas de implementação, divisão de commits e tags constam de PLANO_COMM
 - Estado: aprovado explicitamente pelo dono: “Aprovo o plano para iniciar”.
 - Decisão: PLANO_COMMITS.md aprovado; executar C01–C09 e parar no portão F1.
 - Limites: nenhuma autorização automática para C10 em diante, deploy, push ou importação pessoal. Licença pública continua não escolhida; manter aviso sem concessão. Validação física de voz continua pendente.
+
+## ADR-004 — Registrar limite ambiental do spike nativo S2
+
+- Data: 2026-11-18.
+- Estado: registro de evidência, sem alteração de arquitetura/produto.
+- Resultado: prebuild Android e exportação Hermes Android/iOS concluídos. assembleDebug com Java 21/Gradle 9.4.1 executou 63 tarefas, mas falhou ao baixar artefatos do Maven Central por erro de resolução de rede. Nenhum APK ou execução física está aprovado.
+- Tratamento: usar a exceção explícita do portão F1 no plano aprovado (“S2 executado ou limitação explicitada”). Não trocar SDK/motor por causa dessa indisponibilidade. Repetir build nativo quando a rede permitir, antes de afirmar validação nativa; iOS depende de ambiente Apple.
+- Não há dispensa de S1 físico em F4 nem autorização para avançar ao bloco F2 automaticamente.
