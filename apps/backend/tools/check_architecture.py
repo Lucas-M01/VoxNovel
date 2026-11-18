@@ -12,10 +12,11 @@ NETWORK_MODULES = {
     "cloudscraper",
     "curl_cffi",
     "supabase",
+    "postgrest",
     "socket",
 }
 SQL = re.compile(
-    r"^\s*(SELECT|INSERT\s+INTO|UPDATE\s+\w+\s+SET|DELETE\s+FROM|CREATE\s+TABLE|ALTER\s+TABLE)\b",
+    r"^\s*(SELECT(?=\s+\S)|INSERT\s+INTO|UPDATE\s+\w+\s+SET|DELETE\s+FROM|CREATE\s+TABLE|ALTER\s+TABLE)\b",
     re.I,
 )
 
@@ -48,6 +49,13 @@ def find_violations(source: str, path: str) -> list[str]:
                 violations.append(
                     f"{path}:{line}: network import outside adapters/engines"
                 )
+            if not repository and module.split(".")[0] in {
+                "sqlite3",
+                "sqlalchemy",
+                "psycopg",
+                "psycopg2",
+            }:
+                violations.append(f"{path}:{line}: SQL client outside repositories")
             if not config and module in {"dotenv", "pydantic_settings"}:
                 violations.append(f"{path}:{line}: settings outside core/config.py")
 
@@ -77,6 +85,7 @@ def find_violations(source: str, path: str) -> list[str]:
                 )
             if (
                 not repository
+                and not network
                 and isinstance(node.func, ast.Attribute)
                 and node.func.attr in {"execute", "executemany", "executescript"}
             ):

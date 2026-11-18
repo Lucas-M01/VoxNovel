@@ -58,3 +58,12 @@ async def test_cors_only_allows_configured_origins() -> None:
     assert allowed.headers["access-control-allow-origin"] == "https://reader.example"
     assert denied.status_code == 400
     assert "access-control-allow-origin" not in denied.headers
+
+
+def test_empty_optional_persistence_configuration_is_ignored() -> None:
+    with pytest.MonkeyPatch.context() as patch:
+        patch.setenv("VOXNOVEL_SUPABASE_URL", "")
+        patch.setenv("VOXNOVEL_SUPABASE_SERVICE_KEY", "")
+        settings = get_settings()
+    assert settings.supabase_url is None
+    assert settings.supabase_service_key is None

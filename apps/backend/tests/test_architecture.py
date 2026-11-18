@@ -6,6 +6,7 @@ from tools.check_architecture import find_violations
 @pytest.mark.parametrize(
     ("source", "path"),
     [
+        ("import sqlite3", "src/adapters/database.py"),
         ("import httpx as client", "src/services/reader.py"),
         ("from urllib.request import urlopen", "src/api/novels.py"),
         ("from os import getenv as env; env('PORT')", "src/main.py"),
@@ -25,6 +26,7 @@ def test_detects_architecture_violations(source: str, path: str) -> None:
     ("source", "path"),
     [
         ("import httpx", "src/adapters/network.py"),
+        ("action = 'select'", "src/adapters/network.py"),
         ("import requests", "src/services/engines/google.py"),
         (
             "query = 'SELECT * FROM novels'; session.execute(query)",
