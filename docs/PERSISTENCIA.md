@@ -40,3 +40,19 @@ A migration `20261119002243_preferences.sql` acrescenta dois singletons privados
 A migration é aditiva e reaplicável. Para voltar o código a C12, mantenha as duas tabelas: C12 não as usa e as preferências permanecem disponíveis ao reaplicar C13. Não há down destrutivo de preferências pessoais. Testes limpam somente as linhas sintéticas da stack descartável.
 
 Evidência C13: 54 testes backend passaram, incluindo seis integrações reais; reaplicação da migration preservou sentinelas de filtros/velocidade, removidos ao final, e advisors locais não apontaram achados.
+
+## Texto remoto (C14)
+
+`ChapterTextRepository` preserva o caminho `{novel_id}/cap_{chapter}.json` e o formato de valor `{"cap": 1, "texto": "..."}`. `ChapterText` é um valor de cache, não uma entidade de banco com data artificial. O adaptador Storage pagina listagens e agrupa remoções; somente nomes de capítulos JSON válidos são considerados. Não grava áudio nem cria jobs ou tabela de capítulos. O isolamento adicional por fonte continua pendente no plano, sem migração de cache pessoal neste bloco.
+
+O bucket vem de `VOXNOVEL_SUPABASE_TEXT_BUCKET` e deve ser provisionado previamente como **privado**, aceitando `application/json`. O backend não cria buckets na inicialização e não publica URLs do conteúdo. Somente o backend usa service_role. Testes criam e removem seu próprio bucket com nome aleatório na stack local, sem usar o bucket pessoal configurado.
+
+O SDK retorna `not_found` tanto em alguns erros de objeto quanto de bucket. Somente a ausência identificada de objeto retorna cache miss; bucket ausente, erro de rede, JSON inválido ou capítulo divergente geram erro tipado. Como o endpoint de listagem pode retornar vazio para bucket inexistente, o adaptador verifica o bucket antes de paginar. A integração verifica conteúdo UTF-8, substituição, listagem multipágina, remoção de capítulo/obra, isolamento entre obras e bloqueio da URL pública. O bucket sintético é esvaziado e excluído no finally.
+
+Referências de API conferidas: [upsert](https://supabase.com/docs/reference/python/upsert), [upload](https://supabase.com/docs/reference/python/storage-from-upload), [listagem](https://supabase.com/docs/reference/python/storage-from-list) e [download](https://supabase.com/docs/reference/python/storage-from-download). O contrato também foi verificado no SDK instalado e na stack real.
+
+## Portão F2
+
+Gate final: 62 testes backend, sendo 55 unitários e sete integrações reais, além de lint/tipos/Jest mobile, exportações Hermes Android/iOS, arquitetura e varredura de segredos. WBS_STATUS registra somente as partes adaptadas. Nenhum dado pessoal foi importado e nenhum projeto remoto foi alterado.
+
+A stack temporária é encerrada após o gate, preservando seus volumes locais. Para repetir, iniciar a mesma stack privada com a CLI e aplicar as duas migrations (primeiro biblioteca, depois preferências) com transação/ON_ERROR_STOP. A integração cria seu próprio bucket privado; não é preciso provisionar o bucket de produto para rodá-la. O diretório da stack e suas credenciais não são versionados. O app ainda não oferece um fluxo funcional de leitura; a API de produto será composta em F3 e a interface nos blocos mobile.

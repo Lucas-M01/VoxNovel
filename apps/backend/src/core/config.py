@@ -10,6 +10,9 @@ class Settings(BaseSettings):
     supabase_url: HttpUrl | None = None
     supabase_service_key: SecretStr | None = None
 
+    supabase_text_bucket: str = Field(default="downloads", min_length=1)
+    storage_page_size: int = Field(default=100, ge=1, le=1000)
+
     default_speed: float = Field(default=1.5, gt=0, allow_inf_nan=False)
     filter_words: list[str] = Field(
         default_factory=lambda: [

@@ -1,6 +1,6 @@
 # Status individual dos pacotes WBS
 
-Data: 2026-11-18. Fundação implementada; produto ainda sem paridade validada. Análise aprovada; refinamento técnico vinculado ao plano da Fase 2, ainda aguardando aprovação. Estados da fundação atualizados; pacotes compostos não contam como integralmente entregues.
+Data: 2026-11-18. Fundação e persistência F2 implementadas; produto ainda sem paridade final validada. Análise e plano aprovados. Estados dos blocos atualizados; pacotes compostos não contam como integralmente entregues.
 
 “Não iniciado — adaptar” cobre apenas a parte de paridade descrita em ANALISE.md; não autoriza executar o pacote inteiro. “Fora de escopo” não significa funcionalidade implementada nem infra aprovada. Misturas de áudio/texto devem seguir a seção 6 da análise.
 
@@ -32,27 +32,27 @@ Data: 2026-11-18. Fundação implementada; produto ainda sem paridade validada. 
 | 1.4.9 | Instalar expo-background-fetch, expo-task-manager, expo-file-system | Não iniciado — adaptar | FileSystem já necessário; não adicionar background-fetch/task-manager sem função existente. |
 | 1.4.10 | Criar estrutura de pastas `src/core/`, `ui/`, `pattern/`, `features/`, `screens/` | Feito — fundação adaptada | C01–C08; evidências em FUNDACAO.md. Somente base e camadas usadas, sem funções extras da WBS. |
 | 1.4.11 | Configurar Expo Router + layouts base | Parcial — base feita | C07: Router e entrada mínima; jornada P01 completa permanece em C44. |
-| 2.1.1 | Criar `src/database/connection.py` (engine + session, SQLite/PostgreSQL compatível) | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
+| 2.1.1 | Criar `src/database/connection.py` (engine + session, SQLite/PostgreSQL compatível) | Feito — paridade adaptada | C11: SDK Supabase no adaptador; sem SQLAlchemy/SQLite. ADR-001/005 e PERSISTENCIA.md. |
 | 2.1.2 | Modelo `User` | Fora de escopo | Capacidade nova ou motor diferente; não consta da paridade. |
-| 2.1.3 | Modelo `Obra` (incl. `idioma_original`, `canonical_base_index`) | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
-| 2.1.4 | Modelo `Fonte` (incl. `extractor_template`) | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
+| 2.1.3 | Modelo `Obra` (incl. `idioma_original`, `canonical_base_index`) | Feito — paridade adaptada | C10: contrato Novel e fontes; somente campos observados na paridade. |
+| 2.1.4 | Modelo `Fonte` (incl. `extractor_template`) | Feito — paridade adaptada | C10: contrato Source com progresso próprio e chapter_ids; sem extractor_template. |
 | 2.1.5 | Modelo `FonteHealth` (success_count, failure_count, avg_response_ms) | Fora de escopo | Capacidade nova ou motor diferente; não consta da paridade. |
-| 2.1.6 | Modelo `Capitulo` (incl. `content_hash`, `translated_hash`, `chapter_status`) | Não iniciado — adaptar | Apenas contrato de texto/cache existente em C14; sem entidade de capítulos com estado/hash novos. |
-| 2.1.7 | Modelo `Progresso` | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
+| 2.1.6 | Modelo `Capitulo` (incl. `content_hash`, `translated_hash`, `chapter_status`) | Feito — paridade adaptada | C14: valor ChapterText validado e JSON no Storage; sem tabela, hash ou chapter_status. |
+| 2.1.7 | Modelo `Progresso` | Feito — paridade adaptada | C10/C11: contrato de progresso e persistência por fonte ativa. |
 | 2.1.8 | Modelo `DownloadJob` + `DownloadChapter` | Fora de escopo | Modelos duráveis DownloadJob/DownloadChapter ausentes; faixa existente será coordenada em memória em C39. |
-| 2.1.9 | Modelo `Filtro` | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
+| 2.1.9 | Modelo `Filtro` | Feito — paridade adaptada | C13: filtros globais singleton; listas vazias preservadas, sem escopo por obra. |
 | 2.1.10 | Modelo `AudioCache` (incl. `lang`) | Eliminado (v2.2) | Somente áudio remoto; sem objeto no fluxo de texto + fala local. |
 | 2.1.11 | Modelo `GlossaryEntry` (incl. `priority`, `enabled`) | Fora de escopo | Capacidade nova ou motor diferente; não consta da paridade. |
-| 2.2.1 | Inicializar Alembic | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
-| 2.2.2 | Criar migration inicial com todas as tabelas Solo | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
-| 2.2.3 | Validar apply + rollback em SQLite | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
-| 2.3.1 | `obra_repo.py` | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
-| 2.3.2 | `fonte_repo.py` | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
+| 2.2.1 | Inicializar Alembic | Feito — paridade adaptada | C12/C13: SQL versionado gerado com CLI Supabase; sem Alembic desnecessário. |
+| 2.2.2 | Criar migration inicial com todas as tabelas Solo | Feito — paridade adaptada | C12/C13: somente novels/sources/filters/preferences, RLS e função atômica; sem tabelas extras Solo. |
+| 2.2.3 | Validar apply + rollback em SQLite | Feito — paridade adaptada | C12: rollback/reaplicação PostgreSQL preservam sentinelas. C13: reaplicação aditiva preserva preferências; rollback do código mantém tabelas. |
+| 2.3.1 | `obra_repo.py` | Feito — paridade adaptada | C11/C12: LibraryRepository com integração real e escrita atômica. |
+| 2.3.2 | `fonte_repo.py` | Feito — paridade adaptada | C11/C12: fontes/progresso no LibraryRepository, remoção concorrente segura. |
 | 2.3.3 | `fonte_health_repo.py` (record_success, record_failure, list_ordered_by_score) | Fora de escopo | Capacidade nova ou motor diferente; não consta da paridade. |
-| 2.3.4 | `capitulo_repo.py` (find_by_number, save com content_hash e chapter_status) | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
+| 2.3.4 | `capitulo_repo.py` (find_by_number, save com content_hash e chapter_status) | Feito — paridade adaptada | C14: get/save JSON por obra/capítulo; sem hash/status novos. |
 | 2.3.5 | `audio_cache_repo.py` | Eliminado (v2.2) | Somente áudio remoto; sem objeto no fluxo de texto + fala local. |
 | 2.3.6 | `glossary_repo.py` (ORDER BY priority DESC, enabled_only) | Fora de escopo | Capacidade nova ou motor diferente; não consta da paridade. |
-| 2.3.7 | `download_repo.py` (DownloadJob + DownloadChapter) | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
+| 2.3.7 | `download_repo.py` (DownloadJob + DownloadChapter) | Feito — paridade adaptada | C14: listar/ler/remover texto remoto; sem DownloadJob/DownloadChapter. |
 | 2.4.1 | `db.ts` singleton WatermelonDB | Fora de escopo por padrão | Infra ausente/dispensável; exigir necessidade de paridade e decisão antes de adotar. Em 2.4.3, AudioCache eliminado (v2.2). |
 | 2.4.2 | Modelos WatermelonDB: Obra, Fonte, Capitulo (com content_hash, chapter_status), Progresso | Fora de escopo por padrão | Infra ausente/dispensável; exigir necessidade de paridade e decisão antes de adotar. Em 2.4.3, AudioCache eliminado (v2.2). |
 | 2.4.3 | Modelos WatermelonDB: DownloadJob, DownloadChapter, Filtro, AudioCache, GlossaryEntry | Fora de escopo por padrão | Infra ausente/dispensável; exigir necessidade de paridade e decisão antes de adotar. Em 2.4.3, AudioCache eliminado (v2.2). |
@@ -227,7 +227,7 @@ Itens novos do v2.2 sem ID: tts-service e configuração de vozes mapeados para 
 
 ## Vínculo ao plano da Fase 2
 
-Plano proposto em PLANO_COMMITS.md. IDs abaixo cobrem apenas a parte adaptada descrita nos respectivos commits. Demais IDs preservam a classificação individual acima; testes acompanham os módulos, sem pacote extra só para cada ferramenta. Aprovação da análise não equivale à aprovação deste plano.
+Plano aprovado em PLANO_COMMITS.md. IDs abaixo cobrem apenas a parte adaptada descrita nos respectivos commits. Demais IDs preservam a classificação individual acima; testes acompanham os módulos, sem pacote extra só para cada ferramenta. F1 e F2 entregues; F3 aguarda o próximo portão.
 
 | WBS | Commits previstos |
 |---|---|
