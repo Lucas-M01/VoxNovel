@@ -4,7 +4,7 @@ C10: contratos de domínio com testes. C11: repositories e adaptador Supabase, c
 
 Não usar projetos pessoais como ambiente de integração. O dono aprovou Docker apenas para testes locais descartáveis (ADR-005). A configuração e credenciais temporárias ficam fora do git. A stack não é vinculada a um projeto remoto.
 
-O arquivo `apps/backend/src/repositories/fixtures/integration_schema.sql` é o baseline sintético de C11, aplicado somente no banco local descartável. Tabelas têm RLS habilitado e acesso de dados restrito ao service_role do backend. Não há login de usuário final. Migrações e testes de atomicidade pertencem a C12.
+O baseline de C11 foi incorporado em `apps/backend/src/repositories/migrations/20261118234557_atomic_library.sql`. A migration foi validada somente no banco local descartável. Tabelas têm RLS habilitado e acesso de dados restrito ao service_role do backend. Não há login de usuário final. C12 adiciona uma função SQL de gravação atômica, índice de slug normalizado e FK de pertença da fonte ativa. O rollback em `rollback_atomic_library.sql` remove essas adições e preserva tabelas, fontes e progresso de C11.
 
 Com a stack local descartável já iniciada e o baseline aplicado, executar na raiz:
 
@@ -23,3 +23,12 @@ O script consulta status local da CLI, verifica que a API é loopback e entrega 
 A suíte comum sem configuração de persistência marca integração como não executada. Esse skip não fecha F2: o bloco exige execução real. Em C11 foram verificados criação/leitura, duplicatas normalizadas, atualização de fonte sem trocar ID, preservação de IDs RoyalRoad, troca/progresso por fonte, bloqueio da última remoção e exclusão com limpeza das fontes.
 
 As consultas permanecem nos repositories e o SDK de rede no adaptador. O checker distingue o método HTTP `execute` do SDK de SQL: imports de clientes SQL e instruções SQL continuam proibidos fora dos repositories. Há testes para a distinção entre a ação textual `select` do protocolo e uma query SQL real.
+
+## Evidências de C12
+
+- Cinco testes reais: round-trip do domínio, criação parcialmente inválida sem resíduos, duas remoções concorrentes preservando a última fonte e rejeição de fonte ativa de outra obra e unicidade de slug normalizado no banco.
+- Uma obra sintética com duas fontes e capítulos diferentes permaneceu idêntica antes/depois de rollback e reaplicação; o sentinela foi removido ao final.
+- Advisors locais sem achados. Funções SECURITY INVOKER, search_path explícito, RLS ativo, sem EXECUTE de escrita para anon/authenticated; service_role recebe somente CRUD nas tabelas da aplicação.
+- A extração `db pull` da CLI ficou indisponível por falha no banco-sombra. O arquivo final combina o baseline versionado de C11 com as funções extraídas por pg_dump do banco testado. ACLs globais da plataforma foram excluídas. Não houve reparo/alteração em histórico remoto nem alteração de banco pessoal.
+
+O bootstrap/upgrade deve aplicar a migration com transação e ON_ERROR_STOP. Nunca executar rollback em dados pessoais como forma de teste. O teste de integração requer a migration de C12, e não apenas o baseline histórico de C11.

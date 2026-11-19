@@ -1,3 +1,5 @@
+from uuid import UUID
+
 import httpx
 from postgrest import SyncFilterRequestBuilder, SyncSelectRequestBuilder
 from postgrest.exceptions import APIError
@@ -54,6 +56,37 @@ class SupabaseTransport:
             if exc.code == "23505":
                 raise BusinessError(
                     "Record already exists.", status=409, title="Conflict"
+                ) from exc
+            raise BusinessError(
+                "Persistence request failed.", status=503, title="Unavailable"
+            ) from exc
+        except httpx.HTTPError as exc:
+            raise BusinessError(
+                "Persistence is unavailable.", status=503, title="Unavailable"
+            ) from exc
+
+    def write(self, operation: str, novel_id: UUID, values: Row) -> None:
+        try:
+            self.client.rpc(
+                "voxnovel_write_library",
+                {
+                    "p_operation": operation,
+                    "p_novel_id": str(novel_id),
+                    "p_values": values,
+                },
+            ).execute()
+        except APIError as exc:
+            if exc.code == "23505":
+                raise BusinessError(
+                    "Record already exists.", status=409, title="Conflict"
+                ) from exc
+            if exc.code == "P0002":
+                raise BusinessError(
+                    "Record not found.", status=404, title="Not Found"
+                ) from exc
+            if exc.code == "22023":
+                raise BusinessError(
+                    "The request violates a library invariant."
                 ) from exc
             raise BusinessError(
                 "Persistence request failed.", status=503, title="Unavailable"

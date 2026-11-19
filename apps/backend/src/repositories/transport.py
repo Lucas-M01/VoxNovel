@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 from typing import Literal, Protocol
+from uuid import UUID
 
 from pydantic import JsonValue
 
@@ -17,3 +18,5 @@ class Operation:
 
 class Transport(Protocol):
     def send(self, operation: Operation) -> list[Row]: ...
+
+    def write(self, operation: str, novel_id: UUID, values: Row) -> None: ...

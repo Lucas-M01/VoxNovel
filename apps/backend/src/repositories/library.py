@@ -5,7 +5,7 @@ from pydantic import TypeAdapter
 from slugify import slugify
 
 from src.core.exceptions import BusinessError
-from src.repositories.models import Novel, NovelInput, Source, SourceInput, timestamp
+from src.repositories.models import Novel, NovelInput, Source, SourceInput
 from src.repositories.transport import Operation, Row, Transport
 
 ROWS = TypeAdapter(list[Row])
@@ -76,54 +76,31 @@ class LibraryRepository:
             normalized_slug(n.slug) == normalized_slug(slug) for n in self.list_novels()
         ):
             raise BusinessError("Novel already exists.", status=409, title="Conflict")
-        novel = Novel(title=data.title, slug=slug, current_chapter=data.current_chapter)
-        row = novel.model_dump(mode="json", exclude={"sources"})
-        self.transport.send(
-            Operation("novels", "insert", ROWS.validate_python([row])[0])
-        )
-        for source in data.sources:
-            self.add_source(novel.id, source)
-        return self.get(novel.id)
+        novel_id = uuid4()
+        values = data.model_dump(mode="json")
+        values["slug"] = slug
+        self.transport.write("create", novel_id, ROWS.validate_python([values])[0])
+        return self.get(novel_id)
 
     def add_source(self, novel_id: UUID, data: SourceInput) -> Novel:
-        novel = self.get(novel_id)
-        existing = next((s for s in novel.sources if s.provider == data.provider), None)
-        values = data.model_dump(mode="json")
-        values["id"] = str(existing.id if existing else uuid4())
-        values["novel_id"] = str(novel_id)
-        values["slug"] = data.slug or novel.slug
-        values["current_chapter"] = data.current_chapter or (
-            existing.current_chapter if existing else novel.current_chapter
+        self.transport.write(
+            "add_source",
+            novel_id,
+            ROWS.validate_python([data.model_dump(mode="json")])[0],
         )
-        values["updated_at"] = timestamp().isoformat()
-        self.transport.send(
-            Operation("sources", "upsert", ROWS.validate_python([values])[0])
-        )
-        if novel.active_source_id is None:
-            self._update(novel_id, {"active_source_id": values["id"]})
         return self.get(novel_id)
 
     def update_progress(self, novel_id: UUID, chapter: int) -> Novel:
         if chapter < 1:
             raise BusinessError("Chapter must be positive.")
-        novel = self.get(novel_id)
-        if novel.active_source_id:
-            self.transport.send(
-                Operation(
-                    "sources",
-                    "update",
-                    {"current_chapter": chapter, "updated_at": timestamp().isoformat()},
-                    {"id": str(novel.active_source_id), "novel_id": str(novel_id)},
-                )
-            )
-        self._update(novel_id, {"current_chapter": chapter})
+        self.transport.write("progress", novel_id, {"chapter": chapter})
         return self.get(novel_id)
 
     def activate_source(self, novel_id: UUID, source_id: UUID) -> Novel:
         novel = self.get(novel_id)
         if not any(s.id == source_id for s in novel.sources):
             raise missing("Source not found in this novel.")
-        self._update(novel_id, {"active_source_id": str(source_id)})
+        self.transport.write("activate_source", novel_id, {"source_id": str(source_id)})
         return self.get(novel_id)
 
     def remove_source(self, novel_id: UUID, source_id: UUID) -> Novel:
@@ -132,36 +109,8 @@ class LibraryRepository:
             raise missing("Source not found in this novel.")
         if len(novel.sources) <= 1:
             raise BusinessError("A novel must retain at least one source.")
-        if novel.active_source_id == source_id:
-            self._update(
-                novel_id,
-                {
-                    "active_source_id": str(
-                        next(s.id for s in novel.sources if s.id != source_id)
-                    )
-                },
-            )
-        self.transport.send(
-            Operation(
-                "sources",
-                "delete",
-                filters={"id": str(source_id), "novel_id": str(novel_id)},
-            )
-        )
+        self.transport.write("remove_source", novel_id, {"source_id": str(source_id)})
         return self.get(novel_id)
 
     def delete(self, novel_id: UUID) -> None:
-        self.get(novel_id)
-        self.transport.send(
-            Operation("novels", "delete", filters={"id": str(novel_id)})
-        )
-
-    def _update(self, novel_id: UUID, values: Row) -> None:
-        self.transport.send(
-            Operation(
-                "novels",
-                "update",
-                {**values, "updated_at": timestamp().isoformat()},
-                {"id": str(novel_id)},
-            )
-        )
+        self.transport.write("delete", novel_id, {})
