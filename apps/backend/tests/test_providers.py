@@ -121,3 +121,68 @@ def test_invalid_provider_url_and_empty_search() -> None:
     ):
         with pytest.raises(BusinessError):
             action()
+
+
+def test_novelfire_prefix_fallback_and_optional_chapter_count() -> None:
+    http = FixtureHttp(
+        {
+            "https://novelfire.net/book/synthetic": BusinessError("Blocked"),
+            "https://novelfire.net/novel/synthetic": "<h1>Synthetic Fire</h1>",
+            "https://novelfire.net/novel/synthetic/chapters": (
+                '<input id="gotochapno" max="917">'
+            ),
+        }
+    )
+    service = MetadataService(http, Settings())
+    result = service.novelfire("https://novelfire.net/book/synthetic/chapter-5")
+    assert result.title == "Synthetic Fire" and result.total_chapters == 917
+    assert (
+        result.chapter_url_pattern
+        == "https://novelfire.net/novel/synthetic/chapter-{cap}"
+    )
+    http.pages["https://novelfire.net/novel/synthetic/chapters"] = BusinessError(
+        "Unavailable"
+    )
+    assert (
+        service.novelfire("https://novelfire.net/book/synthetic").total_chapters is None
+    )
+
+
+def test_royalroad_preserves_ordered_unique_real_ids() -> None:
+    http = FixtureHttp(
+        {
+            "https://www.royalroad.com/fiction/123/synthetic": """
+        <h1>Synthetic Road</h1><a href="/fiction/123/synthetic/chapter/9081/one">One</a>
+        <a href="/fiction/123/synthetic/chapter/7023/two">Two</a>
+        <a href="/fiction/123/synthetic/chapter/9081/one">Again</a>
+        <div class="tags"><span class="tag">Fantasy</span></div>"""
+        }
+    )
+    result = MetadataService(http, Settings()).royalroad(
+        "https://www.royalroad.com/fiction/123/synthetic/chapter/9081"
+    )
+    assert result.chapter_ids == [9081, 7023]
+    assert result.total_chapters == 2 and result.genres == ["Fantasy"]
+    assert (
+        result.chapter_url_pattern
+        == "https://www.royalroad.com/fiction/123/synthetic/chapter/{cap}"
+    )
+
+
+def test_known_provider_errors_and_no_ids() -> None:
+    service = MetadataService(
+        FixtureHttp(
+            {
+                "https://novelfire.net/book/synthetic": BusinessError("Unavailable"),
+                "https://novelfire.net/novel/synthetic": BusinessError("Unavailable"),
+                "https://www.royalroad.com/fiction/123/synthetic": "<h1>Synthetic</h1>",
+            }
+        ),
+        Settings(),
+    )
+    with pytest.raises(BusinessError):
+        service.novelfire("https://novelfire.net/book/synthetic")
+    with pytest.raises(BusinessError):
+        service.royalroad("https://www.royalroad.com/not-fiction")
+    result = service.royalroad("https://www.royalroad.com/fiction/123/synthetic")
+    assert result.chapter_ids == [] and result.chapter_url_pattern is None

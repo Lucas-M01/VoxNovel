@@ -41,3 +41,15 @@ def test_detects_architecture_violations(source: str, path: str) -> None:
 )
 def test_accepts_implementation_within_boundaries(source: str, path: str) -> None:
     assert find_violations(source, path) == []
+
+
+def test_protocol_mount_prefix_is_not_a_hardcoded_endpoint() -> None:
+    assert (
+        find_violations(
+            'session.mount("https://", adapter)', "src/adapters/providers.py"
+        )
+        == []
+    )
+    assert find_violations(
+        'url = "https://source.example/"', "src/adapters/providers.py"
+    )

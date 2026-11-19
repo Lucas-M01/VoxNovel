@@ -143,6 +143,7 @@ class Page:
     status: int
     headers: dict[str, str]
     content: bytes
+    cookie_headers: tuple[str, ...] = ()
 
     @property
     def text(self) -> str:
@@ -161,7 +162,17 @@ class PublicHttp:
             ipaddress.ip_network(value) for value in settings.scraper_denied_networks
         ]
 
-    def _exchange(self, parsed: SplitResult, address: str, timeout: float) -> Page:
+    def _exchange(
+        self,
+        parsed: SplitResult,
+        address: str,
+        timeout: float,
+        *,
+        method: str = "GET",
+        request_headers: dict[str, str] | None = None,
+        body: bytes | None = None,
+        read_errors: bool = False,
+    ) -> Page:
         host = parsed.hostname
         assert host is not None
         port = parsed.port or (443 if parsed.scheme == "https" else 80)
@@ -183,18 +194,25 @@ class PublicHttp:
                 )
             )
             connection.request(
-                "GET",
+                method,
                 target,
+                body=body,
                 headers={
                     "User-Agent": self.settings.scraper_user_agent,
                     "Accept": "text/html,application/xhtml+xml,*/*;q=0.8",
+                    **(request_headers or {}),
                     "Accept-Encoding": "gzip, deflate",
                 },
             )
             response = connection.getresponse()
             headers = {key.lower(): value for key, value in response.getheaders()}
-            if not 200 <= response.status < 300:
-                return Page(parsed.geturl(), response.status, headers, b"")
+            cookies = tuple(
+                value
+                for key, value in response.getheaders()
+                if key.lower() == "set-cookie"
+            )
+            if not read_errors and not 200 <= response.status < 300:
+                return Page(parsed.geturl(), response.status, headers, b"", cookies)
             limit = self.settings.scraper_max_bytes
             if int(headers.get("content-length", "0")) > limit:
                 raise BusinessError("The source response is too large.", status=502)
@@ -206,19 +224,19 @@ class PublicHttp:
                 if encoding != "identity"
                 else None
             )
-            body = bytearray()
+            decoded_body = bytearray()
             transferred = 0
             while chunk := response.read1(min(65536, limit + 1)):
                 transferred += len(chunk)
                 decoded = (
-                    decoder.decompress(chunk, limit - len(body) + 1)
+                    decoder.decompress(chunk, limit - len(decoded_body) + 1)
                     if decoder
                     else chunk
                 )
-                body.extend(decoded)
+                decoded_body.extend(decoded)
                 if (
                     transferred > limit
-                    or len(body) > limit
+                    or len(decoded_body) > limit
                     or (decoder and decoder.unconsumed_tail)
                 ):
                     raise BusinessError("The source response is too large.", status=502)
@@ -230,38 +248,69 @@ class PublicHttp:
                 raise unavailable()
             if decoder and (not decoder.eof or decoder.unused_data):
                 raise unavailable()
-            return Page(parsed.geturl(), response.status, headers, bytes(body))
+            return Page(
+                parsed.geturl(), response.status, headers, bytes(decoded_body), cookies
+            )
         finally:
             timer.cancel()
             connection.close()
+
+    def _destination(
+        self, url: str, deadline: float
+    ) -> tuple[SplitResult, list[str], float]:
+        parsed = parse_url(url)
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            raise unavailable()
+        host = parsed.hostname
+        assert host is not None
+        addresses = self.resolver(
+            host, min(remaining, self.settings.scraper_dns_timeout)
+        )
+        # Validate injected resolvers too, and reject mixed public/private answers.
+        addresses = [public_address(address) for address in addresses]
+        if any(
+            ipaddress.ip_address(address) in network
+            for address in addresses
+            for network in self.denied
+        ):
+            raise blocked()
+        if not addresses:
+            raise unavailable()
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            raise unavailable()
+        return parsed, addresses, remaining
+
+    def single(
+        self,
+        url: str,
+        method: str,
+        headers: dict[str, str],
+        body: bytes | None,
+        deadline: float,
+    ) -> Page:
+        if method not in {"GET", "HEAD", "POST"} or (
+            body is not None and len(body) > self.settings.scraper_request_max_bytes
+        ):
+            raise blocked()
+        parsed, addresses, remaining = self._destination(url, deadline)
+        return self._exchange(
+            parsed,
+            addresses[0],
+            min(remaining, self.settings.scraper_request_timeout),
+            method=method,
+            request_headers=headers,
+            body=body,
+            read_errors=True,
+        )
 
     def get(self, url: str) -> Page:
         deadline = time.monotonic() + self.settings.scraper_total_timeout
         redirects = 0
         retries = 0
         while True:
-            parsed = parse_url(url)
-            remaining = deadline - time.monotonic()
-            if remaining <= 0:
-                raise unavailable()
-            host = parsed.hostname
-            assert host is not None
-            addresses = self.resolver(
-                host, min(remaining, self.settings.scraper_dns_timeout)
-            )
-            # Validate injected resolvers too, and reject mixed public/private answers.
-            addresses = [public_address(address) for address in addresses]
-            if any(
-                ipaddress.ip_address(address) in network
-                for address in addresses
-                for network in self.denied
-            ):
-                raise blocked()
-            if not addresses:
-                raise unavailable()
-            remaining = deadline - time.monotonic()
-            if remaining <= 0:
-                raise unavailable()
+            parsed, addresses, remaining = self._destination(url, deadline)
             try:
                 page = self._exchange(
                     parsed,

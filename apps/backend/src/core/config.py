@@ -59,6 +59,11 @@ class Settings(BaseSettings):
             "64:ff9b:1::/48",
         ]
     )
+    scraper_request_max_bytes: int = Field(default=64_000, ge=1024)
+    scraper_challenge_delay: float = Field(default=5, ge=0, le=10)
+    novelfire_base: HttpUrl = HttpUrl("https://novelfire.net")
+    royalroad_base: HttpUrl = HttpUrl("https://www.royalroad.com")
+
     scraper_user_agent: str = "Mozilla/5.0 (compatible; VoxNovel/1.0)"
     scraper_dns_timeout: float = Field(default=5, gt=0, le=30)
     scraper_request_timeout: float = Field(default=20, gt=0, le=120)

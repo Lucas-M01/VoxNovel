@@ -11,3 +11,11 @@ Testes cobrem IPv4/IPv6, metadata, respostas DNS mistas, rebinding em retry, TLS
 Referências conferidas: [http.client do Python](https://docs.python.org/3.12/library/http.client.html), [ipaddress](https://docs.python.org/3.12/library/ipaddress.html) e [Resolver do dnspython](https://dnspython.readthedocs.io/en/stable/resolver-class.html).
 
 A conexão mantém seu prazo original também se a biblioteca tentar reabri-la após expiração. A negociação TLS é explícita, com o socket TLS atribuído antes do handshake, para que o watchdog possa interrompê-lo; o handshake usa somente o orçamento restante.
+
+## Transportes específicos (C18)
+
+NovelFire usa cloudscraper 1.2.71 com intérprete nativo, profundidade de solução limitada e delay configurado. Todos os adaptadores padrão são removidos; GET/POST de desafios e redirects passam por `ChallengeAdapter` e `PublicHttp.single`, com o mesmo deadline para a operação inteira, limite de submissões, corpo de request limitado, DNS validado e cookies com política de domínio/path/secure. Não há transporte requests residual nem proxy de ambiente.
+
+RoyalRoad usa curl-cffi com impersonação Chrome, sem proxy, sem redirects automáticos e sem reutilização da conexão. CONNECT_TO e RESOLVE fixam o destino numérico validado, preservando Host/SNI/certificado originais. A descompressão automática é desabilitada: callback limita bytes recebidos e a aplicação limita separadamente a descompressão. Referências: [CONNECT_TO](https://curl.se/libcurl/c/CURLOPT_CONNECT_TO.html), [HTTP_CONTENT_DECODING](https://curl.se/libcurl/c/CURLOPT_HTTP_CONTENT_DECODING.html).
+
+As provas determinísticas incluem redirects privados nos dois transportes, cookies de desafio, POST limitado, impossibilidade de cair no HTTPAdapter padrão e opções cURL de pinning/TLS/descompressão. Não representam promessa de superar qualquer desafio Cloudflare real; mudanças externas no site continuam podendo resultar em erro claro de acesso.

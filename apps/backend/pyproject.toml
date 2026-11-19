@@ -14,6 +14,8 @@ python-slugify = "^9.2.0"
 dnspython = ">=2.7,<3"
 beautifulsoup4 = ">=4.14,<5"
 lxml = ">=6,<7"
+cloudscraper = "1.2.71"
+curl-cffi = ">=0.13,<1"
 
 [tool.poetry.group.dev.dependencies]
 httpx = ">=0.28,<1"
@@ -37,3 +39,7 @@ testpaths = ["tests"]
 markers = ["integration: requires a disposable local Supabase stack"]
 addopts = "-ra --strict-markers"
 pythonpath = ["."]
+
+[[tool.mypy.overrides]]
+module = ["cloudscraper.*"]
+ignore_missing_imports = true

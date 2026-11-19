@@ -76,7 +76,9 @@ class SimulatedHttp(PublicHttp):
         self.pages = pages
         self.calls: list[tuple[str, str]] = []
 
-    def _exchange(self, parsed: SplitResult, address: str, timeout: float) -> Page:
+    def _exchange(
+        self, parsed: SplitResult, address: str, timeout: float, **kwargs: object
+    ) -> Page:
         self.calls.append((parsed.geturl(), address))
         page = self.pages.pop(0)
         if isinstance(page, OSError):

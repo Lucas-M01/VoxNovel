@@ -143,6 +143,66 @@ class MetadataService:
             result.chapter_url_pattern = f"{base}/{slug}-capitulo-{{cap}}/"
         return result
 
+    def novelfire(self, url: str) -> SourceMetadata:
+        parts = urlsplit(url).path.strip("/").split("/")
+        prefix, slug = (
+            (parts[0], parts[1])
+            if len(parts) >= 2 and parts[0] in {"book", "novel"}
+            else ("book", parts[0])
+        )
+        if not slug:
+            raise BusinessError("Invalid NovelFire URL.")
+        base = str(self.settings.novelfire_base).rstrip("/")
+        soup: BeautifulSoup | None = None
+        for candidate in (prefix, "novel" if prefix == "book" else "book"):
+            try:
+                soup = self._soup(f"{base}/{candidate}/{slug}")
+                prefix = candidate
+                break
+            except BusinessError:
+                continue
+        if soup is None:
+            raise BusinessError("NovelFire could not be accessed.", status=502)
+        result = self._basic(soup, url, "NovelFire", slug)
+        result.rating = None
+        result.authors = [
+            tag.get_text(strip=True) for tag in soup.select(".author a,.authors a")
+        ]
+        page = f"{base}/{prefix}/{slug}"
+        try:
+            chapters = self._soup(page + "/chapters")
+            maximum = attribute(chapters.find("input", id="gotochapno"), "max")
+            result.total_chapters = (
+                int(maximum) if maximum and int(maximum) > 0 else None
+            )
+        except (BusinessError, ValueError):
+            pass
+        result.chapter_url_pattern = page + "/chapter-{cap}"
+        return result
+
+    def royalroad(self, url: str) -> SourceMetadata:
+        matched = re.match(r"/fiction/(\d+)/([^/]+)", urlsplit(url).path)
+        if not matched:
+            raise BusinessError("Invalid RoyalRoad URL.")
+        fiction_id, slug = matched.groups()
+        base = str(self.settings.royalroad_base).rstrip("/")
+        page = f"{base}/fiction/{fiction_id}/{slug}"
+        soup = self._soup(page)
+        result = self._basic(soup, url, "RoyalRoad", slug)
+        ids = [
+            int(match.group(1))
+            for tag in soup.select('a[href*="/chapter/"]')
+            if (match := re.search(r"/chapter/(\d+)", attribute(tag, "href") or ""))
+            and int(match.group(1)) > 0
+        ]
+        result.chapter_ids = list(dict.fromkeys(ids))
+        result.total_chapters = len(result.chapter_ids) or None
+        result.chapter_url_pattern = page + "/chapter/{cap}" if ids else None
+        rating = soup.find(class_=re.compile("star|rating", re.I))
+        result.rating = rating.get_text(strip=True) if rating else None
+        result.genres = [tag.get_text(strip=True) for tag in soup.select(".tags .tag")]
+        return result
+
     def search(self, name: str) -> list[SourceMetadata]:
         slug = slugify(name)
         if not slug:

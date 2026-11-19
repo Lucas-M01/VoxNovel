@@ -98,7 +98,11 @@ def find_violations(source: str, path: str) -> list[str]:
         if isinstance(node, ast.Constant) and isinstance(node.value, str):
             if not repository and SQL.match(node.value):
                 violations.append(f"{path}:{node.lineno}: SQL outside repositories")
-            if not config and node.value.startswith(("http://", "https://")):
+            if (
+                not config
+                and node.value.startswith(("http://", "https://"))
+                and node.value not in {"http://", "https://"}
+            ):
                 violations.append(f"{path}:{node.lineno}: hardcoded URL outside config")
         if (
             isinstance(node, ast.ClassDef)
