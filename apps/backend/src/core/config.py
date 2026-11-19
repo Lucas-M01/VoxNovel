@@ -59,6 +59,11 @@ class Settings(BaseSettings):
             "64:ff9b:1::/48",
         ]
     )
+    google_translation_base: HttpUrl = HttpUrl("https://translate.google.com/m")
+    translation_timeout: float = Field(default=45, gt=0, le=180)
+    translation_block_chars: int = Field(default=4500, ge=1, le=4500)
+    translation_block_delay: float = Field(default=0.3, ge=0, le=5)
+
     scraper_request_max_bytes: int = Field(default=64_000, ge=1024)
     scraper_challenge_delay: float = Field(default=5, ge=0, le=10)
     novelfire_base: HttpUrl = HttpUrl("https://novelfire.net")

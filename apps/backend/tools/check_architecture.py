@@ -10,6 +10,7 @@ NETWORK_MODULES = {
     "httpx2",
     "aiohttp",
     "cloudscraper",
+    "deep_translator",
     "curl_cffi",
     "supabase",
     "postgrest",

@@ -23,3 +23,9 @@ As provas determinísticas incluem redirects privados nos dois transportes, cook
 ## Identificação e montagem (C19)
 
 A seleção de provider compara o hostname normalizado inteiro, sem aceitar o nome de um site como substring de outro domínio. O fallback genérico preserva metadados mínimos quando uma fonte pública falha, mas nunca absorve uma rejeição da política de rede. Detecção mantém os dois contratos observados: o utilitário de obra reconhece hífen e retorna 1 no fallback; a detecção de fonte também reconhece `chapter/numero`. Montagem cobre hífen/barra, query `?page=` e acréscimo de `page`, além do placeholder retornado pelo parser.
+
+## Tradução GoogleTranslator (C20)
+
+A engine mantém a biblioteca deep-translator (source auto, target pt), com endpoint configurado em core/config.py. A biblioteca não oferece injeção de cliente HTTP: a engine substitui somente o binding requests do módulo google durante a chamada, sob lock, e o restaura no finally. O módulo requests global não é alterado. O cliente substituto usa exclusivamente o adaptador protegido, com o mesmo deadline durante redirects/recursões; espera pelo lock também tem prazo. Testes usam o parser GoogleTranslator real com HTTP simulado, verificam sl/tl/q e restauração do binding em sucesso/falha.
+
+O serviço divide o texto em blocos de 4500 caracteres, traduz cada bloco e preserva o bloco original em erro/retorno vazio, com espaçamento entre blocos. Nenhum conteúdo de tradução ou exceção externa é registrado. Rede real Google não foi usada como prova determinística.
