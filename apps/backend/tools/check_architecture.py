@@ -14,6 +14,9 @@ NETWORK_MODULES = {
     "supabase",
     "postgrest",
     "socket",
+    "http.client",
+    "dns",
+    "storage3",
 }
 SQL = re.compile(
     r"^\s*(SELECT(?=\s+\S)|INSERT\s+INTO|UPDATE\s+\w+\s+SET|DELETE\s+FROM|CREATE\s+TABLE|ALTER\s+TABLE)\b",
@@ -43,7 +46,7 @@ def find_violations(source: str, path: str) -> list[str]:
                 aliases[alias.asname or alias.name] = f"{module}.{alias.name}"
         for module, line in modules:
             if not network and (
-                module.split(".")[0] in NETWORK_MODULES
+                (module.split(".")[0] in NETWORK_MODULES or module in NETWORK_MODULES)
                 or module.startswith("urllib.request")
             ):
                 violations.append(

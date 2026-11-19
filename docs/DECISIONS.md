@@ -45,3 +45,10 @@ As escolhas de implementação, divisão de commits e tags constam de PLANO_COMM
 - Decisão: executar C10–C14 e avisar assim que existir fluxo funcional testável, com instruções de execução. A base atual inicia FastAPI/Expo, mas ainda não oferece o fluxo do leitor.
 - Ambiente: o dono aprovou explicitamente “Aprovar stack local descartável (recomendado)” para integração via Docker. Uso restrito a testes; sem provisionar/alterar projetos Supabase existentes.
 - Limites: o bloco F2 mantém seu portão; mocks não substituem integração real.
+
+## ADR-006 — Autorizar bloco F3
+
+- Data: 2026-11-18.
+- Estado: aprovado explicitamente pelo dono: “Pode prosseguir”, em resposta ao portão F2.
+- Decisão: executar C15–C25, com rede protegida antes de expor scraping; encerrar no portão F3 com evidências, log e tag.
+- Limites: manter paridade e avisar quando houver fluxo funcional executável, com comandos. F4, deploy, push e importação pessoal continuam sujeitos aos respectivos portões.

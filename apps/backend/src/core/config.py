@@ -49,6 +49,21 @@ class Settings(BaseSettings):
         ]
     )
 
+    scraper_denied_networks: list[str] = Field(
+        default_factory=lambda: [
+            "168.63.129.16/32",
+            "64:ff9b::/96",
+            "64:ff9b:1::/48",
+        ]
+    )
+    scraper_user_agent: str = "Mozilla/5.0 (compatible; VoxNovel/1.0)"
+    scraper_dns_timeout: float = Field(default=5, gt=0, le=30)
+    scraper_request_timeout: float = Field(default=20, gt=0, le=120)
+    scraper_total_timeout: float = Field(default=45, gt=0, le=180)
+    scraper_max_bytes: int = Field(default=4_000_000, ge=1024)
+    scraper_max_redirects: int = Field(default=5, ge=0, le=10)
+    scraper_retries: int = Field(default=2, ge=0, le=3)
+
     app_name: str = "VoxNovel API"
     host: str = "127.0.0.1"
     port: int = Field(default=8000, ge=1, le=65535)
