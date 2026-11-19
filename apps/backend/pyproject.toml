@@ -12,6 +12,8 @@ uvicorn = ">=0.30,<1"
 supabase = "^2.34.1"
 python-slugify = "^9.2.0"
 dnspython = ">=2.7,<3"
+beautifulsoup4 = ">=4.14,<5"
+lxml = ">=6,<7"
 
 [tool.poetry.group.dev.dependencies]
 httpx = ">=0.28,<1"
