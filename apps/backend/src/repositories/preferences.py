@@ -106,6 +106,17 @@ class PreferencesRepository:
             return self.save_filters(filters)
         return filters
 
+    def add_word(self, value: str) -> FilterState:
+        return self.add_filter("phrases" if " " in value else "words", value)
+
+    def remove_word(self, value: str) -> FilterState:
+        filters = self.filters()
+        if any(term.lower() == value.lower() for term in filters.words):
+            return self.remove_filter("words", value)
+        if any(term.lower() == value.lower() for term in filters.phrases):
+            return self.remove_filter("phrases", value)
+        return filters
+
     def speed(self) -> SpeedState:
         return SpeedState.model_validate(
             self._load("preferences", {"speed": self.settings.default_speed})

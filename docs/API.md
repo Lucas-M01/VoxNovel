@@ -51,3 +51,13 @@ python3 scripts/check_integration.py --workdir "$STACK_DIR" --all-checks
 ```
 
 A integração HTTP percorre criação, leitura/listagem, conflito, progresso, fontes, troca, bloqueio da última remoção e exclusão no banco local real. Textos e metadados externos usam fixtures nas provas determinísticas.
+
+## Texto, filtros e velocidade (C22)
+
+- GET `/api/v1/chapters/text?url=...&chapter=...`: extrai, limpa, aplica filtros globais e traduz automaticamente para português; retorna url/chapter/text. Requer acesso público e configuração de filtros no banco. Não gera áudio.
+- GET/PUT/DELETE `/api/v1/filters`: lê/substitui/esvazia words/phrases/regex. DELETE mantém listas vazias.
+- POST/DELETE `/api/v1/filters/term`: JSON `{"kind":"words","value":"Synthetic"}`; kinds words, phrases e regex são explícitos.
+- POST/DELETE `/api/v1/filters/word` e `/api/v1/filters/regex`: capacidades antigas com nomes EN. Word decide palavra/frase pela presença de espaço; remoção procura palavras antes de frases. Não cria filtros por obra.
+- GET/PUT `/api/v1/settings`: velocidade padrão, com JSON `{"speed":1.5}` no PUT.
+
+Se a API já estava aberta antes de novos commits, reinicie o processo para carregar as rotas novas. Use somente preferências sintéticas nesta stack: testes de integração limpam suas linhas singleton.

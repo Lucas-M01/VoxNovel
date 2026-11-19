@@ -7,7 +7,10 @@ from src.adapters.providers import ProviderHttp
 from src.adapters.supabase import SupabaseTransport
 from src.core.config import Settings
 from src.repositories.library import LibraryRepository
+from src.repositories.preferences import PreferencesRepository
+from src.services.chapters import ChapterService
 from src.services.providers import MetadataService
+from src.services.translation import TextTranslator
 
 
 class Resources:
@@ -43,3 +46,19 @@ def metadata(context: Context) -> MetadataService:
 
 Library = Annotated[LibraryRepository, Depends(library)]
 Metadata = Annotated[MetadataService, Depends(metadata)]
+
+
+def preferences(context: Context) -> PreferencesRepository:
+    return PreferencesRepository(context.transport(), context.settings)
+
+
+def chapters(context: Context) -> ChapterService:
+    return ChapterService(
+        ProviderHttp(context.settings),
+        preferences(context),
+        TextTranslator(context.settings),
+    )
+
+
+Preferences = Annotated[PreferencesRepository, Depends(preferences)]
+Chapters = Annotated[ChapterService, Depends(chapters)]

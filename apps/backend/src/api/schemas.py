@@ -1,7 +1,8 @@
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
+from src.repositories.preferences import FilterKind
 from src.services.providers import SourceMetadata
 
 
@@ -21,3 +22,12 @@ class ChapterNumber(BaseModel):
 
 class ChapterUrl(BaseModel):
     url: str | None
+
+
+class FilterValueInput(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    value: str = Field(min_length=1)
+
+
+class FilterTermInput(FilterValueInput):
+    kind: FilterKind
