@@ -61,3 +61,12 @@ A integração HTTP percorre criação, leitura/listagem, conflito, progresso, f
 - GET/PUT `/api/v1/settings`: velocidade padrão, com JSON `{"speed":1.5}` no PUT.
 
 Se a API já estava aberta antes de novos commits, reinicie o processo para carregar as rotas novas. Use somente preferências sintéticas nesta stack: testes de integração limpam suas linhas singleton.
+
+## Cache remoto de texto e logs (C23)
+
+- POST `/api/v1/downloads/{novel_id}/{chapter}`: gera texto da fonte ativa se ainda não estiver em cache; retorna status ok/cache. Requer chapter_url_pattern na fonte e bucket privado previamente configurado.
+- GET `/api/v1/downloads/{novel_id}` e GET `/api/v1/downloads/{novel_id}/{chapter}/text`: listam capítulos e leem texto já salvo.
+- DELETE nesses mesmos recursos remove capítulo/obra do cache remoto, sem jobs ou áudio.
+- GET `/api/v1/logs`: últimas 500 mensagens de processo em memória; GET `/api/v1/status`: disponibilidade da API, sem probe Redis ou observabilidade comercial.
+
+A integração cria seu próprio bucket privado aleatório e o remove ao final. O bucket de uso manual deve ser criado privadamente, aceitando application/json, e indicado por VOXNOVEL_SUPABASE_TEXT_BUCKET. Os arquivos conservam cap/texto no Storage; a API de leitura retorna chapter/text. Não há migração de dados pessoais. A correção dos IDs reais RoyalRoad será validada separadamente em C24.

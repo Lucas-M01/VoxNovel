@@ -3,9 +3,11 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from src.api.chapters import router as chapters_router
 from src.api.deps import Resources
+from src.api.downloads import router as downloads_router
 from src.api.library import router as library_router
 from src.api.preferences import router as preferences_router
 from src.api.sources import router as sources_router
+from src.api.system import router as system_router
 from src.core.config import Settings, get_settings
 from src.core.exceptions import register_exception_handlers
 
@@ -18,6 +20,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(sources_router)
     app.include_router(chapters_router)
     app.include_router(preferences_router)
+    app.include_router(downloads_router)
+    app.include_router(system_router)
     register_exception_handlers(app)
     app.add_middleware(
         CORSMiddleware,

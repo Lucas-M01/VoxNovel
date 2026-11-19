@@ -1,3 +1,4 @@
+from typing import Literal
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -31,3 +32,11 @@ class FilterValueInput(BaseModel):
 
 class FilterTermInput(FilterValueInput):
     kind: FilterKind
+
+
+class LogResult(BaseModel):
+    logs: list[str]
+
+
+class ApiStatus(BaseModel):
+    status: Literal["ok"] = "ok"
