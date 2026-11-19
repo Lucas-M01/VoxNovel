@@ -1,6 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from src.api.deps import Resources
+from src.api.library import router as library_router
+from src.api.sources import router as sources_router
 from src.core.config import Settings, get_settings
 from src.core.exceptions import register_exception_handlers
 
@@ -8,6 +11,9 @@ from src.core.exceptions import register_exception_handlers
 def create_app(settings: Settings | None = None) -> FastAPI:
     config = settings if settings is not None else get_settings()
     app = FastAPI(title=config.app_name)
+    app.state.resources = Resources(config)
+    app.include_router(library_router)
+    app.include_router(sources_router)
     register_exception_handlers(app)
     app.add_middleware(
         CORSMiddleware,
