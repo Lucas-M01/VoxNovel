@@ -46,7 +46,9 @@ class SupabaseTransport:
                 case "update":
                     request = table.update(operation.values)
                 case "upsert":
-                    request = table.upsert(operation.values)
+                    request = table.upsert(
+                        operation.values, ignore_duplicates=operation.ignore_duplicates
+                    )
                 case "delete":
                     request = table.delete()
             for field, value in operation.filters.items():

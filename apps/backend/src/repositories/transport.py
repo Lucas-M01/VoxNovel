@@ -14,6 +14,7 @@ class Operation:
     values: Row = field(default_factory=dict)
     filters: dict[str, str] = field(default_factory=dict)
     order: str | None = None
+    ignore_duplicates: bool = False
 
 
 class Transport(Protocol):

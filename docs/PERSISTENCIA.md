@@ -32,3 +32,11 @@ As consultas permanecem nos repositories e o SDK de rede no adaptador. O checker
 - A extração `db pull` da CLI ficou indisponível por falha no banco-sombra. O arquivo final combina o baseline versionado de C11 com as funções extraídas por pg_dump do banco testado. ACLs globais da plataforma foram excluídas. Não houve reparo/alteração em histórico remoto nem alteração de banco pessoal.
 
 O bootstrap/upgrade deve aplicar a migration com transação e ON_ERROR_STOP. Nunca executar rollback em dados pessoais como forma de teste. O teste de integração requer a migration de C12, e não apenas o baseline histórico de C11.
+
+## Filtros e velocidade (C13)
+
+A migration `20261119002243_preferences.sql` acrescenta dois singletons privados, com RLS e CRUD exclusivo do backend. Listas e velocidade padrão vêm de `core/config.py` e podem ser configuradas por ambiente. O bootstrap ignora conflitos para não substituir preferências já gravadas; listas vazias permanecem vazias. Remoção usa tipo e valor exato, e regex inválida é rejeitada antes da gravação. Erros de persistência são propagados, sem confirmar salvamento inexistente.
+
+A migration é aditiva e reaplicável. Para voltar o código a C12, mantenha as duas tabelas: C12 não as usa e as preferências permanecem disponíveis ao reaplicar C13. Não há down destrutivo de preferências pessoais. Testes limpam somente as linhas sintéticas da stack descartável.
+
+Evidência C13: 54 testes backend passaram, incluindo seis integrações reais; reaplicação da migration preservou sentinelas de filtros/velocidade, removidos ao final, e advisors locais não apontaram achados.

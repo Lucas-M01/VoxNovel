@@ -10,6 +10,42 @@ class Settings(BaseSettings):
     supabase_url: HttpUrl | None = None
     supabase_service_key: SecretStr | None = None
 
+    default_speed: float = Field(default=1.5, gt=0, allow_inf_nan=False)
+    filter_words: list[str] = Field(
+        default_factory=lambda: [
+            "advertisement",
+            "publicidade",
+            "patrocinado",
+            "sponsored",
+            "subscribe",
+            "newsletter",
+            "clique aqui",
+            "click here",
+        ]
+    )
+    filter_phrases: list[str] = Field(
+        default_factory=lambda: [
+            "aceitar cookies",
+            "accept cookies",
+            "política de privacidade",
+            "todos os direitos reservados",
+            "all rights reserved",
+            "compartilhe nas redes sociais",
+            "share on social media",
+            "leia também",
+            "read more",
+            "veja também",
+        ]
+    )
+    filter_regex: list[str] = Field(
+        default_factory=lambda: [
+            r"\[anúncio\]",
+            r"\[ad\]",
+            r"©\s*\d{4}",
+            r"https?://\S+",
+        ]
+    )
+
     app_name: str = "VoxNovel API"
     host: str = "127.0.0.1"
     port: int = Field(default=8000, ge=1, le=65535)
