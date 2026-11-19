@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup, Tag
 from pydantic import BaseModel, Field, HttpUrl, PositiveInt, ValidationError
 from slugify import slugify
 
-from src.adapters.http import Page
+from src.adapters.http import Page, parse_url
 from src.core.config import Settings
 from src.core.exceptions import BusinessError
 
@@ -202,6 +202,41 @@ class MetadataService:
         result.rating = rating.get_text(strip=True) if rating else None
         result.genres = [tag.get_text(strip=True) for tag in soup.select(".tags .tag")]
         return result
+
+    def generic(self, url: str) -> SourceMetadata:
+        result = SourceMetadata(provider="Genérico", title=url, url_base=HttpUrl(url))
+        try:
+            soup = self._soup(url)
+        except BusinessError as exc:
+            if exc.status == 400:
+                raise
+            return result
+        title = soup.find("title")
+        result.title = title.get_text(strip=True) if title else url
+        result.image_url = image_url(soup, url)
+        numbers = [
+            int(match.group(1))
+            for tag in soup.select("a[href]")
+            if (
+                match := re.search(
+                    r"chapter[-/](\d+)", attribute(tag, "href") or "", re.I
+                )
+            )
+        ]
+        result.total_chapters = max(numbers) if numbers and max(numbers) > 0 else None
+        return result
+
+    def identify(self, url: str) -> SourceMetadata:
+        host = (parse_url(url).hostname or "").lower().rstrip(".").removeprefix("www.")
+        for base, parser in (
+            (self.settings.freewebnovel_base, self.freewebnovel),
+            (self.settings.centralnovel_base, self.centralnovel),
+            (self.settings.novelfire_base, self.novelfire),
+            (self.settings.royalroad_base, self.royalroad),
+        ):
+            if host == (base.host or "").lower().rstrip(".").removeprefix("www."):
+                return parser(url)
+        return self.generic(url)
 
     def search(self, name: str) -> list[SourceMetadata]:
         slug = slugify(name)

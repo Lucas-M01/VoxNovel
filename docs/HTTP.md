@@ -19,3 +19,7 @@ NovelFire usa cloudscraper 1.2.71 com intérprete nativo, profundidade de soluç
 RoyalRoad usa curl-cffi com impersonação Chrome, sem proxy, sem redirects automáticos e sem reutilização da conexão. CONNECT_TO e RESOLVE fixam o destino numérico validado, preservando Host/SNI/certificado originais. A descompressão automática é desabilitada: callback limita bytes recebidos e a aplicação limita separadamente a descompressão. Referências: [CONNECT_TO](https://curl.se/libcurl/c/CURLOPT_CONNECT_TO.html), [HTTP_CONTENT_DECODING](https://curl.se/libcurl/c/CURLOPT_HTTP_CONTENT_DECODING.html).
 
 As provas determinísticas incluem redirects privados nos dois transportes, cookies de desafio, POST limitado, impossibilidade de cair no HTTPAdapter padrão e opções cURL de pinning/TLS/descompressão. Não representam promessa de superar qualquer desafio Cloudflare real; mudanças externas no site continuam podendo resultar em erro claro de acesso.
+
+## Identificação e montagem (C19)
+
+A seleção de provider compara o hostname normalizado inteiro, sem aceitar o nome de um site como substring de outro domínio. O fallback genérico preserva metadados mínimos quando uma fonte pública falha, mas nunca absorve uma rejeição da política de rede. Detecção mantém os dois contratos observados: o utilitário de obra reconhece hífen e retorna 1 no fallback; a detecção de fonte também reconhece `chapter/numero`. Montagem cobre hífen/barra, query `?page=` e acréscimo de `page`, além do placeholder retornado pelo parser.

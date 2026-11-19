@@ -186,3 +186,26 @@ def test_known_provider_errors_and_no_ids() -> None:
         service.royalroad("https://www.royalroad.com/not-fiction")
     result = service.royalroad("https://www.royalroad.com/fiction/123/synthetic")
     assert result.chapter_ids == [] and result.chapter_url_pattern is None
+
+
+def test_identification_routes_by_hostname_not_substring() -> None:
+    url = "https://freewebnovel.com.evil.example/novel/synthetic"
+    http = FixtureHttp(
+        {url: '<title>Generic synthetic</title><a href="/chapter/7">7</a>'}
+    )
+    result = MetadataService(http, Settings()).identify(url)
+    assert result.provider == "Genérico" and result.title == "Generic synthetic"
+    assert result.total_chapters == 7 and result.slug is None
+    assert http.calls == [url]
+
+
+def test_generic_fallback_preserves_network_policy_failure() -> None:
+    url = "https://source.example/synthetic"
+    http = FixtureHttp({url: BusinessError("Unavailable", status=502)})
+    service = MetadataService(http, Settings())
+    assert service.identify(url).title == url
+    http.pages[url] = BusinessError("Blocked private redirect", status=400)
+    with pytest.raises(BusinessError):
+        service.identify(url)
+    with pytest.raises(BusinessError):
+        service.identify("file:///private")
