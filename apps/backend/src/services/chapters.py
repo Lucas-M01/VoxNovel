@@ -1,8 +1,9 @@
 from pydantic import BaseModel, PositiveInt
 
+from src.core.config import Settings, get_settings
 from src.core.exceptions import BusinessError
 from src.repositories.preferences import PreferencesRepository
-from src.services.chapter_urls import chapter_url
+from src.services.chapter_urls import resolved_chapter_url
 from src.services.content import apply_filters, extract_chapter
 from src.services.logs import LogBuffer
 from src.services.providers import Fetcher
@@ -22,20 +23,36 @@ class ChapterService:
         preferences: PreferencesRepository,
         translator: TextTranslator,
         logs: LogBuffer | None = None,
+        *,
+        settings: Settings | None = None,
     ):
+        self.settings = settings if settings is not None else get_settings()
         self.http = http
         self.preferences = preferences
         self.translator = translator
         self.logs = logs
 
     def text(
-        self, url: str, chapter: int, *, require_content: bool = False
+        self,
+        url: str,
+        chapter: int,
+        *,
+        require_content: bool = False,
+        resolved: bool = False,
     ) -> ChapterResult:
-        resolved = chapter_url(url, chapter)
+        if chapter < 1:
+            raise BusinessError("Invalid chapter.")
+        target = (
+            url
+            if resolved
+            else resolved_chapter_url(
+                url, chapter, self.settings.royalroad_base.host or ""
+            )
+        )
         if self.logs:
             self.logs.add("Acessando fonte")
         try:
-            extracted = extract_chapter(self.http.get(resolved).content)
+            extracted = extract_chapter(self.http.get(target).content)
             if require_content and not extracted:
                 raise BusinessError(
                     "The source chapter has no content.",
@@ -48,7 +65,7 @@ class ChapterService:
             if self.logs:
                 self.logs.add("Traduzindo capítulo")
             result = ChapterResult(
-                url=resolved, chapter=chapter, text=self.translator.translate(filtered)
+                url=target, chapter=chapter, text=self.translator.translate(filtered)
             )
             if self.logs:
                 self.logs.add("Texto pronto")

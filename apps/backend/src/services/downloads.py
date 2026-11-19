@@ -50,9 +50,14 @@ class DownloadService:
         )
         if source is None or not source.chapter_url_pattern:
             raise BusinessError("The active source has no chapter URL pattern.")
-        url = pattern_url(source.chapter_url_pattern, chapter)
+        identifier = chapter
+        if source.chapter_ids:
+            if not 1 <= chapter <= len(source.chapter_ids):
+                raise BusinessError("Chapter is outside the source chapter list.")
+            identifier = source.chapter_ids[chapter - 1]
+        url = pattern_url(source.chapter_url_pattern, identifier)
         assert url is not None
-        text = self.chapters.text(url, chapter, require_content=True)
+        text = self.chapters.text(url, chapter, require_content=True, resolved=True)
         self.cache.save(novel_id, ChapterText(chapter=chapter, text=text.text))
         self.logs.add("Texto remoto salvo")
         return DownloadResult(status="ok", novel_id=novel_id, chapter=chapter)

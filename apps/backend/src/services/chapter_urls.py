@@ -1,4 +1,5 @@
 import re
+from urllib.parse import urlsplit
 
 from src.core.exceptions import BusinessError
 
@@ -44,3 +45,16 @@ def chapter_url(base: str, chapter: int) -> str:
             r"(\?page=)\d+", lambda match: match.group(1) + str(chapter), base
         )
     return base + ("&" if "?" in base else "?") + f"page={chapter}"
+
+
+def resolved_chapter_url(base: str, chapter: int, royalroad_host: str) -> str:
+    if chapter < 1:
+        raise BusinessError("Invalid chapter.")
+    parsed = urlsplit(base)
+    host = (parsed.hostname or "").lower().rstrip(".").removeprefix("www.")
+    expected = royalroad_host.lower().rstrip(".").removeprefix("www.")
+    if host == expected and re.match(
+        r"/fiction/\d+/[^/]+/chapter/\d+", parsed.path, re.I
+    ):
+        return base
+    return chapter_url(base, chapter)

@@ -63,6 +63,7 @@ def chapters(context: Context) -> ChapterService:
         preferences(context),
         TextTranslator(context.settings),
         context.logs,
+        settings=context.settings,
     )
 
 
