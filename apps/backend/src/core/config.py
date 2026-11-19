@@ -49,6 +49,9 @@ class Settings(BaseSettings):
         ]
     )
 
+    freewebnovel_base: HttpUrl = HttpUrl("https://freewebnovel.com")
+    centralnovel_base: HttpUrl = HttpUrl("https://centralnovel.com")
+
     scraper_denied_networks: list[str] = Field(
         default_factory=lambda: [
             "168.63.129.16/32",
