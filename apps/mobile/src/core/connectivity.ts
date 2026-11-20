@@ -29,8 +29,9 @@ function subscribe(listener: () => void) {
     }
   };
 }
+export function getConnectivity(): Connectivity { return status; }
 export function useConnectivity(): Connectivity {
-  return useSyncExternalStore<Connectivity>(subscribe, () => status, () => 'unknown');
+  return useSyncExternalStore<Connectivity>(subscribe, getConnectivity, () => 'unknown');
 }
 export function chapterAvailable(offline: boolean, downloaded: ReadonlySet<number>, chapter: number): boolean {
   return Number.isSafeInteger(chapter) && chapter > 0 && (!offline || downloaded.has(chapter));

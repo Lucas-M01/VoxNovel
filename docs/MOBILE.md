@@ -215,3 +215,19 @@ O leitor sintético agora pode ser exercitado com `reader:harness`: preparar e
 abrir leitor, mudar preferências, navegar pelos dois capítulos locais e testar
 rolagem. O teste continua sem fonte externa/tradução e não substitui a jornada
 pela biblioteca, que será ligada em F6.
+
+## Prefetch de texto (C34)
+
+A conclusão da leitura ativa agenda N+1..N+3 sequencialmente, usando o cache de
+texto puro por obra/fonte/URL/capítulo. Os limiares estritos acima de 80% e 95%
+reutilizam a fila e não duplicam requisições. Não há mutation de progresso,
+escrita de arquivos ou mudança visual de capítulo no prefetch. Limites conhecidos
+são respeitados e falhas ficam silenciosas, com uma tentativa automática por
+capítulo na sessão para impedir repetição a cada frame de scroll.
+
+Offline, somente arquivos já locais entram no prefetch; capítulos ausentes não
+fazem GET. Cleanup descarta a fila pendente e permite concluir uma requisição
+compartilhada já em andamento no cache em memória. O hook de lifecycle apenas
+abre/descarta o recurso; fetch começa nos eventos de capítulo pronto e scroll,
+sem trabalho de dados em efeitos. Testes cobrem sequência/concorrência, deduplicação,
+limiares, fim conhecido, falhas, descarte e ausência de gravações.

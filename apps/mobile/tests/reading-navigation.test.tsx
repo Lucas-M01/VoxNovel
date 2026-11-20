@@ -49,6 +49,7 @@ test('offline navigation opens only local chapters, without fetching their conte
   const data = setup();
   await data.storage.saveChapter(readerScope, 1, 'Primeiro local.');
   await data.storage.saveChapter(readerScope, 3, 'Terceiro local.');
+  jest.mocked(NetInfo.addEventListener).mockImplementationOnce(listener => { listener({ type: NetInfoStateType.none, isConnected: false, isInternetReachable: false, details: null }); return jest.fn(); });
   try {
     await render(<QueryClientProvider client={data.client}><ReadingScreen novel={readerNovel} services={data} /></QueryClientProvider>);
     await screen.findByText('Primeiro local.');

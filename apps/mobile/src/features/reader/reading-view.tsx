@@ -8,6 +8,7 @@ import { themes, widths, scrollSpeeds, useReadingPreferences } from '@core/readi
 import { readerServices, readingChapterOptions, readingKeys, type ReaderServices } from '@features/reader/reader-data';
 import { useConnectivity, chapterAvailable } from '@core/connectivity';
 import { localChaptersOptions } from '@core/local-queries';
+import { useChapterPrefetch } from '@features/reader/use-chapter-prefetch';
 import { ChapterNavigation } from '@features/reader/chapter-navigation';
 import { useAutoScroll } from '@features/reader/use-auto-scroll';
 import { ProgressBar } from '@ui/progress-bar';
@@ -22,7 +23,8 @@ export function ReadingView({ novel, initialChapter, services = readerServices }
   const { preferences, update } = useReadingPreferences();
   const client = useQueryClient();
   const source = activeSource(novel);
-  const query = useQuery(readingChapterOptions(client, novel, chapter, services));
+  const prefetch = useChapterPrefetch(client, novel, services);
+  const query = useQuery(readingChapterOptions(client, novel, chapter, services, number => { void prefetch.activate(number); }));
   const progress = useMutationState({ filters: { mutationKey: readingKeys.progress(novel.id, source?.id ?? '', chapter) }, select: mutation => mutation.state.status });
   const content = query.data ? formatReadingText(query.data.text) : null;
   const theme = themes[preferences.themeIndex];
@@ -49,7 +51,8 @@ export function ReadingView({ novel, initialChapter, services = readerServices }
     const { contentOffset, contentSize, layoutMeasurement } = event.nativeEvent;
     offset.current = contentOffset.y;
     const span = contentSize.height - layoutMeasurement.height;
-    setFraction(span > 0 ? Math.max(0, Math.min(1, contentOffset.y / span)) : 0);
+    const fraction = span > 0 ? Math.max(0, Math.min(1, contentOffset.y / span)) : 0;
+    setFraction(fraction); void prefetch.scroll(chapter, fraction);
   }
   function toggleControls() {
     if (!dragging.current) update({ controlsVisible: !preferences.controlsVisible });

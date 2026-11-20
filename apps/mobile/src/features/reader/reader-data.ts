@@ -12,7 +12,7 @@ export const readingKeys = {
 export type ReaderServices = { request: HttpResource; storage: LocalStorage };
 export const readerServices: ReaderServices = { request: httpResource, storage: localStorage };
 
-export function readingChapterOptions(client: QueryClient, novel: Novel, chapter: number, services = readerServices) {
+export function readingChapterOptions(client: QueryClient, novel: Novel, chapter: number, services = readerServices, onReady?: (chapter: number) => void) {
   chapterSchema.parse(chapter);
   const source = activeSource(novel);
   return queryOptions({
@@ -29,6 +29,7 @@ export function readingChapterOptions(client: QueryClient, novel: Novel, chapter
           ...options, mutationKey: readingKeys.progress(novel.id, source.id, chapter),
         });
         void mutation.execute({ id: novel.id, chapter }).catch(() => {});
+        onReady?.(chapter);
       }
       return data;
     },

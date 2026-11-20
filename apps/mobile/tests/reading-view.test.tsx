@@ -1,3 +1,4 @@
+import NetInfo, { NetInfoStateType } from '@react-native-community/netinfo';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import { createHttpResource, type HttpTransport } from '@core/http-resource';
@@ -23,6 +24,7 @@ test('downloaded text renders offline without requesting content and a progress 
   });
   const data = services(transport);
   await data.storage.saveChapter(readerScope, 2, 'Livro sintético - Capítulo 2: Local\nTexto offline.\n— Diálogo offline.');
+  jest.mocked(NetInfo.addEventListener).mockImplementationOnce(listener => { listener({ type: NetInfoStateType.none, isConnected: false, isInternetReachable: false, details: null }); return jest.fn(); });
   const client = readerQueryClient();
   try {
     await render(<QueryClientProvider client={client}><ReadingScreen novel={readerNovel} initialChapter={2} services={data} /></QueryClientProvider>);
@@ -58,14 +60,14 @@ test('reading preferences restyle the rendered text without refetching content',
   try {
     await render(<QueryClientProvider client={client}><ReadingScreen novel={readerNovel} services={data} /></QueryClientProvider>);
     await screen.findByText('Parágrafo sintético.');
-    await waitFor(() => expect(transport).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(transport).toHaveBeenCalledTimes(5));
     await fireEvent.press(screen.getByRole('button', { name: 'Personalização' }));
     await fireEvent.press(screen.getByRole('button', { name: '23' }));
     await fireEvent.press(screen.getByRole('button', { name: 'Serif' }));
     await fireEvent.press(screen.getByRole('button', { name: 'Claro' }));
     await fireEvent.press(screen.getByRole('button', { name: 'Fechar' }));
     expect(screen.getByText('Parágrafo sintético.')).toHaveStyle({ fontSize: 23, fontFamily: 'serif', color: '#2C2C2C' });
-    expect(transport).toHaveBeenCalledTimes(2);
+    expect(transport).toHaveBeenCalledTimes(5);
     await screen.unmount();
   } finally { client.clear(); }
 }, 20000);
