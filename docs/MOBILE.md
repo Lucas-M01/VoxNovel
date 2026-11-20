@@ -272,3 +272,20 @@ schema de entrada. Limpar todos exige confirmação e mantém listas realmente v
 Mutations invalidam filtros, texto em memória e leitura ativa; não alteram os
 arquivos baixados nem criam filtros por obra/glossário. O harness do leitor oferece
 filtros sintéticos em memória, separados da configuração real do backend.
+
+## Downloads individuais (C38)
+
+DownloadsScreen lista apenas arquivos da fonte ativa, mantém as sugestões
+observadas de até dez capítulos a partir do progresso da fonte e abre leitura/voz
+com capítulo explícito. Download busca texto pela URL da fonte, grava o envelope
+local somente após sucesso e atualiza o cache em memória; não salva progresso de
+leitura nem gera áudio. Requisições simultâneas do mesmo capítulo compartilham o
+trabalho em andamento; arquivos existentes não são sobrescritos automaticamente.
+
+Remover exige confirmação. A remoção local e a lista são concluídas antes da
+limpeza remota best-effort; falha/ausência de cache remoto não bloqueia o resultado
+local. Uma remoção local sem confirmação de arquivo removido gera erro e não
+limpa o remoto. Falhas de download continuam visíveis e podem ser tentadas de novo.
+A fonte diferente conserva arquivos com o mesmo número. O harness privado usa
+texto sintético para baixar/remover e abrir o leitor/player reais; não acessa
+Supabase, Google ou o site da obra.
