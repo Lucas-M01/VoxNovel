@@ -9,12 +9,13 @@ import { systemResources } from '@core/api/system';
 import type { Filters, FilterKind, NovelInput, SourceInput } from '@core/api/schemas';
 import { httpResource, type HttpResource } from '@core/http-resource';
 import { keys } from '@core/keys';
+import { localStorage, type LocalStorage } from '@core/local-storage';
 
 export function createQueryClient() {
   return new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } });
 }
 
-export function apiQueries(request: HttpResource = httpResource) {
+export function apiQueries(request: HttpResource = httpResource, storage: LocalStorage = localStorage) {
   const novels = novelResources(request);
   const sources = sourceResources(request);
   const chapters = chapterResources(request);
@@ -23,11 +24,32 @@ export function apiQueries(request: HttpResource = httpResource) {
   const settings = settingsResources(request);
   const system = systemResources(request);
   return {
-    novels: () => queryOptions({ queryKey: keys.novels(), queryFn: ({ signal }) => novels.list(signal) }),
+    novels: () => queryOptions({
+      queryKey: keys.novels(), networkMode: 'always',
+      queryFn: async ({ signal }) => {
+        try {
+          const result = await novels.list(signal);
+          await storage.saveLibrary(result);
+          return result;
+        } catch (error) {
+          if (signal.aborted) throw error;
+          const cached = await storage.readLibrary();
+          if (cached !== null) return cached;
+          throw error;
+        }
+      },
+    }),
     novel: (id: string) => queryOptions({ queryKey: keys.novel(id), queryFn: ({ signal }) => novels.get(id, signal) }),
     search: (name: string) => queryOptions({ queryKey: keys.sourceSearch(name), queryFn: ({ signal }) => sources.search(name, signal) }),
     identify: (url: string) => queryOptions({ queryKey: keys.sourceMetadata(url), queryFn: ({ signal }) => sources.identify(url, signal) }),
-    chapter: (url: string, chapter: number) => queryOptions({ queryKey: keys.chapter(url, chapter), queryFn: ({ signal }) => chapters.text(url, chapter, signal) }),
+    chapter: (novelId: string, url: string, chapter: number) => queryOptions({
+      queryKey: keys.chapter(url, chapter), networkMode: 'always',
+      queryFn: async ({ signal }) => {
+        const cached = await storage.readChapter(novelId, chapter);
+        if (signal.aborted) throw new Error('Solicitação cancelada.');
+        return cached ? { ...cached, url } : chapters.text(url, chapter, signal);
+      },
+    }),
     downloads: (id: string) => queryOptions({ queryKey: keys.downloads(id), queryFn: ({ signal }) => downloads.list(id, signal) }),
     downloadedText: (id: string, chapter: number) => queryOptions({ queryKey: keys.downloadedText(id, chapter), queryFn: ({ signal }) => downloads.text(id, chapter, signal) }),
     filters: () => queryOptions({ queryKey: keys.filters(), queryFn: ({ signal }) => filters.get(signal) }),

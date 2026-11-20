@@ -29,7 +29,7 @@ Data: 2026-11-20. Fundação, persistência e API F3 implementadas; produto aind
 | 1.4.6 | Instalar WatermelonDB + native bindings | Fora de escopo por padrão | Infra ausente/dispensável; exigir necessidade de paridade e decisão antes de adotar. Em 2.4.3, AudioCache eliminado (v2.2). |
 | 1.4.7 | Instalar MMKV + native bindings | Fora de escopo por padrão | Infra ausente/dispensável; exigir necessidade de paridade e decisão antes de adotar. Em 2.4.3, AudioCache eliminado (v2.2). |
 | 1.4.8 | Instalar react-native-track-player + configurar serviço nativo | Eliminado (v2.2) | Somente áudio remoto; sem objeto no fluxo de texto + fala local. |
-| 1.4.9 | Instalar expo-background-fetch, expo-task-manager, expo-file-system | Não iniciado — adaptar | FileSystem já necessário; não adicionar background-fetch/task-manager sem função existente. |
+| 1.4.9 | Instalar expo-background-fetch, expo-task-manager, expo-file-system | Feito — somente FileSystem | C27: biblioteca offline e arquivos de texto persistentes com validação e testes de IO. Sem background-fetch/task-manager; isolamento por fonte em C28. |
 | 1.4.10 | Criar estrutura de pastas `src/core/`, `ui/`, `pattern/`, `features/`, `screens/` | Feito — fundação adaptada | C01–C08; evidências em FUNDACAO.md. Somente base e camadas usadas, sem funções extras da WBS. |
 | 1.4.11 | Configurar Expo Router + layouts base | Parcial — base feita | C07: Router e entrada mínima; jornada P01 completa permanece em C44. |
 | 2.1.1 | Criar `src/database/connection.py` (engine + session, SQLite/PostgreSQL compatível) | Feito — paridade adaptada | C11: SDK Supabase no adaptador; sem SQLAlchemy/SQLite. ADR-001/005 e PERSISTENCIA.md. |
