@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "test": "jest",
     "build": "expo export --platform android --platform ios --max-workers 2 --output-dir dist",
-    "speech:harness": "node tools/run-speech-harness.mjs"
+    "speech:harness": "node tools/run-speech-harness.mjs",
+    "reader:harness": "node tools/run-speech-harness.mjs --reader"
   },
   "dependencies": {
     "@react-native-community/netinfo": "12.0.1",

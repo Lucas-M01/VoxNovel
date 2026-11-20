@@ -5,21 +5,23 @@ import { spawn } from 'node:child_process';
 
 const mobile = path.resolve(import.meta.dirname, '..');
 const repository = path.resolve(mobile, '../..');
-const project = path.join(repository, '.private/voxnovel-speech-harness');
+const reader = process.argv.includes('--reader');
+const slug = reader ? 'voxnovel-reader-harness' : 'voxnovel-speech-harness';
+const project = path.join(repository, '.private', slug);
 const require = createRequire(import.meta.url);
 const dependencies = JSON.parse(await readFile(path.join(mobile, 'package.json'), 'utf8')).dependencies;
 const names = ['expo', 'expo-speech', 'expo-file-system', 'react', 'react-native', '@tanstack/react-query', 'zod', '@react-native-community/netinfo'];
 await mkdir(project, { recursive: true, mode: 0o700 });
 await Promise.all([
   writeFile(path.join(project, 'package.json'), JSON.stringify({
-    name: 'voxnovel-private-speech-harness', version: '1.0.0', private: true, main: 'index.js',
+    name: slug, version: '1.0.0', private: true, main: 'index.js',
     dependencies: Object.fromEntries(names.map(name => [name, dependencies[name]])),
   }, null, 2)),
   writeFile(path.join(project, 'app.json'), JSON.stringify({ expo: {
-    name: 'VoxNovel — S1 privado', slug: 'voxnovel-speech-harness', version: '1.0.0',
-    android: { package: 'app.voxnovel.speechharness' }, ios: { bundleIdentifier: 'app.voxnovel.speechharness' },
+    name: reader ? 'VoxNovel — leitor privado' : 'VoxNovel — S1 privado', slug, version: '1.0.0',
+    android: { package: reader ? 'app.voxnovel.readerharness' : 'app.voxnovel.speechharness' }, ios: { bundleIdentifier: reader ? 'app.voxnovel.readerharness' : 'app.voxnovel.speechharness' },
   } }, null, 2)),
-  writeFile(path.join(project, 'index.js'), "import { registerRootComponent } from 'expo';\nimport Harness from '../../apps/mobile/tools/speech-harness-screen';\nregisterRootComponent(Harness);\n"),
+  writeFile(path.join(project, 'index.js'), `import { registerRootComponent } from 'expo';\nimport Harness from '../../apps/mobile/tools/${reader ? "reader" : "speech"}-harness-screen';\nregisterRootComponent(Harness);\n`),
   writeFile(path.join(project, 'babel.config.cjs'), `const path = require('node:path');
 module.exports = {
   presets: [require.resolve('babel-preset-expo')],
@@ -40,7 +42,7 @@ config.resolver.blockList = [...(Array.isArray(inherited) ? inherited : inherite
 module.exports = config;
 `),
 ]);
-console.log('Harness privado preparado em .private/voxnovel-speech-harness. Sem acesso à API ou dados pessoais.');
+console.log(`Harness privado preparado em .private/${slug}. Sem acesso à API ou dados pessoais.`);
 if (!process.argv.includes('--prepare')) {
   const exporting = process.argv.includes('--export');
   const args = exporting

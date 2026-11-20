@@ -173,3 +173,25 @@ original. Não inferir que o problema relatado no protótipo foi corrigido, nem
 que essa é sua causa definitiva. URL e relatórios estão somente no espaço privado;
 nenhum conteúdo do capítulo foi incorporado aos testes versionados. A validação
 integrada de fontes/tradução continua pendente antes de afirmar paridade final.
+
+## Leitor visual (C32)
+
+`ReadingScreen` valida o capítulo e compõe `ReadingView`; metadados Novel vêm
+validados do chamador. A ligação com os destinos da biblioteca permanece em F6.
+O corpo renderiza Text nativo, com título combinado obra/capítulo quando esse
+formato existe, parágrafos, recuo de diálogo e preferências temporárias.
+A limpeza visual mantém a deduplicação global e os rodapés observados; o texto
+de fala não passa por essa transformação adicional. Não há glossário novo.
+
+A consulta da leitura ativa é distinta do cache de texto puro. Ela recupera
+texto local primeiro e registra o progresso em uma mutation independente,
+sem aguardar a gravação para exibir conteúdo. Falha de progresso é informada
+sem esconder texto; leitura abandonada antes de concluir não dispara gravação.
+Consulta de texto puro usada pelo prefetch não grava progresso nem download.
+As chaves incluem obra/fonte/capítulo e invalidar o texto obriga nova consulta.
+
+O harness privado do leitor usa `yarn workspace @voxnovel/mobile reader:harness`,
+com projeto próprio em .private/voxnovel-reader-harness, preservando o harness de
+voz. Ele prepara texto sintético local, simula apenas a gravação de progresso
+e importa o leitor real. Não testa acesso externo ou tradução. C33 comporá os
+controles de capítulo e a rolagem; o produto ainda não tem entrada pela biblioteca.
