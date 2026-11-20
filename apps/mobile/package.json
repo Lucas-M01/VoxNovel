@@ -12,6 +12,7 @@
     "build": "expo export --platform android --platform ios --max-workers 2 --output-dir dist"
   },
   "dependencies": {
+    "@tanstack/react-query": "5.108.2",
     "expo": "58.0.26",
     "expo-constants": "58.0.16",
     "expo-linking": "58.0.17",
@@ -22,7 +23,8 @@
     "react-native": "0.88.1",
     "react-native-safe-area-context": "5.11.1",
     "react-native-screens": "4.30.1",
-    "react-server-dom-webpack": "19.3.0"
+    "react-server-dom-webpack": "19.3.0",
+    "zod": "4.6.7"
   },
   "devDependencies": {
     "@babel/core": "7.29.13",

@@ -52,3 +52,10 @@ As escolhas de implementação, divisão de commits e tags constam de PLANO_COMM
 - Estado: aprovado explicitamente pelo dono: “Pode prosseguir”, em resposta ao portão F2.
 - Decisão: executar C15–C25, com rede protegida antes de expor scraping; encerrar no portão F3 com evidências, log e tag.
 - Limites: manter paridade e avisar quando houver fluxo funcional executável, com comandos. F4, deploy, push e importação pessoal continuam sujeitos aos respectivos portões.
+
+## ADR-007 — Autorizar bloco F4 e registrar hardware disponível
+
+- Data: 2026-11-20.
+- Estado: aprovado explicitamente pelo dono: “pode prosseguir”, após o portão F3.
+- Decisão: executar C26–C31 e preparar S1 em harness privado. O dono informou “Somente Android” como aparelho físico disponível.
+- Limites: iOS físico permanece pendente, sem dispensa automática. Concluir trabalho independente e registrar evidências antes do portão F4; não afirmar background validado sem teste. Avisar quando houver fluxo mobile executável. Sem autorização para F5, push, deploy ou importação pessoal.

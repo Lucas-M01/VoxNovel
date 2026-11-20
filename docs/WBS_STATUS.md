@@ -25,7 +25,7 @@ Data: 2026-11-20. Fundação, persistência e API F3 implementadas; produto aind
 | 1.4.2 | Configurar `tsconfig.json` strict + path aliases | Feito — fundação adaptada | C01–C08; evidências em FUNDACAO.md. Somente base e camadas usadas, sem funções extras da WBS. |
 | 1.4.3 | Configurar `babel.config.js` com module-resolver | Feito — fundação adaptada | C01–C08; evidências em FUNDACAO.md. Somente base e camadas usadas, sem funções extras da WBS. |
 | 1.4.4 | Instalar ESLint + `eslint-plugin-boundaries` | Feito — fundação adaptada | C01–C08; evidências em FUNDACAO.md. Somente base e camadas usadas, sem funções extras da WBS. |
-| 1.4.5 | Instalar TanStack Query, Zustand, Zod, react-hook-form, axios | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
+| 1.4.5 | Instalar TanStack Query, Zustand, Zod, react-hook-form, axios | Feito — dependências necessárias | C26: TanStack Query e Zod instalados e usados. Zustand/react-hook-form/axios não entram sem necessidade de paridade. |
 | 1.4.6 | Instalar WatermelonDB + native bindings | Fora de escopo por padrão | Infra ausente/dispensável; exigir necessidade de paridade e decisão antes de adotar. Em 2.4.3, AudioCache eliminado (v2.2). |
 | 1.4.7 | Instalar MMKV + native bindings | Fora de escopo por padrão | Infra ausente/dispensável; exigir necessidade de paridade e decisão antes de adotar. Em 2.4.3, AudioCache eliminado (v2.2). |
 | 1.4.8 | Instalar react-native-track-player + configurar serviço nativo | Eliminado (v2.2) | Somente áudio remoto; sem objeto no fluxo de texto + fala local. |
@@ -102,10 +102,10 @@ Data: 2026-11-20. Fundação, persistência e API F3 implementadas; produto aind
 | 3.7.7 | Endpoints glossary: GET/POST/DELETE por novelId | Fora de escopo | Capacidade nova ou motor diferente; não consta da paridade. |
 | 3.7.8 | GET /health, /health/db, /health/redis | Feito — paridade adaptada | C23: status e últimos 500 logs em memória; sem /health/redis, métricas ou monitoramento comercial. |
 | 3.7.9 | Montar `router.py` com prefixo `/api/v1` | Feito — paridade adaptada | C21–C23: rotas tipadas sob /api/v1 com Depends e erros padronizados. |
-| 4.1.1 | `http-resource.ts` (defineApiRoute, httpResource, FriendlyError, refresh token) | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
-| 4.1.2 | `constants.ts` + `keys.ts` (com lang em chapters e tts) | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
-| 4.1.3 | `queries.ts` com staleTime/gcTime por domínio | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
-| 4.1.4 | Módulos de API: novels, chapters, sources, tts, downloads, filters, glossary | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
+| 4.1.1 | `http-resource.ts` (defineApiRoute, httpResource, FriendlyError, refresh token) | Feito — paridade adaptada | C26: fetch central, configuração por env, cancelamento/timeout, validação e ApiError amigável; sem refresh token/auth. |
+| 4.1.2 | `constants.ts` + `keys.ts` (com lang em chapters e tts) | Parcial — C26 implementado | Configuração central e query keys para contratos existentes; somente tradução PT. Isolamento por fonte em C28 ainda pendente. |
+| 4.1.3 | `queries.ts` com staleTime/gcTime por domínio | Feito — paridade adaptada | C26: queryOptions/mutationOptions tipados, provider único e invalidação após sucesso; sem repetição automática de requests. |
+| 4.1.4 | Módulos de API: novels, chapters, sources, tts, downloads, filters, glossary | Feito — paridade adaptada | C26: novels/chapters/sources/downloads/filters/settings/system com schemas de todas as respostas. Sem tts remoto/glossary/auth. |
 | 4.2.1 | `session-store.ts` (MMKV encrypted) | Fora de escopo | Capacidade nova ou motor diferente; não consta da paridade. |
 | 4.2.2 | `app-store.ts` (tema, locale, fontSize, target_language_global, storage_limit_bytes) | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
 | 4.2.3 | `player-store.ts` (MMKV) | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
