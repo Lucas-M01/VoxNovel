@@ -362,3 +362,17 @@ Excluir exige confirmação e resposta válida da API antes de remover a obra do
 cache. Os arquivos de capítulos permanecem preservados, como no protótipo;
 sua remoção explícita continua na tela de downloads. Testes usam biblioteca,
 URLs e arquivos sintéticos. A composição da entrada principal fica em C44.
+
+## Detalhes, fontes e progresso (C43)
+
+Os detalhes mostram capa, fonte ativa e progresso, com atalhos para leitura,
+voz e downloads. Editar capítulo valida inteiro positivo e limite conhecido.
+Trocar fonte usa a resposta da API e restaura o capítulo próprio dessa fonte;
+não converte percentuais. Remover fonte exige confirmação e a última fica
+protegida tanto na interface quanto na API. Adição/atualização usa a busca
+existente. Excluir obra reutiliza a confirmação e a regra online da biblioteca.
+
+Respostas de alterações atualizam o cache da obra e o snapshot da biblioteca,
+cancelando leituras antigas antes de gravar. Sem rede, detalhes recuperam a obra
+da biblioteca salva e mantêm atalhos para os capítulos locais; não há fila de
+escritas offline. A integração dos atalhos com as rotas reais fica em C44.

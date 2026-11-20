@@ -147,9 +147,9 @@ Data: 2026-11-20. Fundação, persistência, API F3 e serviços mobile F4 implem
 | 6.1.3 | `generic-source-form.tsx` com schema Zod completo | Fora de escopo | Capacidade nova ou motor diferente; não consta da paridade. |
 | 6.1.4 | Fluxo identificação: URL → /sources/identify → formulário pré-preenchido com template | Feito — busca/cadastro C40 | Nome/URL, metadados, seleção de fontes, capítulo inicial, duplicatas e erro parcial; integração de navegação em C44, IDs RoyalRoad corrigidos em C41. |
 | 6.2.1 | `library/novel-card.tsx` + `library-list.tsx` (paginação infinita) | Feito — biblioteca C42 | Capas, fonte/progresso, ordenação, refresh e cache offline identificado; exclusão confirmada exige rede. Navegação principal em C44. |
-| 6.2.2 | `novel-detail/source-list.tsx` (exibe SourceHealthScore por fonte) | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
-| 6.2.3 | `progress-controls.tsx` + `reading-prefs.tsx` (target_language por obra) | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
-| 6.2.4 | Sincronização de progresso por percentual ao trocar de fonte (com banner) | Não iniciado — adaptar | P09 restaura progresso próprio da fonte; não implementar percentual/banner novo. |
+| 6.2.2 | `novel-detail/source-list.tsx` (exibe SourceHealthScore por fonte) | Feito — detalhes/fontes C43 | Capa, progresso editável, fontes e atalhos; fonte restaura capítulo próprio, última remoção protegida e confirmações. Sem conversão percentual; rotas conectadas em C44. |
+| 6.2.3 | `progress-controls.tsx` + `reading-prefs.tsx` (target_language por obra) | Feito — detalhes/fontes C43 | Capa, progresso editável, fontes e atalhos; fonte restaura capítulo próprio, última remoção protegida e confirmações. Sem conversão percentual; rotas conectadas em C44. |
+| 6.2.4 | Sincronização de progresso por percentual ao trocar de fonte (com banner) | Feito — detalhes/fontes C43 | Capa, progresso editável, fontes e atalhos; fonte restaura capítulo próprio, última remoção protegida e confirmações. Sem conversão percentual; rotas conectadas em C44. |
 ## WBS-M
 
 | ID | Pacote original | Estado | Motivo/limite |
