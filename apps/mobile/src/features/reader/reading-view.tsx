@@ -15,10 +15,11 @@ import { ProgressBar } from '@ui/progress-bar';
 import { ChapterBody } from '@features/reader/chapter-body';
 import { ReadingControls } from '@features/reader/reading-controls';
 import { OfflineNotice } from '@pattern/offline-notice';
+import { Button } from '@ui/button';
 import { ErrorMessage } from '@ui/error-message';
 
-type Props = { novel: Novel; initialChapter?: number | undefined; services?: ReaderServices | undefined };
-export function ReadingView({ novel, initialChapter, services = readerServices }: Props) {
+type Props = { novel: Novel; initialChapter?: number | undefined; services?: ReaderServices | undefined; onListen?: ((chapter: number) => void) | undefined };
+export function ReadingView({ novel, initialChapter, services = readerServices, onListen }: Props) {
   const [chapter, setChapter] = useState(initialChapter ?? novel.current_chapter);
   const { preferences, update } = useReadingPreferences();
   const client = useQueryClient();
@@ -76,6 +77,7 @@ export function ReadingView({ novel, initialChapter, services = readerServices }
         <ChapterBody content={content} preferences={preferences} />
       </Pressable>
     </ScrollView> : null}
+    {preferences.controlsVisible && onListen ? <Button title="Ouvir capítulo" onPress={() => onListen(chapter)} /> : null}
     {preferences.controlsVisible ? <ReadingControls preferences={preferences} onChange={update} /> : null}
   </View>;
 }

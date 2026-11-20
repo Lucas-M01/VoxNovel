@@ -231,3 +231,23 @@ compartilhada já em andamento no cache em memória. O hook de lifecycle apenas
 abre/descarta o recurso; fetch começa nos eventos de capítulo pronto e scroll,
 sem trabalho de dados em efeitos. Testes cobrem sequência/concorrência, deduplicação,
 limiares, fim conhecido, falhas, descarte e ausência de gravações.
+
+## Player composto (C35)
+
+A tela SpeechScreen compõe o serviço nativo testado em S1, sem TrackPlayer ou
+áudio remoto. Um controller de sessão publica snapshots via useSyncExternalStore;
+consultas carregam velocidade inicial e vozes sem bloquear play local com defaults.
+Ações explícitas carregam texto local/cache/rede, aguardam encerramento do player
+anterior e iniciam o texto sem a limpeza visual adicional do leitor.
+
+Controles incluem play/pause/retomar, frase atual/total, escolha de voz agrupada,
+velocidades observadas, capítulo anterior/próximo/escolha e painel de última
+mensagem da sessão. Fim encadeia próximo disponível ou informa o último capítulo;
+offline não tenta abrir capítulo ausente. Falha de progresso não para fala.
+Troca de capítulo/discard invalida cargas e callbacks antigos; sair destrói só
+o player pertencente à tela. Não há estado durável de player, pitch/volume,
+mini-player, salto em segundos ou sincronização de rolagem com voz.
+
+O leitor privado pode abrir a tela de fala real com texto sintético. A correção
+de prioridade do capítulo explícito é o commit C36 separado previsto no plano;
+a biblioteca e os destinos completos ainda serão ligados em F6.
