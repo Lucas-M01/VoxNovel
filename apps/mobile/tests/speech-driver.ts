@@ -18,3 +18,13 @@ export function speechDriver(voices: Voice[] = []) {
   };
   return { driver, utterances, current };
 }
+
+export function flushSpeech(): Promise<void> {
+  return new Promise(resolve => setImmediate(resolve));
+}
+
+export function deferredStop() {
+  let release = () => {};
+  const promise = new Promise<void>(resolve => { release = resolve; });
+  return { promise, release: () => release() };
+}

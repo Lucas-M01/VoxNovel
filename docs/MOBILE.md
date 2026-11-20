@@ -109,6 +109,28 @@ pausa/retomada, parada, limites de posição, configuração e agrupamento/fallb
 A serialização completa de cancelamentos e substituição do player é C30;
 nenhum resultado de teste simulado certifica background ou tela bloqueada.
 
+## Cancelamento e harness (C30)
+
+Comandos de parada são serializados. A geração da fala é invalidada antes de
+aguardar o motor, de modo que callbacks atrasados não avancem a frase. Eventos
+de conclusão/erro são consumidos uma vez. Configurações e trocas rápidas mantêm
+somente a solicitação mais recente; descarte é idempotente e impede novos eventos.
+Falha ao parar impede nova reprodução até uma parada subsequente bem sucedida.
+
+A sessão compartilhada do adaptador encerra o player anterior antes de criar
+outro. Uma troca superada devolve null e não fala. As telas futuras devem usar
+essa sessão e destruir a instância que receberam ao sair, em vez de parar
+indiscriminadamente um player mais novo. Testes cobrem cancelamento pendente,
+comandos simultâneos, fim duplicado, recuperação de erro e desmontagem.
+
+O harness de desenvolvimento fica fora das rotas do produto. O launcher gera
+um projeto privado ignorado pelo git, com identificador próprio e texto sintético.
+O bundle dele importa o mesmo adaptador nativo e os mesmos serviços de arquivos
+e fala. Seu teste de UI prepara capítulos, alterna controles, avança ao segundo
+capítulo e verifica descarte. As exportações Hermes do harness Android/iOS
+foram executadas, mas a execução física continua pendente. Instruções e matriz
+de resultados ficam em S1.md. O dono foi avisado de que já pode testar no Android.
+
 ## Validação física S1
 
 O dono informou disponibilidade de Android físico. iOS continua pendente.

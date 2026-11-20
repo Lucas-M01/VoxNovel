@@ -1,8 +1,8 @@
 # Progresso
 
 - Atualizado: 2026-11-20.
-- Fase atual: Fase 3 — bloco F4 (C26–C31) autorizado e iniciado; C26–C29 concluídos; próximo C30.
-- Último marco: C29 (HEAD após este registro), predecessor 5d043a0 (C28). Tag fase-3-f3 criada após o gate; fases anteriores em fase-3-f2 e fase-3-f1.
+- Fase atual: Fase 3 — bloco F4 (C26–C31) autorizado e iniciado; C26–C30 implementados e verificados por suíte; próximo C31. S1 físico pendente.
+- Último marco: C30 (HEAD após este registro), predecessor 7cc6a69 (C29). Tag fase-3-f3 criada após o gate; fases anteriores em fase-3-f2 e fase-3-f1.
 - Autorização: plano e F3 aprovados explicitamente (ADR-003/006). Docker local descartável somente para testes aprovado em ADR-005; dono pediu aviso quando houvesse fluxo executável e foi avisado em C21, com guia API.md. F4 aprovado explicitamente em ADR-007; sem autorização para F5, push, deploy ou importação pessoal.
 - Entregue em F3: HTTP protegido contra SSRF nos transportes usados, extração/limpeza/filtros, quatro providers e fallback genérico, tradução GoogleTranslator auto→PT, API EN tipada de biblioteca/fontes/progresso/texto/config/cache/logs/status, preservação de IDs RoyalRoad e limites de recursos/falhas redigidas. Somente capacidades de paridade; sem auth, jobs/filas duráveis, áudio remoto, score, glossário ou observabilidade comercial.
 - Gate F3/C25: 170 testes backend (160 unitários + dez integrações reais), Ruff/format/mypy/arquitetura/compileall, 20 casos das regras de lint mobile, eslint/tsc/Jest e exportações Hermes Android/iOS aprovados. Gitleaks de arquivos candidatos e histórico passou, com valores redigidos. CI remoto não foi executado.
@@ -10,7 +10,7 @@
 - Executável: backend testável por Swagger conforme docs/API.md. Configuração local da CLI preservada em .private/voxnovel-f3-supabase, ignorada pelo git, sem imprimir chaves. Stack mantida ativa para testes manuais; o guia explica encerramento preservando volumes. O Expo ainda contém apenas a fundação e não oferece leitor funcional.
 - Limites de evidência: fontes e tradução externa foram verificadas com corpus sintético e HTTP injetado; não certificar layouts atuais ou bypass de qualquer desafio Cloudflare. Paridade final P01–P35 permanece pendente da Fase 4, depois da composição mobile.
 - S2: prebuild Android concluído em F1; assembleDebug executou 63 tarefas e falhou ao obter dependências Maven por resolução de rede (ADR-004). Sem APK novo validado. Repetir quando a rede permitir; iOS nativo exige ambiente Apple. Exportação Hermes não substitui teste físico.
-- Próximo item: C30: serialização de fala/cancelamento e harness privado para S1; depois C31 (serviços mobile), conforme aprovação de F4. S1 de fala/background exige aparelhos Android/iOS físicos ou dispensa expressa dos limites no portão F4; dono informou somente Android físico, iOS pendente sem dispensa. Licença pública continua não escolhida. Avisar novamente quando o leitor mobile estiver executável, com comandos.
+- Próximo item: C31: controles compartilhados, conectividade e preferências temporárias (serviços mobile), conforme aprovação de F4. S1 de fala/background exige aparelhos Android/iOS físicos ou dispensa expressa dos limites no portão F4; dono informou somente Android físico, iOS pendente sem dispensa. Licença pública continua não escolhida. Avisar novamente quando o leitor mobile estiver executável, com comandos.
 - Continuidade: ler AGENTS.md e este arquivo. Consultar PLANO_COMMITS.md, ANALISE.md, HTTP.md, API.md e PERSISTENCIA.md. WBS_STATUS classifica somente responsabilidades adaptadas e registra fixtures reais/cobertura ainda não certificadas. _legacy permanece ignorado e somente leitura.
 
 - C26 entregue: cliente HTTP central por env, Zod em todas as respostas, recursos API EN, QueryClient provider, queries canceláveis e mutations sem retry com invalidação após sucesso. Versões fixadas: TanStack Query 5.108.2 e Zod 4.6.7. Documentação em MOBILE.md; ainda sem leitor funcional.
@@ -26,3 +26,9 @@
 - C29 entregue: serviço de fala por frases com driver nativo expo-speech e callbacks testáveis; seleção/agrupamento de vozes, pausa simulada, progresso e configuração de voz/velocidade na sessão. Sem teste físico concluído.
 
 - Gate C29: 170 testes backend com dez integrações reais, Ruff/format/mypy/arquitetura/compileall, 20 casos das regras de lint, ESLint/tsc, 130 testes mobile, exportações Hermes Android/iOS e Gitleaks de candidatos/histórico aprovados. Os testes de fala usam driver injetado; nenhuma execução física, instalação de APK ou certificação de background foi declarada.
+
+- C30 entregue: cancelamento serializado, callbacks invalidados antes de await stop, troca de player após encerramento e harness privado gerado por tools/run-speech-harness.mjs. 141 testes mobile de serviços e teste de UI do harness aprovados; exportações próprias Android/iOS do harness passaram. Gate completo C30 aprovado. Dono avisado com comando de execução e pedido de resultados do Android. Procedimento físico em S1.md; nenhum resultado físico registrado.
+
+- Relato do dono nesta sessão: o original funcionava, mas atualmente um capítulo não estava sendo traduzido. Ele ainda não executou a reconstrução. Reenviadas instruções completas do harness Android; tradução real deve ser verificada no fluxo integrado antes de afirmar que o problema foi resolvido. S1 físico continua não executado.
+
+- Gate C30: 170 testes backend com dez integrações reais, Ruff/format/mypy/arquitetura/compileall, 20 casos das regras de lint, ESLint/tsc, 142 testes mobile, bundles Hermes Android/iOS do produto e do harness e Gitleaks de candidatos/histórico aprovados. Exclusão de _legacy/.venv no Metro privado conferida. Revisão React Best Practices aplicada a hooks, acessibilidade, efeitos de ciclo de vida e ausência de fetch em efeitos. Não há tag F4 nem arquitetura de background declarada validada enquanto S1 aguarda evidência/dispensa.

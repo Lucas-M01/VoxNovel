@@ -1,5 +1,5 @@
 import * as Speech from 'expo-speech';
-import type { SpeechDriver } from '@core/tts-service';
+import { createSpeechSession, type SpeechDriver } from '@core/tts-service';
 
 export const nativeSpeech: SpeechDriver = {
   speak: (text, options) => {
@@ -13,3 +13,5 @@ export const nativeSpeech: SpeechDriver = {
   stop: () => Speech.stop(),
   voices: () => Speech.getAvailableVoicesAsync(),
 };
+
+export const speechSession = createSpeechSession(nativeSpeech);

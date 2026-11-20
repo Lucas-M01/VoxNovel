@@ -25,73 +25,160 @@ export function splitSentences(text: string): string[] {
   return text.split(/(?<=[.!?…])\s+/u).map(sentence => sentence.trim()).filter(Boolean);
 }
 
-export function createSpeechPlayer(text: string, driver: SpeechDriver, callbacks: SpeechCallbacks = {}) {
+function createPlayer(text: string, driver: SpeechDriver, callbacks: SpeechCallbacks = {}) {
   const sentences = splitSentences(text);
   let index = 0;
   let status: SpeechStatus = 'stopped';
   let destroyed = false;
   let generation = 0;
   let config: SpeechConfig = {};
+  let tail = Promise.resolve();
+  let destruction: Promise<void> | undefined;
+  let shutdownFailed = false;
+  function enqueue(action: () => void | Promise<void>): Promise<void> {
+    const result = tail.then(action);
+    tail = result.catch(() => {});
+    return result;
+  }
   function setStatus(value: SpeechStatus) { status = value; callbacks.onStatus?.(value); }
+  const message = () => new Error('Não foi possível reproduzir a fala. Confira a voz instalada.');
+  async function shutdown() {
+    try { await driver.stop(); shutdownFailed = false; }
+    catch { shutdownFailed = true; if (!destroyed) setStatus('stopped'); throw message(); }
+  }
+  function invalidate() { destroyed = true; generation += 1; }
   function speakCurrent() {
-    if (destroyed) return;
+    if (destroyed || status !== 'speaking') return;
     const sentence = sentences[index];
     if (sentence === undefined) { setStatus('stopped'); callbacks.onEnd?.(); return; }
     const token = ++generation;
+    let consumed = false;
     const active = () => !destroyed && token === generation && status === 'speaking';
     const fail = () => {
-      if (!active()) return;
-      setStatus('stopped');
-      callbacks.onError?.(new Error('Não foi possível reproduzir a fala. Confira a voz instalada.'));
+      if (!active() || consumed) return;
+      consumed = true;
+      setStatus('stopped'); callbacks.onError?.(message());
     };
     callbacks.onSentence?.(index, sentences.length);
+    if (!active()) return;
     try {
       driver.speak(sentence, {
         ...config,
-        onDone: () => { if (active()) { index += 1; speakCurrent(); } },
-        onStopped: () => { /* Pause and stop retain ownership of the position. */ },
+        onDone: () => {
+          if (!active() || consumed) return;
+          consumed = true;
+          void enqueue(() => { if (active()) { index += 1; speakCurrent(); } }).catch(() => {
+            if (!destroyed) { setStatus('stopped'); callbacks.onError?.(message()); }
+          });
+        },
+        onStopped: () => {},
         onError: fail,
       });
     } catch { fail(); }
   }
-  return {
+  function replay(action: () => void): Promise<void> {
+    if (destroyed) return Promise.resolve();
+    const ticket = ++generation;
+    action();
+    return enqueue(async () => {
+      if (destroyed) return;
+      await shutdown();
+      if (!destroyed && ticket === generation && status === 'speaking') speakCurrent();
+    });
+  }
+  function destroy(): Promise<void> {
+    if (!destruction) { invalidate(); destruction = enqueue(shutdown); }
+    return destruction;
+  }
+  const player = {
     configure(options: SpeechConfig) { if (!destroyed) config = { ...config, ...speechConfigSchema.parse(options) }; },
-    async applyConfig(options: SpeechConfig) {
-      if (destroyed) return;
-      config = { ...config, ...speechConfigSchema.parse(options) };
-      if (status === 'speaking') { await driver.stop(); speakCurrent(); }
+    applyConfig(options: SpeechConfig): Promise<void> {
+      if (destroyed) return Promise.resolve();
+      const parsed = speechConfigSchema.parse(options);
+      if (status !== 'speaking') { config = { ...config, ...parsed }; return Promise.resolve(); }
+      return replay(() => { config = { ...config, ...parsed }; });
     },
-    play() { if (!destroyed && status !== 'speaking') { setStatus('speaking'); speakCurrent(); } },
-    async pause() { if (!destroyed && status === 'speaking') { setStatus('paused'); await driver.stop(); } },
-    resume() { if (!destroyed && status === 'paused') { setStatus('speaking'); speakCurrent(); } },
-    async stop() {
-      if (destroyed) return;
-      setStatus('stopped'); await driver.stop(); index = 0;
+    play(): Promise<void> {
+      if (destroyed || status === 'speaking') return Promise.resolve();
+      const ticket = ++generation;
+      setStatus('speaking');
+      return enqueue(async () => {
+        if (destroyed || ticket !== generation || status !== 'speaking') return;
+        if (shutdownFailed) await shutdown();
+        if (!destroyed && ticket === generation && status === 'speaking') speakCurrent();
+      });
     },
-    jumpTo(position: number) {
-      if (!destroyed) index = Math.max(0, Math.min(z.int().parse(position), sentences.length - 1));
+    pause(): Promise<void> {
+      if (destroyed || status !== 'speaking') return Promise.resolve();
+      generation += 1; setStatus('paused');
+      return enqueue(shutdown);
     },
-    async nextSentence() {
-      if (destroyed) return;
-      const playing = status === 'speaking';
-      await driver.stop(); index = Math.min(index + 1, Math.max(0, sentences.length - 1));
-      if (playing) speakCurrent();
+    resume(): Promise<void> { return status === 'paused' ? player.play() : Promise.resolve(); },
+    stop(): Promise<void> {
+      if (destroyed) return Promise.resolve();
+      generation += 1; index = 0; setStatus('stopped');
+      return enqueue(shutdown);
     },
-    async previousSentence() {
-      if (destroyed) return;
-      const playing = status === 'speaking';
-      await driver.stop(); index = Math.max(0, index - 1);
-      if (playing) speakCurrent();
+    jumpTo(position: number): Promise<void> {
+      if (destroyed) return Promise.resolve();
+      const next = Math.max(0, Math.min(z.int().parse(position), sentences.length - 1));
+      if (status === 'speaking') return replay(() => { index = next; });
+      generation += 1; index = next; return Promise.resolve();
     },
-    async destroy() { if (!destroyed) { destroyed = true; await driver.stop(); } },
+    nextSentence(): Promise<void> { return replay(() => { index = Math.min(index + 1, Math.max(0, sentences.length - 1)); }); },
+    previousSentence(): Promise<void> { return replay(() => { index = Math.max(0, index - 1); }); },
+    destroy,
     get status() { return status; },
     get sentenceIndex() { return index; },
     get totalSentences() { return sentences.length; },
     get sentences(): readonly string[] { return sentences; },
   };
+  return { player, invalidate };
 }
 
+export function createSpeechPlayer(text: string, driver: SpeechDriver, callbacks: SpeechCallbacks = {}) {
+  return createPlayer(text, driver, callbacks).player;
+}
 export type SpeechPlayer = ReturnType<typeof createSpeechPlayer>;
+
+export function createSpeechSession(driver: SpeechDriver) {
+  let current: ReturnType<typeof createPlayer> | null = null;
+  let generation = 0;
+  let tail: Promise<unknown> = Promise.resolve();
+  function enqueue<T>(action: () => Promise<T>): Promise<T> {
+    const result = tail.then(action);
+    tail = result.catch(() => {});
+    return result;
+  }
+  async function shutdown() {
+    const old = current;
+    current = null;
+    if (old) await old.player.destroy();
+    else {
+      try { await driver.stop(); }
+      catch { throw new Error('Não foi possível encerrar a fala anterior. Tente novamente.'); }
+    }
+  }
+  return {
+    replace(text: string, callbacks: SpeechCallbacks = {}, options: SpeechConfig = {}): Promise<SpeechPlayer | null> {
+      const config = speechConfigSchema.parse(options);
+      const ticket = ++generation;
+      current?.invalidate();
+      return enqueue(async () => {
+        await shutdown();
+        if (ticket !== generation) return null;
+        const next = createPlayer(text, driver, callbacks);
+        next.player.configure(config);
+        current = next;
+        return next.player;
+      });
+    },
+    stop(): Promise<void> {
+      generation += 1; current?.invalidate();
+      return enqueue(shutdown);
+    },
+  };
+}
 
 export async function availableVoices(driver: SpeechDriver): Promise<Voice[]> {
   try { return z.array(voiceSchema).parse(await driver.voices()); }

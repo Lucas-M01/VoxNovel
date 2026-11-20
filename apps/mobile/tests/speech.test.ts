@@ -1,39 +1,39 @@
 import { availableVoices, createSpeechPlayer, defaultVoice, groupedVoices, splitSentences } from '@core/tts-service';
-import { speechDriver, voice } from './speech-driver';
+import { flushSpeech, speechDriver, voice } from './speech-driver';
 
 const text = 'Primeira frase. Segunda frase! Terceira frase?';
 
-test('segments punctuation and whitespace as observed without changing sentence content', () => {
+test('segments punctuation and whitespace as observed without changing sentence content', async () => {
   expect(splitSentences('  Um.\n Dois!   Três? Quatro…\n Cinco sem ponto  ')).toEqual(['Um.', 'Dois!', 'Três?', 'Quatro…', 'Cinco sem ponto']);
   expect(splitSentences('')).toEqual([]);
   expect(splitSentences('   \n ')).toEqual([]);
   expect(splitSentences('Um.Sem espaço.')).toEqual(['Um.Sem espaço.']);
 });
 
-test('chains sentences with progress and finishes exactly once', () => {
+test('chains sentences with progress and finishes exactly once', async () => {
   const fake = speechDriver();
   const onSentence = jest.fn();
   const onEnd = jest.fn();
   const onStatus = jest.fn();
   const player = createSpeechPlayer(text, fake.driver, { onSentence, onEnd, onStatus });
-  player.play();
+  await player.play();
   expect(fake.current().text).toBe('Primeira frase.');
   expect(player.status).toBe('speaking');
-  fake.current().options.onDone();
+  fake.current().options.onDone(); await flushSpeech();
   expect(fake.current().text).toBe('Segunda frase!');
-  fake.current().options.onDone();
+  fake.current().options.onDone(); await flushSpeech();
   const last = fake.current().options;
-  last.onDone(); last.onDone();
+  last.onDone(); last.onDone(); await flushSpeech();
   expect(onSentence.mock.calls).toEqual([[0, 3], [1, 3], [2, 3]]);
   expect(player.status).toBe('stopped');
   expect(onStatus.mock.calls).toEqual([['speaking'], ['stopped']]);
   expect(onEnd).toHaveBeenCalledTimes(1);
 });
 
-test('empty text finishes without invoking native speech', () => {
+test('empty text finishes without invoking native speech', async () => {
   const fake = speechDriver();
   const onEnd = jest.fn();
-  createSpeechPlayer('', fake.driver, { onEnd }).play();
+  await createSpeechPlayer('', fake.driver, { onEnd }).play();
   expect(fake.driver.speak).not.toHaveBeenCalled();
   expect(onEnd).toHaveBeenCalledTimes(1);
 });
@@ -41,15 +41,15 @@ test('empty text finishes without invoking native speech', () => {
 test('simulates pause with stop and resumes the current sentence from its beginning', async () => {
   const fake = speechDriver();
   const player = createSpeechPlayer(text, fake.driver);
-  player.play();
-  fake.current().options.onDone();
+  await player.play();
+  fake.current().options.onDone(); await flushSpeech();
   const pausedUtterance = fake.current();
   await player.pause();
   pausedUtterance.options.onStopped(); pausedUtterance.options.onDone();
   expect(player.sentenceIndex).toBe(1);
   expect(player.status).toBe('paused');
   expect(fake.driver.stop).toHaveBeenCalledTimes(1);
-  player.resume();
+  await player.resume();
   expect(fake.current().text).toBe(pausedUtterance.text);
   expect(fake.utterances).toHaveLength(3);
 });
@@ -57,13 +57,13 @@ test('simulates pause with stop and resumes the current sentence from its beginn
 test('stop resets position and play starts again at the first sentence', async () => {
   const fake = speechDriver();
   const player = createSpeechPlayer(text, fake.driver);
-  player.play(); fake.current().options.onDone();
+  await player.play(); fake.current().options.onDone(); await flushSpeech();
   await player.stop();
   expect(player.sentenceIndex).toBe(0);
   expect(player.status).toBe('stopped');
-  player.play();
+  await player.play();
   expect(fake.current().text).toBe('Primeira frase.');
-  player.play();
+  await player.play();
   expect(fake.utterances).toHaveLength(3);
 });
 
@@ -71,8 +71,8 @@ test('voice and speed changes replay the same sentence with new options', async 
   const fake = speechDriver();
   const player = createSpeechPlayer(text, fake.driver);
   player.configure({ rate: 1, voice: 'pt-old' });
-  player.play();
-  fake.current().options.onDone();
+  await player.play();
+  fake.current().options.onDone(); await flushSpeech();
   const old = fake.current().options;
   await player.applyConfig({ rate: 1.5, voice: 'pt-new' });
   expect(fake.current()).toMatchObject({ text: 'Segunda frase!', options: { rate: 1.5, voice: 'pt-new' } });
@@ -84,19 +84,19 @@ test('voice and speed changes replay the same sentence with new options', async 
 test('configuration while paused affects resume without speaking early', async () => {
   const fake = speechDriver();
   const player = createSpeechPlayer(text, fake.driver);
-  player.play(); await player.pause();
+  await player.play(); await player.pause();
   await player.applyConfig({ rate: 0.75 });
   expect(fake.utterances).toHaveLength(1);
-  player.resume();
+  await player.resume();
   expect(fake.current().options.rate).toBe(0.75);
 });
 
 test('next, previous and direct selection respect sentence bounds', async () => {
   const fake = speechDriver();
   const player = createSpeechPlayer(text, fake.driver);
-  player.jumpTo(99); expect(player.sentenceIndex).toBe(2);
-  player.jumpTo(-5); expect(player.sentenceIndex).toBe(0);
-  player.play();
+  await player.jumpTo(99); expect(player.sentenceIndex).toBe(2);
+  await player.jumpTo(-5); expect(player.sentenceIndex).toBe(0);
+  await player.play();
   await player.nextSentence(); expect(fake.current().text).toBe('Segunda frase!');
   await player.previousSentence(); expect(fake.current().text).toBe('Primeira frase.');
   await player.previousSentence(); expect(player.sentenceIndex).toBe(0);
@@ -112,25 +112,25 @@ test('destroy stops speech and makes late callbacks and subsequent commands iner
   const onEnd = jest.fn();
   const onError = jest.fn();
   const player = createSpeechPlayer(text, fake.driver, { onEnd, onError });
-  player.play(); const old = fake.current().options;
+  await player.play(); const old = fake.current().options;
   await player.destroy();
   old.onDone(); old.onError(new Error('Late native error'));
-  player.play(); player.resume(); await player.applyConfig({ rate: 2 }); await player.nextSentence();
+  await player.play(); await player.resume(); await player.applyConfig({ rate: 2 }); await player.nextSentence();
   expect(fake.utterances).toHaveLength(1);
   expect(onEnd).not.toHaveBeenCalled(); expect(onError).not.toHaveBeenCalled();
 });
 
-test('reports native speech errors with a fixed message and stops the player', () => {
+test('reports native speech errors with a fixed message and stops the player', async () => {
   const fake = speechDriver();
   const onError = jest.fn();
   const player = createSpeechPlayer(text, fake.driver, { onError });
-  player.play();
+  await player.play();
   fake.current().options.onError(new Error('Sensitive native diagnostic'));
   expect(player.status).toBe('stopped');
   expect(onError).toHaveBeenCalledWith(new Error('Não foi possível reproduzir a fala. Confira a voz instalada.'));
 });
 
-test('rejects nonfinite or nonpositive voice rates', () => {
+test('rejects nonfinite or nonpositive voice rates', async () => {
   const fake = speechDriver();
   const player = createSpeechPlayer(text, fake.driver);
   for (const rate of [0, -1, NaN, Infinity]) expect(() => player.configure({ rate })).toThrow();
