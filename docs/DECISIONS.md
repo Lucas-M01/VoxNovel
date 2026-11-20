@@ -59,3 +59,11 @@ As escolhas de implementação, divisão de commits e tags constam de PLANO_COMM
 - Estado: aprovado explicitamente pelo dono: “pode prosseguir”, após o portão F3.
 - Decisão: executar C26–C31 e preparar S1 em harness privado. O dono informou “Somente Android” como aparelho físico disponível.
 - Limites: iOS físico permanece pendente, sem dispensa automática. Concluir trabalho independente e registrar evidências antes do portão F4; não afirmar background validado sem teste. Avisar quando houver fluxo mobile executável. Sem autorização para F5, push, deploy ou importação pessoal.
+
+## ADR-008 — Fechar F4 com limites físicos e autorizar F5
+
+- Data: 2026-11-20.
+- Estado: aprovado explicitamente pelo dono: “Aprovar avanço com limites registrados (recomendado)”.
+- Evidência: relato de sucesso no POCO X5, voz pt-br-x-ptd-local (Enhanced), para os controles, avanço ao capítulo 2, troca de app e bloqueio de tela perguntados; detalhes em S1.md.
+- Decisão: aceitar essa evidência parcial para fechar F4 e executar C32–C39 (F5). Dispensar os testes físicos restantes como impedimento deste portão, mantendo-os pendentes de validação: iOS, interrupções, voz sem rede/sem PT, saída da tela e duração de dois capítulos por condição de background/bloqueio.
+- Limites: não declarar esses cenários aprovados nem paridade completa. Versão Android/motor/ambiente de execução ainda não informados. Bloqueios reais de fonte/tradução continuam abertos; nenhuma troca de motor foi autorizada. Ao fim de F5, repetir o portão do plano. Sem autorização automática para F6, push, deploy ou importação pessoal.

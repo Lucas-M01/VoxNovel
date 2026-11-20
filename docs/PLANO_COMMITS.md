@@ -104,6 +104,8 @@ S1 exige Android/iOS físicos para afirmar background nos dois sistemas; em 2026
 
 Portão F4: cliente/arquivos/voz/controles testados, S1 registrado com evidência disponível e pendências explícitas. Para fechar o bloco, pendência física precisa ser resolvida ou dispensada expressamente pelo dono com limites registrados. Log C26–C31 e parada.
 
+Registro de execução em 2026-11-20: F4 fechado com sucesso Android relatado e dispensa expressa dos limites físicos restantes conforme ADR-008; C32–C39 autorizados. Os cenários dispensados permanecem pendentes de validação.
+
 ## 7. F5: leitura, player, filtros e downloads
 
 | Commit | Título em inglês | WBS | Paridade / classe | Entrega e aceite específico |

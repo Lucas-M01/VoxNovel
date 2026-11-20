@@ -1,6 +1,6 @@
 # Status individual dos pacotes WBS
 
-Data: 2026-11-20. Fundação, persistência, API F3 e serviços mobile F4 implementados; F4 aguarda S1 físico e o produto permanece sem paridade final validada. Análise e plano aprovados. Estados dos blocos atualizados; pacotes compostos não contam como integralmente entregues.
+Data: 2026-11-20. Fundação, persistência, API F3 e serviços mobile F4 implementados; F4 fechado com relato Android e dispensa expressa dos limites restantes (ADR-008); F5 autorizado, produto sem paridade final validada. Análise e plano aprovados. Estados dos blocos atualizados; pacotes compostos não contam como integralmente entregues.
 
 “Não iniciado — adaptar” cobre apenas a parte de paridade descrita em ANALISE.md; não autoriza executar o pacote inteiro. “Fora de escopo” não significa funcionalidade implementada nem infra aprovada. Misturas de áudio/texto devem seguir a seção 6 da análise.
 
@@ -110,7 +110,7 @@ Data: 2026-11-20. Fundação, persistência, API F3 e serviços mobile F4 implem
 | 4.2.2 | `app-store.ts` (tema, locale, fontSize, target_language_global, storage_limit_bytes) | Feito — preferências de sessão | C31: opções existentes de leitura com Zod/useState; sem locale EN, target_language global, storage limit, MMKV ou persistência nova. Composição do leitor em F5. |
 | 4.2.3 | `player-store.ts` (MMKV) | Feito — estado de sessão | C29: estado na instância do player; sem MMKV ou persistência nova de voz/posição por frase. |
 | 4.2.4 | `download-store.ts` (memória) | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
-| 4.3.1 | `audio-service.ts`: setupPlayer, addToQueue, resolveTrackUrl, scheduleNextChapters | Implementado — S1 físico pendente | C29/C30: expo-speech por frases e cancelamento serializado; sem TrackPlayer/áudio remoto/fila durável. Harness privado e testes de corrida/UI/exportações prontos; evidência física Android/iOS ainda ausente. |
+| 4.3.1 | `audio-service.ts`: setupPlayer, addToQueue, resolveTrackUrl, scheduleNextChapters | Feito — limites físicos registrados | C29/C30: expo-speech por frases e cancelamento serializado; sem TrackPlayer/áudio remoto/fila durável. Harness privado e testes de corrida/UI/exportações prontos; dono relatou sucesso no POCO X5, voz pt-br-x-ptd-local (Enhanced); demais cenários/iOS pendentes, dispensados como impedimento F4 em ADR-008. |
 | 4.3.2 | Emitir PLAYER_PROGRESS via `event-bus.ts` | Feito — callbacks de paridade | C29: callback de índice/total por frase e status/término/erro; sem EventBus sem consumidores. |
 | 4.4.1 | `task-queue.ts` com TaskType, enqueue, dequeue, priority, retryFailed | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
 | 4.4.2 | Registrar SYNC_SOURCE + UPDATE_NOVEL no expo-task-manager | Fora de escopo | Capacidade nova ou motor diferente; não consta da paridade. |
