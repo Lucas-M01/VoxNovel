@@ -1,8 +1,8 @@
 # Progresso
 
 - Atualizado: 2026-11-20.
-- Fase atual: Fase 3 — bloco F4 (C26–C31) autorizado e iniciado; C26–C27 concluídos; próximo C28.
-- Último marco: C27 (HEAD após este registro), predecessor 53ce12e (C26). Tag fase-3-f3 criada após o gate; fases anteriores em fase-3-f2 e fase-3-f1.
+- Fase atual: Fase 3 — bloco F4 (C26–C31) autorizado e iniciado; C26–C28 concluídos; próximo C29.
+- Último marco: C28 (HEAD após este registro), predecessor 0a14834 (C27). Tag fase-3-f3 criada após o gate; fases anteriores em fase-3-f2 e fase-3-f1.
 - Autorização: plano e F3 aprovados explicitamente (ADR-003/006). Docker local descartável somente para testes aprovado em ADR-005; dono pediu aviso quando houvesse fluxo executável e foi avisado em C21, com guia API.md. F4 aprovado explicitamente em ADR-007; sem autorização para F5, push, deploy ou importação pessoal.
 - Entregue em F3: HTTP protegido contra SSRF nos transportes usados, extração/limpeza/filtros, quatro providers e fallback genérico, tradução GoogleTranslator auto→PT, API EN tipada de biblioteca/fontes/progresso/texto/config/cache/logs/status, preservação de IDs RoyalRoad e limites de recursos/falhas redigidas. Somente capacidades de paridade; sem auth, jobs/filas duráveis, áudio remoto, score, glossário ou observabilidade comercial.
 - Gate F3/C25: 170 testes backend (160 unitários + dez integrações reais), Ruff/format/mypy/arquitetura/compileall, 20 casos das regras de lint mobile, eslint/tsc/Jest e exportações Hermes Android/iOS aprovados. Gitleaks de arquivos candidatos e histórico passou, com valores redigidos. CI remoto não foi executado.
@@ -10,7 +10,7 @@
 - Executável: backend testável por Swagger conforme docs/API.md. Configuração local da CLI preservada em .private/voxnovel-f3-supabase, ignorada pelo git, sem imprimir chaves. Stack mantida ativa para testes manuais; o guia explica encerramento preservando volumes. O Expo ainda contém apenas a fundação e não oferece leitor funcional.
 - Limites de evidência: fontes e tradução externa foram verificadas com corpus sintético e HTTP injetado; não certificar layouts atuais ou bypass de qualquer desafio Cloudflare. Paridade final P01–P35 permanece pendente da Fase 4, depois da composição mobile.
 - S2: prebuild Android concluído em F1; assembleDebug executou 63 tarefas e falhou ao obter dependências Maven por resolução de rede (ADR-004). Sem APK novo validado. Repetir quando a rede permitir; iOS nativo exige ambiente Apple. Exportação Hermes não substitui teste físico.
-- Próximo item: C28: isolar caches por fonte; depois C29–C31 (serviços mobile), conforme aprovação de F4. S1 de fala/background exige aparelhos Android/iOS físicos ou dispensa expressa dos limites no portão F4; dono informou somente Android físico, iOS pendente sem dispensa. Licença pública continua não escolhida. Avisar novamente quando o leitor mobile estiver executável, com comandos.
+- Próximo item: C29: fala nativa por frases e vozes; depois C30–C31 (serviços mobile), conforme aprovação de F4. S1 de fala/background exige aparelhos Android/iOS físicos ou dispensa expressa dos limites no portão F4; dono informou somente Android físico, iOS pendente sem dispensa. Licença pública continua não escolhida. Avisar novamente quando o leitor mobile estiver executável, com comandos.
 - Continuidade: ler AGENTS.md e este arquivo. Consultar PLANO_COMMITS.md, ANALISE.md, HTTP.md, API.md e PERSISTENCIA.md. WBS_STATUS classifica somente responsabilidades adaptadas e registra fixtures reais/cobertura ainda não certificadas. _legacy permanece ignorado e somente leitura.
 
 - C26 entregue: cliente HTTP central por env, Zod em todas as respostas, recursos API EN, QueryClient provider, queries canceláveis e mutations sem retry com invalidação após sucesso. Versões fixadas: TanStack Query 5.108.2 e Zod 4.6.7. Documentação em MOBILE.md; ainda sem leitor funcional.
@@ -18,3 +18,7 @@
 
 - C27 entregue: FileSystem 58.0.14 persistente, biblioteca `{ obras, salvoEm }` e capítulos `{ cap, texto }` nos formatos observados; leitura local-first, fallback de biblioteca, gravação explícita de downloads e testes de ausência/corrupção/IO/remoção/cancelamento. Nenhum dado pessoal foi migrado. C28 deve isolar as fontes antes de compor a interface.
 - Gate C27: 170 testes backend com dez integrações reais, Ruff/format/mypy/arquitetura/compileall, 20 casos das regras de lint, ESLint/tsc, 111 testes mobile, exportações Hermes Android/iOS e Gitleaks de candidatos/histórico aprovados.
+
+- C28 entregue: namespace por obra/fonte para disco e memória, sem atribuição automática dos arquivos antigos; testes de fontes com mesmo capítulo/URL e reversão da transição sem alterar bytes antigos. Cache remoto P35 mantém contrato sem fonte e não alimenta downloads locais.
+
+- Gate C28: 170 testes backend com dez integrações reais, Ruff/format/mypy/arquitetura/compileall, 20 casos das regras de lint, ESLint/tsc, 116 testes mobile, exportações Hermes Android/iOS e Gitleaks de candidatos/histórico aprovados. A transição de namespace é reversível preservando os arquivos sintéticos sem fonte; nenhuma migração pessoal foi executada.

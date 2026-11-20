@@ -61,8 +61,27 @@ falha ao gravar capítulo não é apresentada como download concluído. Operaç�
 incluem listar/contar, verificar existência, medir bytes e remover capítulo/obra,
 sem áudio e sem acesso ao armazenamento externo de outros apps.
 
-O isolamento de cache por fonte e a preservação do formato antigo serão tratados
-separadamente em C28, antes de compor qualquer interface de leitura/download.
+## Isolamento por fonte (C28)
+
+As consultas de capítulo incluem obra e fonte na chave, além de URL e número.
+Arquivos novos ficam em
+`downloads/{novelId}/sources/{sourceId}/cap_{chapter}.json`; o JSON continua
+`{ cap, texto }`. Ler, listar, contar e remover capítulo usa o escopo escolhido.
+Contagem por obra recebe os escopos das fontes ativas. Remover os downloads de
+uma obra apaga somente o namespace novo de fontes dessa obra.
+
+Arquivos antigos sem fonte permanecem intocados no caminho anterior. Uma fonte
+ativa hoje não comprova a origem de um download antigo; por isso não existe
+atribuição automática, renomeação ou importação. Na falta do texto da fonte
+escolhida, a consulta usa a rede ou mantém erro de indisponibilidade. A reversão
+da transição de namespace foi verificada com arquivos sintéticos: criar e
+remover o namespace novo preserva exatamente os bytes antigos e a biblioteca.
+Importação pessoal continua sujeita ao dry-run e à autorização previstos no plano.
+
+O cache remoto da API P35 mantém seu contrato por obra/capítulo, sem declarar
+proveniência por fonte. O fluxo de downloads mobile observado busca texto pela
+URL da fonte e grava no aparelho; não usa esse cache remoto como origem de texto
+local. Alterar o contrato remoto exige mudança própria e não está no C28 mobile.
 
 ## Validação física S1
 

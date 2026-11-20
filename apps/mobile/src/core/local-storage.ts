@@ -5,6 +5,7 @@ import { deviceFiles, type LocalFiles } from '@core/local-files';
 const segment = z.string().min(1).max(128).regex(/^[A-Za-z0-9_-]+$/);
 const storedChapter = z.object({ cap: chapterSchema, texto: z.string().min(1) });
 const storedLibrary = z.object({ obras: z.array(novelSchema), salvoEm: z.number().nonnegative() });
+export type ChapterScope = { novelId: string; sourceId: string };
 export type ChapterText = z.infer<typeof chapterTextSchema>;
 
 export class LocalStorageError extends Error {
@@ -14,10 +15,11 @@ export class LocalStorageError extends Error {
 export function createLocalStorage(files: LocalFiles = deviceFiles, now: () => number = Date.now) {
   const root = () => files.documentDirectory().replace(/\/+$/, '');
   const libraryPath = () => `${root()}/cache_obras.json`;
-  const directory = (novelId: string) => `${root()}/downloads/${segment.parse(novelId)}`;
-  const path = (novelId: string, chapter: number) => `${directory(novelId)}/cap_${chapterSchema.parse(chapter)}.json`;
-  async function readChapter(novelId: string, chapter: number): Promise<ChapterText | null> {
-    const target = path(novelId, chapter);
+  const sourceRoot = (novelId: string) => `${root()}/downloads/${segment.parse(novelId)}/sources`;
+  const directory = (scope: ChapterScope) => `${sourceRoot(scope.novelId)}/${segment.parse(scope.sourceId)}`;
+  const path = (scope: ChapterScope, chapter: number) => `${directory(scope)}/cap_${chapterSchema.parse(chapter)}.json`;
+  async function readChapter(scope: ChapterScope, chapter: number): Promise<ChapterText | null> {
+    const target = path(scope, chapter);
     try {
       if (!await files.exists(target)) return null;
       const data = storedChapter.safeParse(JSON.parse(await files.read(target)));
@@ -25,8 +27,8 @@ export function createLocalStorage(files: LocalFiles = deviceFiles, now: () => n
       return { chapter: data.data.cap, text: data.data.texto };
     } catch { return null; }
   }
-  async function listChapters(novelId: string): Promise<number[]> {
-    const target = directory(novelId);
+  async function listChapters(scope: ChapterScope): Promise<number[]> {
+    const target = directory(scope);
     try {
       if (!await files.exists(target)) return [];
       const chapters = (await files.list(target)).flatMap(name => {
@@ -53,21 +55,21 @@ export function createLocalStorage(files: LocalFiles = deviceFiles, now: () => n
     },
     readChapter,
     listChapters,
-    async hasChapter(novelId: string, chapter: number): Promise<boolean> {
-      const target = path(novelId, chapter);
+    async hasChapter(scope: ChapterScope, chapter: number): Promise<boolean> {
+      const target = path(scope, chapter);
       try { return await files.exists(target); } catch { return false; }
     },
-    async saveChapter(novelId: string, chapter: number, text: string): Promise<string> {
-      const target = path(novelId, chapter);
+    async saveChapter(scope: ChapterScope, chapter: number, text: string): Promise<string> {
+      const target = path(scope, chapter);
       const data = storedChapter.parse({ cap: chapter, texto: text });
       try {
-        await files.mkdir(directory(novelId));
+        await files.mkdir(directory(scope));
         await files.write(target, JSON.stringify(data));
         return target;
       } catch { throw new LocalStorageError(); }
     },
-    async removeChapter(novelId: string, chapter: number): Promise<string[]> {
-      const target = path(novelId, chapter);
+    async removeChapter(scope: ChapterScope, chapter: number): Promise<string[]> {
+      const target = path(scope, chapter);
       try {
         if (!await files.exists(target)) return [];
         await files.remove(target);
@@ -75,20 +77,20 @@ export function createLocalStorage(files: LocalFiles = deviceFiles, now: () => n
       } catch { return []; }
     },
     async removeNovel(novelId: string): Promise<boolean> {
-      const target = directory(novelId);
+      const target = sourceRoot(novelId);
       try {
         if (!await files.exists(target)) return false;
         await files.remove(target);
         return true;
       } catch { return false; }
     },
-    async countChapters(novelIds: string[]): Promise<Record<string, number>> {
+    async countChapters(scopes: ChapterScope[]): Promise<Record<string, number>> {
       const counts: Record<string, number> = {};
-      for (const id of novelIds) counts[id] = (await listChapters(id)).length;
+      for (const scope of scopes) counts[scope.novelId] = (await listChapters(scope)).length;
       return counts;
     },
-    async usedBytes(novelId: string): Promise<number> {
-      const target = directory(novelId);
+    async usedBytes(scope: ChapterScope): Promise<number> {
+      const target = directory(scope);
       try {
         if (!await files.exists(target)) return 0;
         let bytes = 0;

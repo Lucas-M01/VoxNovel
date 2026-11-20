@@ -29,7 +29,7 @@ Data: 2026-11-20. Fundação, persistência e API F3 implementadas; produto aind
 | 1.4.6 | Instalar WatermelonDB + native bindings | Fora de escopo por padrão | Infra ausente/dispensável; exigir necessidade de paridade e decisão antes de adotar. Em 2.4.3, AudioCache eliminado (v2.2). |
 | 1.4.7 | Instalar MMKV + native bindings | Fora de escopo por padrão | Infra ausente/dispensável; exigir necessidade de paridade e decisão antes de adotar. Em 2.4.3, AudioCache eliminado (v2.2). |
 | 1.4.8 | Instalar react-native-track-player + configurar serviço nativo | Eliminado (v2.2) | Somente áudio remoto; sem objeto no fluxo de texto + fala local. |
-| 1.4.9 | Instalar expo-background-fetch, expo-task-manager, expo-file-system | Feito — somente FileSystem | C27: biblioteca offline e arquivos de texto persistentes com validação e testes de IO. Sem background-fetch/task-manager; isolamento por fonte em C28. |
+| 1.4.9 | Instalar expo-background-fetch, expo-task-manager, expo-file-system | Feito — somente FileSystem | C27: biblioteca offline e arquivos de texto persistentes com validação e testes de IO. Sem background-fetch/task-manager; C28 isola arquivos por fonte e preserva os antigos. |
 | 1.4.10 | Criar estrutura de pastas `src/core/`, `ui/`, `pattern/`, `features/`, `screens/` | Feito — fundação adaptada | C01–C08; evidências em FUNDACAO.md. Somente base e camadas usadas, sem funções extras da WBS. |
 | 1.4.11 | Configurar Expo Router + layouts base | Parcial — base feita | C07: Router e entrada mínima; jornada P01 completa permanece em C44. |
 | 2.1.1 | Criar `src/database/connection.py` (engine + session, SQLite/PostgreSQL compatível) | Feito — paridade adaptada | C11: SDK Supabase no adaptador; sem SQLAlchemy/SQLite. ADR-001/005 e PERSISTENCIA.md. |
@@ -103,7 +103,7 @@ Data: 2026-11-20. Fundação, persistência e API F3 implementadas; produto aind
 | 3.7.8 | GET /health, /health/db, /health/redis | Feito — paridade adaptada | C23: status e últimos 500 logs em memória; sem /health/redis, métricas ou monitoramento comercial. |
 | 3.7.9 | Montar `router.py` com prefixo `/api/v1` | Feito — paridade adaptada | C21–C23: rotas tipadas sob /api/v1 com Depends e erros padronizados. |
 | 4.1.1 | `http-resource.ts` (defineApiRoute, httpResource, FriendlyError, refresh token) | Feito — paridade adaptada | C26: fetch central, configuração por env, cancelamento/timeout, validação e ApiError amigável; sem refresh token/auth. |
-| 4.1.2 | `constants.ts` + `keys.ts` (com lang em chapters e tts) | Parcial — C26 implementado | Configuração central e query keys para contratos existentes; somente tradução PT. Isolamento por fonte em C28 ainda pendente. |
+| 4.1.2 | `constants.ts` + `keys.ts` (com lang em chapters e tts) | Feito — paridade adaptada | C26/C28: configuração central, query keys de capítulo por obra/fonte/URL/número e namespace local por fonte. Somente tradução PT; sem tts remoto. Arquivos antigos preservados sem atribuição presumida. |
 | 4.1.3 | `queries.ts` com staleTime/gcTime por domínio | Feito — paridade adaptada | C26: queryOptions/mutationOptions tipados, provider único e invalidação após sucesso; sem repetição automática de requests. |
 | 4.1.4 | Módulos de API: novels, chapters, sources, tts, downloads, filters, glossary | Feito — paridade adaptada | C26: novels/chapters/sources/downloads/filters/settings/system com schemas de todas as respostas. Sem tts remoto/glossary/auth. |
 | 4.2.1 | `session-store.ts` (MMKV encrypted) | Fora de escopo | Capacidade nova ou motor diferente; não consta da paridade. |

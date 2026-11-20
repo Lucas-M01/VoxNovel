@@ -5,8 +5,10 @@ import { apiQueries, createQueryClient } from '@core/queries';
 import { memoryFiles } from './local-files';
 
 const novelId = '11111111-1111-4111-8111-111111111111';
+const scope = { novelId, sourceId: 'source-a' };
+const otherScope = { novelId: 'other', sourceId: 'source-a' };
 const novel = { id: novelId, title: 'Synthetic', slug: 'synthetic', current_chapter: 1, image_url: null, total_chapters: null, active_source_id: null, sources: [], updated_at: '2026-11-20T12:00:00Z' };
-const target = `file://documents/downloads/${novelId}/cap_3.json`;
+const target = `file://documents/downloads/${novelId}/sources/source-a/cap_3.json`;
 
 function setup() {
   const memory = memoryFiles();
@@ -32,74 +34,74 @@ test('returns null for missing cache and preserves corrupt cache untouched', asy
 
 test('stores only text in persistent documents using the observed chapter format', async () => {
   const { storage, contents } = setup();
-  await expect(storage.saveChapter(novelId, 3, 'Texto sintético.')).resolves.toBe(target);
+  await expect(storage.saveChapter(scope, 3, 'Texto sintético.')).resolves.toBe(target);
   expect(contents.get(target)).toBe(JSON.stringify({ cap: 3, texto: 'Texto sintético.' }));
-  await expect(storage.hasChapter(novelId, 3)).resolves.toBe(true);
-  await expect(storage.readChapter(novelId, 3)).resolves.toEqual({ chapter: 3, text: 'Texto sintético.' });
+  await expect(storage.hasChapter(scope, 3)).resolves.toBe(true);
+  await expect(storage.readChapter(scope, 3)).resolves.toEqual({ chapter: 3, text: 'Texto sintético.' });
 });
 
 test.each(['broken-json', '{"cap":3,"texto":42}', '{"cap":4,"texto":"Outra frase."}', '{"cap":3,"texto":""}'])('preserves an unreadable chapter without overwriting it: %s', async text => {
   const { storage, contents } = setup();
   contents.set(target, text);
-  await expect(storage.readChapter(novelId, 3)).resolves.toBeNull();
+  await expect(storage.readChapter(scope, 3)).resolves.toBeNull();
   expect(contents.get(target)).toBe(text);
 });
 
 test('returns missing chapter states without creating directories', async () => {
   const { storage, files } = setup();
-  await expect(storage.readChapter(novelId, 3)).resolves.toBeNull();
-  await expect(storage.hasChapter(novelId, 3)).resolves.toBe(false);
-  await expect(storage.listChapters(novelId)).resolves.toEqual([]);
-  await expect(storage.removeChapter(novelId, 3)).resolves.toEqual([]);
+  await expect(storage.readChapter(scope, 3)).resolves.toBeNull();
+  await expect(storage.hasChapter(scope, 3)).resolves.toBe(false);
+  await expect(storage.listChapters(scope)).resolves.toEqual([]);
+  await expect(storage.removeChapter(scope, 3)).resolves.toEqual([]);
   await expect(storage.removeNovel(novelId)).resolves.toBe(false);
   expect(files.mkdir).not.toHaveBeenCalled();
 });
 
 test('lists chapter numbers in numeric order and ignores unrelated names', async () => {
   const { storage, contents } = setup();
-  await storage.saveChapter(novelId, 10, 'Dez.');
-  await storage.saveChapter(novelId, 2, 'Dois.');
+  await storage.saveChapter(scope, 10, 'Dez.');
+  await storage.saveChapter(scope, 2, 'Dois.');
   for (const name of ['cap_0.json', 'cap_2.json.bak', 'cap_3oops.json', 'cap_9007199254740992.json', 'audio.wav']) {
-    contents.set(`file://documents/downloads/${novelId}/${name}`, 'Synthetic');
+    contents.set(`file://documents/downloads/${novelId}/sources/source-a/${name}`, 'Synthetic');
   }
-  await expect(storage.listChapters(novelId)).resolves.toEqual([2, 10]);
-  await expect(storage.countChapters([novelId, 'other'])).resolves.toEqual({ [novelId]: 2, other: 0 });
+  await expect(storage.listChapters(scope)).resolves.toEqual([2, 10]);
+  await expect(storage.countChapters([scope, otherScope])).resolves.toEqual({ [novelId]: 2, other: 0 });
 });
 
 test('removes only the requested chapter or novel and reports remaining text bytes', async () => {
   const { storage, contents } = setup();
-  await storage.saveChapter(novelId, 3, 'Três.');
-  await storage.saveChapter(novelId, 4, 'Quatro.');
-  await storage.saveChapter('other', 3, 'Outra.');
-  await expect(storage.usedBytes(novelId)).resolves.toBe((contents.get(target)?.length ?? 0) + (contents.get(target.replace('cap_3', 'cap_4'))?.length ?? 0));
-  await expect(storage.removeChapter(novelId, 3)).resolves.toEqual([target]);
-  await expect(storage.listChapters(novelId)).resolves.toEqual([4]);
+  await storage.saveChapter(scope, 3, 'Três.');
+  await storage.saveChapter(scope, 4, 'Quatro.');
+  await storage.saveChapter(otherScope, 3, 'Outra.');
+  await expect(storage.usedBytes(scope)).resolves.toBe((contents.get(target)?.length ?? 0) + (contents.get(target.replace('cap_3', 'cap_4'))?.length ?? 0));
+  await expect(storage.removeChapter(scope, 3)).resolves.toEqual([target]);
+  await expect(storage.listChapters(scope)).resolves.toEqual([4]);
   await expect(storage.removeNovel(novelId)).resolves.toBe(true);
-  await expect(storage.listChapters(novelId)).resolves.toEqual([]);
-  await expect(storage.readChapter('other', 3)).resolves.toMatchObject({ text: 'Outra.' });
+  await expect(storage.listChapters(scope)).resolves.toEqual([]);
+  await expect(storage.readChapter(otherScope, 3)).resolves.toMatchObject({ text: 'Outra.' });
 });
 
 test('handles IO failure without claiming successful persistence or deletion', async () => {
   const { storage, fail } = setup();
   fail();
   await expect(storage.saveLibrary([novel])).resolves.toBe(false);
-  await expect(storage.saveChapter(novelId, 3, 'Texto.')).rejects.toBeInstanceOf(LocalStorageError);
+  await expect(storage.saveChapter(scope, 3, 'Texto.')).rejects.toBeInstanceOf(LocalStorageError);
   await expect(storage.readLibrary()).resolves.toBeNull();
-  await expect(storage.readChapter(novelId, 3)).resolves.toBeNull();
-  await expect(storage.listChapters(novelId)).resolves.toEqual([]);
-  await expect(storage.hasChapter(novelId, 3)).resolves.toBe(false);
-  await expect(storage.removeChapter(novelId, 3)).resolves.toEqual([]);
+  await expect(storage.readChapter(scope, 3)).resolves.toBeNull();
+  await expect(storage.listChapters(scope)).resolves.toEqual([]);
+  await expect(storage.hasChapter(scope, 3)).resolves.toBe(false);
+  await expect(storage.removeChapter(scope, 3)).resolves.toEqual([]);
   await expect(storage.removeNovel(novelId)).resolves.toBe(false);
-  await expect(storage.usedBytes(novelId)).resolves.toBe(0);
+  await expect(storage.usedBytes(scope)).resolves.toBe(0);
 });
 
 test('rejects unsafe identifiers and chapter values before writing any files', async () => {
   const { storage, files } = setup();
   for (const id of ['../outside', 'book/source', '', '%2e%2e', 'a\\b']) {
-    await expect(storage.saveChapter(id, 1, 'Texto.')).rejects.toThrow();
+    await expect(storage.saveChapter({ novelId: id, sourceId: 'source-a' }, 1, 'Texto.')).rejects.toThrow();
   }
-  await expect(storage.saveChapter(novelId, 0, 'Texto.')).rejects.toThrow();
-  await expect(storage.saveChapter(novelId, 1, '')).rejects.toThrow();
+  await expect(storage.saveChapter(scope, 0, 'Texto.')).rejects.toThrow();
+  await expect(storage.saveChapter(scope, 1, '')).rejects.toThrow();
   expect(files.write).not.toHaveBeenCalled();
 });
 
@@ -134,7 +136,7 @@ test('a library cache write failure does not hide valid online results', async (
 
 test('chapter queries use downloaded text offline and never auto-download online text', async () => {
   const { storage } = setup();
-  await storage.saveChapter(novelId, 3, 'Texto offline.');
+  await storage.saveChapter(scope, 3, 'Texto offline.');
   const transport = jest.fn(async () => ({ ok: true, status: 200, text: async () => JSON.stringify({ chapter: 4, text: 'Texto online.', url: 'https://example.org/chapter-4' }) }));
   const request = createHttpResource({ baseUrl: () => 'http://api.example', transport });
   const queries = apiQueries(request, storage);
@@ -142,11 +144,11 @@ test('chapter queries use downloaded text offline and never auto-download online
   client.setDefaultOptions({ queries: { retry: false, gcTime: Infinity } });
   try {
     onlineManager.setOnline(false);
-    await expect(client.fetchQuery(queries.chapter(novelId, 'https://example.org/chapter-3', 3))).resolves.toMatchObject({ text: 'Texto offline.' });
+    await expect(client.fetchQuery(queries.chapter(scope, 'https://example.org/chapter-3', 3))).resolves.toMatchObject({ text: 'Texto offline.' });
     expect(transport).not.toHaveBeenCalled();
     onlineManager.setOnline(true);
-    await expect(client.fetchQuery(queries.chapter(novelId, 'https://example.org/chapter-4', 4))).resolves.toMatchObject({ text: 'Texto online.' });
-    await expect(storage.readChapter(novelId, 4)).resolves.toBeNull();
+    await expect(client.fetchQuery(queries.chapter(scope, 'https://example.org/chapter-4', 4))).resolves.toMatchObject({ text: 'Texto online.' });
+    await expect(storage.readChapter(scope, 4)).resolves.toBeNull();
   } finally { onlineManager.setOnline(true); client.clear(); }
 });
 

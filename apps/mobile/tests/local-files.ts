@@ -15,7 +15,9 @@ export function memoryFiles() {
       return text;
     }),
     write: jest.fn(async (path, text) => { check(); contents.set(path, text); }),
-    mkdir: jest.fn(async path => { check(); directories.add(path); }),
+    mkdir: jest.fn(async path => { check(); directories.add(path);
+      const parts = path.split('/');
+      while (parts.length > 3) { parts.pop(); directories.add(parts.join('/')); } }),
     list: jest.fn(async path => {
       check();
       return [...contents.keys()].filter(name => name.startsWith(`${path}/`)).map(name => name.slice(path.length + 1)).filter(name => !name.includes('/'));
