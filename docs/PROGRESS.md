@@ -1,9 +1,9 @@
 # Progresso
 
 - Atualizado: 2026-11-20.
-- Fase atual: Fase 3 — bloco F5 concluído; F6 autorizado em ADR-009. Executar C40–C45 com visual simples e consistente, sem funcionalidades extras. C40 concluído; próximo C41, sem nova aprovação necessária.
-- Último commit: C40, commit que contém este registro; predecessor c0b81aa (C39). Fechamento marcado por `fase-3-f5`. Base F4: 44313b1, tag `fase-3-f4`. Histórico aprovado preservado, sem push.
-- Próximo item: C41, correção dos IDs RoyalRoad, já autorizado. F6 tem seis commits C40–C45, seguidos pelo portão da Fase 4 — validação final C46.
+- Fase atual: Fase 3 — bloco F5 concluído; F6 autorizado em ADR-009. Executar C40–C45 com visual simples e consistente, sem funcionalidades extras. C40–C41 concluídos; próximo C42, sem nova aprovação necessária.
+- Último commit: C41, commit que contém este registro; predecessor ac55251 (C40). Fechamento marcado por `fase-3-f5`. Base F4: 44313b1, tag `fase-3-f4`. Histórico aprovado preservado, sem push.
+- Próximo item: C42, biblioteca e cache offline, já autorizado. F6 tem seis commits C40–C45, seguidos pelo portão da Fase 4 — validação final C46.
 - Autorização: análise/plano em ADR-003, F3 em ADR-006, F4 em ADR-007 e fechamento F4/avanço F5 em ADR-008. Docker local descartável somente para testes aprovado em ADR-005. F6 aprovado em ADR-009; sem aprovação para push, deploy ou importação pessoal. Licença pública ainda não escolhida.
 
 ## Entregas F5
@@ -17,7 +17,7 @@
 | C36 | 832bf15 | Capítulo inicial explícito prevalece sobre progresso da fonte e da obra; melhoria separada. |
 | C37 | d643857 | Filtros globais por tipo e limpar com confirmação. |
 | C38 | 0332263 | Downloads individuais por fonte, abertura do capítulo escolhido e remoção confirmada; limpeza remota não bloqueante. |
-| C39 | HEAD deste registro | Intervalo até 50 em grupos de cinco, pular existentes, progresso por tentativas e falhas individuais; somente fila em memória. |
+| C39 | c0b81aa | Intervalo até 50 em grupos de cinco, pular existentes, progresso por tentativas e falhas individuais; somente fila em memória. |
 
 ## Verificação de fechamento
 
@@ -47,6 +47,8 @@ Na raiz, executar `yarn workspace @voxnovel/mobile reader:harness` e abrir o QR 
 - F4 entregou cliente API EN por env/Zod, TanStack Query sem retry, arquivos persistentes por obra/fonte, cache local/em memória, fala serializada e NetInfo. Sem auth, áudio remoto, MMKV, WatermelonDB, EventBus ou funcionalidades fora da paridade.
 - Arquivos de capítulos novos: downloads/{novelId}/sources/{sourceId}/cap_{n}.json com envelope `{ cap, texto }`; biblioteca `{ obras, salvoEm }`. Arquivos antigos preservados; nenhuma alteração em _legacy, que permanece somente leitura e ignorado.
 - Stack Supabase local descartável de testes em .private/voxnovel-f3-supabase; somente banco/Storage locais, nenhum projeto remoto alterado e nenhuma chave exposta no mobile. RLS/ACL/advisors auditados em F3 sem achados. Backend executável conforme API.md; nenhum dado pessoal importado.
-- Checklist P01–P35 ainda não certificado na Fase 4. Ao receber aprovação de F6, executar C40–C45, suíte completa, documentos/tag/log e parar para aprovação da validação final.
+- Checklist P01–P35 ainda não certificado na Fase 4. F6 autorizado em ADR-009; executar C40–C45, suíte completa, documentos/tag/log e parar para aprovação da validação final.
 
 - Gate C40: 170 testes backend com dez integrações reais, 208 mobile, 20 casos de lint, ESLint/tsc/Ruff/mypy/arquitetura/compileall, Hermes Android/iOS e Gitleaks aprovados. Teste de interface repetido após timeout durante espera de disco; limite do fluxo ajustado para 60s, sem remover cenários. Busca/cadastro ainda serão ligados à navegação principal em C44.
+
+- Gate C41: backend 170 testes com integrações e Ruff/mypy/arquitetura passou; após corrigir campo excedente na fixture, checks mobile completos passaram com 210 testes, ESLint/20 casos/tsc, Hermes Android/iOS e Gitleaks. IDs são preservados e a URL RoyalRoad resolve o índice escolhido. Próximo C42.

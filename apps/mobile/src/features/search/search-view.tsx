@@ -7,7 +7,7 @@ import { apiQueries } from '@core/queries';
 import { httpResource, type HttpResource } from '@core/http-resource';
 import { keys } from '@core/keys';
 import type { Novel } from '@core/api/schemas';
-import { findDuplicate, saveSearchSelection, startingChapterSchema, type Metadata } from '@features/search/search-service';
+import { findDuplicate, initialMetadataChapter, saveSearchSelection, startingChapterSchema, type Metadata } from '@features/search/search-service';
 import { Button } from '@ui/button';
 import { Dialog } from '@ui/dialog';
 import { ErrorMessage } from '@ui/error-message';
@@ -33,10 +33,11 @@ export function SearchView({ onOpen, request = httpResource, existing }: Props) 
   }, onSuccess: data => { setResults(data); setSelected([]); }, onError: failure => setError(failure.message) });
   const inspect = useMutation({ mutationFn: async () => {
     const first = selected[0]; if (!first) throw new Error('Selecione ao menos uma fonte.');
-    return existing ?? findDuplicate(await novelResources(request).list(), first);
-  }, onSuccess: found => {
+    const initialChapter = mode === 'url' ? initialMetadataChapter(first, input) : 1;
+    return { found: existing ?? findDuplicate(await novelResources(request).list(), first), initialChapter };
+  }, onSuccess: ({ found, initialChapter }) => {
     if (found && !existing) setDuplicate({ novel: found, selected });
-    else { setDraft(found ? { selected, existing: found } : { selected }); setChapter(String(found?.current_chapter ?? 1)); }
+    else { setDraft(found ? { selected, existing: found } : { selected }); setChapter(String(found?.current_chapter ?? initialChapter)); }
   }, onError: failure => setError(failure.message) });
   const save = useMutation({ mutationFn: async () => {
     if (!draft) throw new Error('Selecione uma fonte.');

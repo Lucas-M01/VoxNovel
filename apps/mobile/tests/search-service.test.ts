@@ -14,12 +14,9 @@ test('slug duplicate matching strips repeated known suffixes and initial chapter
   expect(startingChapterSchema.parse(' 2 ')).toBe(2);
 });
 
-test('source creation resolves selected chapter and rejects a chapter beyond the known end before HTTP', async () => {
-  const transport = jest.fn(async () => jsonResponse({ url: 'https://example.org/chapter-3' }));
-  const request = createHttpResource({ baseUrl: () => 'https://api.example', transport });
-  await expect(metadataSource(request, syntheticMetadata, 6)).rejects.toThrow('apenas 5 capítulos');
-  expect(transport).not.toHaveBeenCalled();
-  expect(await metadataSource(request, syntheticMetadata, 3)).toMatchObject({ current_chapter: 3, url_base: 'https://example.org/chapter-3' });
+test('source creation resolves selected chapter and rejects a chapter beyond the known end', async () => {
+  await expect(metadataSource(syntheticMetadata, 6)).rejects.toThrow('apenas 5 capítulos');
+  expect(await metadataSource(syntheticMetadata, 3)).toMatchObject({ current_chapter: 3, url_base: 'https://example.org/chapter-3' });
 });
 
 test('multiple selected sources preserve selection order and a failed extra keeps the saved novel recoverable', async () => {

@@ -340,3 +340,11 @@ salva recuperável e apresenta o erro, sem reenviar automaticamente o cadastro.
 As solicitações são queries/mutations disparadas por eventos; não há fetch em
 useEffect. As telas usam uma base visual simples compartilhada, sem novas deps.
 A entrada pela navegação principal será conectada em C44.
+
+## Identificadores RoyalRoad (C41)
+
+O cadastro preserva `chapter_ids`. A URL de cada capítulo usa o identificador
+na posição escolhida, em vez de tratar o número sequencial como ID do site.
+Ao colar uma URL de capítulo com lista ordenada, o capítulo inicial é o índice
+desse identificador; um ID ausente gera erro, sem abrir outro capítulo. Leitura,
+fala e downloads compartilham a mesma resolução e o cache continua por fonte.
