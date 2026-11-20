@@ -125,8 +125,8 @@ Data: 2026-11-20. Fundação, persistência, API F3 e serviços mobile F4 implem
 | 5.1.1 | `features/reader/hooks.ts` (useChapter, useReaderSettings, useFilterPipeline) | Feito — paridade adaptada | C32: leitura local-first, query de leitura ativa, progresso em mutation independente e preferências temporárias. Falha de progresso não esconde conteúdo; integração de navegação em F6. |
 | 5.1.2 | `filter-pipeline.tsx` + `glossary-pipeline.tsx` (priority DESC) | Feito — limpeza visual existente | C32: deduplicação/título/rodapés do leitor preservados, separados da fala. Sem glossário ou filtro novo. |
 | 5.1.3 | `text-renderer.tsx` (fonte, espaçamento, tema) | Feito — paridade adaptada | C32: Text nativo com títulos/parágrafos/diálogos, fontes/tamanhos/temas/espaçamento/largura observados; harness sintético e testes de composição. |
-| 5.1.4 | `autoscroll-controller.tsx` (escuta PLAYER_PROGRESS via EventBus) | Não iniciado — adaptar | P20 tem autoscroll independente; não sincronizar por milissegundos da voz. |
-| 5.1.5 | `reader-controls.tsx` + `settings-panel.tsx` | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
+| 5.1.4 | `autoscroll-controller.tsx` (escuta PLAYER_PROGRESS via EventBus) | Feito — autoscroll independente | C33: timer de 16 ms com velocidades existentes, pausa/troca de velocidade/cleanup; sem vínculo com voz ou EventBus. |
+| 5.1.5 | `reader-controls.tsx` + `settings-panel.tsx` | Feito — paridade adaptada | C31/C33: preferências, anterior/próximo/escolha, limites/offline e controles ocultáveis com guarda de drag. Não avança ao atingir 95%. |
 | 5.1.6 | `screens/novel/[id]/read.tsx` com prefetchQuery próximos 3 capítulos | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
 | 5.1.7 | Leitura contínua: scroll ≥ 95% → salva progresso → navega para próximo automaticamente | Fora de escopo | Capacidade nova ou motor diferente; não consta da paridade. |
 | 5.1.8 | Salvar posição de scroll no WatermelonDB ao sair | Fora de escopo | Capacidade nova ou motor diferente; não consta da paridade. |

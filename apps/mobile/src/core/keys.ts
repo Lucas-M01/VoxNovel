@@ -8,6 +8,7 @@ export const keys = {
   chapter: (scope: ChapterScope, url: string, chapter: number) => ['chapters', scope.novelId, scope.sourceId, url, chapter],
   downloads: (id: string) => ['downloads', id],
   downloadedText: (id: string, chapter: number) => ['downloads', id, chapter],
+  localChapters: (scope: ChapterScope) => ['local-chapters', scope.novelId, scope.sourceId],
   filters: () => ['filters'],
   settings: () => ['settings'],
   status: () => ['status'],

@@ -1,11 +1,11 @@
-import { ActivityIndicator, Pressable, StyleSheet, Text } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, Text, type StyleProp, type ViewStyle } from 'react-native';
 
-type Props = { title: string; onPress: () => void; disabled?: boolean; busy?: boolean; selected?: boolean };
-export function Button({ title, onPress, disabled = false, busy = false, selected = false }: Props) {
+type Props = { title: string; onPress: () => void; disabled?: boolean; busy?: boolean; selected?: boolean; style?: StyleProp<ViewStyle> };
+export function Button({ title, onPress, disabled = false, busy = false, selected = false, style }: Props) {
   const blocked = disabled || busy;
   return (
     <Pressable accessibilityRole="button" accessibilityLabel={title} accessibilityState={{ disabled: blocked, busy, selected }}
-      disabled={blocked} onPress={onPress} style={[styles.button, selected ? styles.selected : null, blocked ? styles.disabled : null]}>
+      disabled={blocked} onPress={onPress} style={[styles.button, selected ? styles.selected : null, blocked ? styles.disabled : null, style]}>
       {busy ? <ActivityIndicator color="#FFFFFF" /> : null}
       <Text style={styles.label}>{title}</Text>
     </Pressable>

@@ -195,3 +195,23 @@ com projeto próprio em .private/voxnovel-reader-harness, preservando o harness 
 voz. Ele prepara texto sintético local, simula apenas a gravação de progresso
 e importa o leitor real. Não testa acesso externo ou tradução. C33 comporá os
 controles de capítulo e a rolagem; o produto ainda não tem entrada pela biblioteca.
+
+## Navegação e rolagem (C33)
+
+Leitura oferece anterior/próximo e seleção numérica, respeitando limites conhecidos
+e arquivos disponíveis quando offline. O diálogo mantém erro de validação sem
+mudar de capítulo. A lista local usa chave por obra/fonte. Tocar no corpo
+oculta/exibe controles; um drag impede o toque acidental até o período de liberação
+observado de 150 ms. O timer é limpo ao sair.
+
+Autoscroll usa passos de 0,5/1/1,8/3 a cada 16 ms, independentemente da fala.
+Mudar velocidade reinicia somente esse timer; pausar ou desmontar limpa o recurso.
+Durante carregamento sem conteúdo o timer não rola um corpo inexistente. Trocar
+capítulo reinicia posição/progresso. Scroll acima de 95% atualiza a indicação,
+sem navegação automática. Os testes verificam limites, navegação offline sem GET
+de texto já local, toggle/drag e limpeza dos intervalos pertencentes ao módulo.
+
+O leitor sintético agora pode ser exercitado com `reader:harness`: preparar e
+abrir leitor, mudar preferências, navegar pelos dois capítulos locais e testar
+rolagem. O teste continua sem fonte externa/tradução e não substitui a jornada
+pela biblioteca, que será ligada em F6.
