@@ -1,6 +1,6 @@
 # Status individual dos pacotes WBS
 
-Data: 2026-11-20. Fundação, persistência, API F3 e serviços mobile F4 implementados; F4 fechado com relato Android e dispensa expressa dos limites restantes (ADR-008); F5 concluído com gate C39 aprovado (170 testes backend, 203 mobile e bundles Android/iOS); F6 aguarda aprovação, produto sem paridade final validada. Análise e plano aprovados. Estados dos blocos atualizados; pacotes compostos não contam como integralmente entregues.
+Data: 2026-11-20. Fundação, persistência, API F3 e serviços mobile F4 implementados; F4 fechado com relato Android e dispensa expressa dos limites restantes (ADR-008); F5 concluído com gate C39 aprovado (170 testes backend, 203 mobile e bundles Android/iOS); F6 autorizado em ADR-009, produto sem paridade final validada. Análise e plano aprovados. Estados dos blocos atualizados; pacotes compostos não contam como integralmente entregues.
 
 “Não iniciado — adaptar” cobre apenas a parte de paridade descrita em ANALISE.md; não autoriza executar o pacote inteiro. “Fora de escopo” não significa funcionalidade implementada nem infra aprovada. Misturas de áudio/texto devem seguir a seção 6 da análise.
 
@@ -142,10 +142,10 @@ Data: 2026-11-20. Fundação, persistência, API F3 e serviços mobile F4 implem
 | 5.3.5 | EventBus DOWNLOAD_FINISHED → invalidar queries do capítulo | Feito — adaptação de paridade C38/C39 | Atualiza queries locais e cache de texto após gravação; sem EventBus obrigatório. |
 | 5.4.1 | `filter-manager.tsx` (CRUD, globais + por obra) | Feito — filtros globais | C37: palavra/frase/regex explícitos, validação da expressão, remoção exata, limpar com confirmação e listas vazias; sem glossário/filtros por obra. |
 | 5.4.2 | `glossary-manager.tsx` (CRUD com priority e enabled) | Fora de escopo | Capacidade nova ou motor diferente; não consta da paridade. |
-| 6.1.1 | `features/search/hooks.ts` + `search-bar.tsx` | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
-| 6.1.2 | `source-results.tsx` + `extractor-template-picker.tsx` | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
+| 6.1.1 | `features/search/hooks.ts` + `search-bar.tsx` | Feito — busca/cadastro C40 | Nome/URL, metadados, seleção de fontes, capítulo inicial, duplicatas e erro parcial; integração de navegação em C44, correção de IDs em C41. |
+| 6.1.2 | `source-results.tsx` + `extractor-template-picker.tsx` | Feito — busca/cadastro C40 | Nome/URL, metadados, seleção de fontes, capítulo inicial, duplicatas e erro parcial; integração de navegação em C44, correção de IDs em C41. |
 | 6.1.3 | `generic-source-form.tsx` com schema Zod completo | Fora de escopo | Capacidade nova ou motor diferente; não consta da paridade. |
-| 6.1.4 | Fluxo identificação: URL → /sources/identify → formulário pré-preenchido com template | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
+| 6.1.4 | Fluxo identificação: URL → /sources/identify → formulário pré-preenchido com template | Feito — busca/cadastro C40 | Nome/URL, metadados, seleção de fontes, capítulo inicial, duplicatas e erro parcial; integração de navegação em C44, correção de IDs em C41. |
 | 6.2.1 | `library/novel-card.tsx` + `library-list.tsx` (paginação infinita) | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
 | 6.2.2 | `novel-detail/source-list.tsx` (exibe SourceHealthScore por fonte) | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
 | 6.2.3 | `progress-controls.tsx` + `reading-prefs.tsx` (target_language por obra) | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |

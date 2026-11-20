@@ -1,10 +1,10 @@
 # Progresso
 
 - Atualizado: 2026-11-20.
-- Fase atual: Fase 3 — bloco F5 (C32–C39) concluído. Parar no portão para aprovação de F6; não iniciar C40 sem aprovação explícita.
-- Último commit: C39, commit que contém este registro; predecessor 0332263 (C38). Fechamento marcado por `fase-3-f5`. Base F4: 44313b1, tag `fase-3-f4`. Histórico aprovado preservado, sem push.
-- Próximo item: C40, busca por nome/URL, somente após aprovação de F6. F6 tem seis commits C40–C45, seguidos pelo portão da Fase 4 — validação final C46.
-- Autorização: análise/plano em ADR-003, F3 em ADR-006, F4 em ADR-007 e fechamento F4/avanço F5 em ADR-008. Docker local descartável somente para testes aprovado em ADR-005. Sem aprovação para F6, push, deploy ou importação pessoal. Licença pública ainda não escolhida.
+- Fase atual: Fase 3 — bloco F5 concluído; F6 autorizado em ADR-009. Executar C40–C45 com visual simples e consistente, sem funcionalidades extras. C40 concluído; próximo C41, sem nova aprovação necessária.
+- Último commit: C40, commit que contém este registro; predecessor c0b81aa (C39). Fechamento marcado por `fase-3-f5`. Base F4: 44313b1, tag `fase-3-f4`. Histórico aprovado preservado, sem push.
+- Próximo item: C41, correção dos IDs RoyalRoad, já autorizado. F6 tem seis commits C40–C45, seguidos pelo portão da Fase 4 — validação final C46.
+- Autorização: análise/plano em ADR-003, F3 em ADR-006, F4 em ADR-007 e fechamento F4/avanço F5 em ADR-008. Docker local descartável somente para testes aprovado em ADR-005. F6 aprovado em ADR-009; sem aprovação para push, deploy ou importação pessoal. Licença pública ainda não escolhida.
 
 ## Entregas F5
 
@@ -39,7 +39,7 @@ Na raiz, executar `yarn workspace @voxnovel/mobile reader:harness` e abrir o QR 
 - Providers externos têm testes determinísticos, sem certificação dos layouts/desafios atuais. Avaliar esses limites antes da validação final.
 - S2: prebuild Android concluído em F1; assembleDebug executou 63 tarefas antes de falhar no acesso a Maven por resolução de rede (ADR-004). Sem APK novo validado; iOS nativo requer ambiente Apple. Hermes/testes simulados não substituem compilação nativa e execução física.
 - Importação pessoal não executada. Arquivos antigos sem fonte comprovada ficam preservados, sem atribuição automática; C45 oferecerá dry-run com dados sintéticos antes de qualquer operação pessoal autorizada.
-- Licença pública ainda aberta. Próxima decisão obrigatória: aprovação de F6 após revisar o fechamento F5.
+- Licença pública ainda aberta. Próximo portão: aprovação da Fase 4 após fechar F6.
 
 ## Continuidade e ambiente
 
@@ -48,3 +48,5 @@ Na raiz, executar `yarn workspace @voxnovel/mobile reader:harness` e abrir o QR 
 - Arquivos de capítulos novos: downloads/{novelId}/sources/{sourceId}/cap_{n}.json com envelope `{ cap, texto }`; biblioteca `{ obras, salvoEm }`. Arquivos antigos preservados; nenhuma alteração em _legacy, que permanece somente leitura e ignorado.
 - Stack Supabase local descartável de testes em .private/voxnovel-f3-supabase; somente banco/Storage locais, nenhum projeto remoto alterado e nenhuma chave exposta no mobile. RLS/ACL/advisors auditados em F3 sem achados. Backend executável conforme API.md; nenhum dado pessoal importado.
 - Checklist P01–P35 ainda não certificado na Fase 4. Ao receber aprovação de F6, executar C40–C45, suíte completa, documentos/tag/log e parar para aprovação da validação final.
+
+- Gate C40: 170 testes backend com dez integrações reais, 208 mobile, 20 casos de lint, ESLint/tsc/Ruff/mypy/arquitetura/compileall, Hermes Android/iOS e Gitleaks aprovados. Teste de interface repetido após timeout durante espera de disco; limite do fluxo ajustado para 60s, sem remover cenários. Busca/cadastro ainda serão ligados à navegação principal em C44.

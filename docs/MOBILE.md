@@ -329,3 +329,14 @@ capítulos sintéticos; não usa backend, Supabase, dados pessoais ou tradução
 O harness não certifica as fontes/tradução externas nem a navegação principal,
 que será integrada em F6. A fala usa o motor nativo real do aparelho. Nenhum
 servidor Expo é deixado aberto pelo agente após os checks de exportação.
+
+## Busca e cadastro (C40)
+
+A busca aceita nome ou URL, exibe metadados e permite selecionar fontes em ordem.
+O capítulo inicial passa por schema e pelo limite conhecido. A normalização de
+slug preserva a detecção observada de duplicatas, com abertura da obra existente
+ou adição de fonte de outro provider. Uma fonte extra que falha mantém a obra
+salva recuperável e apresenta o erro, sem reenviar automaticamente o cadastro.
+As solicitações são queries/mutations disparadas por eventos; não há fetch em
+useEffect. As telas usam uma base visual simples compartilhada, sem novas deps.
+A entrada pela navegação principal será conectada em C44.

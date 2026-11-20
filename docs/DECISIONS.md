@@ -67,3 +67,10 @@ As escolhas de implementação, divisão de commits e tags constam de PLANO_COMM
 - Evidência: relato de sucesso no POCO X5, voz pt-br-x-ptd-local (Enhanced), para os controles, avanço ao capítulo 2, troca de app e bloqueio de tela perguntados; detalhes em S1.md.
 - Decisão: aceitar essa evidência parcial para fechar F4 e executar C32–C39 (F5). Dispensar os testes físicos restantes como impedimento deste portão, mantendo-os pendentes de validação: iOS, interrupções, voz sem rede/sem PT, saída da tela e duração de dois capítulos por condição de background/bloqueio.
 - Limites: não declarar esses cenários aprovados nem paridade completa. Versão Android/motor/ambiente de execução ainda não informados. Bloqueios reais de fonte/tradução continuam abertos; nenhuma troca de motor foi autorizada. Ao fim de F5, repetir o portão do plano. Sem autorização automática para F6, push, deploy ou importação pessoal.
+
+## ADR-009 — Autorizar F6 com foco em uso e apresentação
+
+- Data: 2026-11-20.
+- Estado: aprovado pelo dono: “Tá bom pode prosseguir”, após explicar o fechamento F5 e a integração/acabamento básico pendentes.
+- Decisão: executar C40–C45 e integrar as jornadas de paridade com visual simples e consistente, adequado para uso e demonstração. Priorizar o necessário; melhorias adicionais ficam para depois.
+- Limites: não amplia funcionalidades, não autoriza publicação/push/deploy nem importação pessoal. Tradução externa e limites físicos continuam pendentes. Ao fim de F6, suíte, documentos, tag/log e parada para aprovação da Fase 4.
