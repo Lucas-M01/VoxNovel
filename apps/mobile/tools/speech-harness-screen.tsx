@@ -1,6 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
-import { AppState, Button, Modal, Platform, SectionList, ScrollView, Switch, Text, View } from 'react-native';
+import { AppState, Modal, Platform, SectionList, ScrollView, Switch, Text, View } from 'react-native';
 import { QueryClientProvider, useMutation } from '@tanstack/react-query';
+import { Button } from '@ui/button';
+import { ErrorMessage } from '@ui/error-message';
+import { ProgressBar } from '@ui/progress-bar';
+import { OfflineNotice } from '@pattern/offline-notice';
+import { ReadingControls } from '@features/reader/reading-controls';
+import { fonts, fontSizes, themes, useReadingPreferences } from '@core/reading-preferences';
 import { createQueryClient } from '@core/queries';
 import { localStorage } from '@core/local-storage';
 import { nativeSpeech, speechSession } from '@core/native-speech';
@@ -14,6 +20,7 @@ function syntheticText(chapter: number, long: boolean) {
 }
 
 function HarnessScreen() {
+  const { preferences, update } = useReadingPreferences();
   const [status, setStatus] = useState<SpeechStatus>('stopped');
   const [chapter, setChapter] = useState(0);
   const [position, setPosition] = useState({ index: 0, total: 0 });
@@ -94,7 +101,10 @@ function HarnessScreen() {
       <Text>Este harness testa serviços. O leitor completo ainda não está disponível.</Text>
       <Text>Texto longo para background/tela bloqueada</Text>
       <Switch accessibilityLabel="Texto longo para background" value={long} onValueChange={setLong} />
-      <Button title="Preparar dois capítulos sintéticos" disabled={prepare.isPending} onPress={() => prepare.mutate()} />
+      <Button title="Preparar dois capítulos sintéticos" busy={prepare.isPending} onPress={() => prepare.mutate()} />
+      {prepare.isError ? <ErrorMessage message="Falha ao preparar dados sintéticos." onRetry={() => prepare.mutate()} /> : null}
+      <OfflineNotice mode="speech" />
+      <ProgressBar label="Progresso da fala" current={position.total ? position.index + 1 : 0} total={position.total} />
       <Text>Capítulo {chapter || '—'} · {status} · frase {position.total ? position.index + 1 : 0}/{position.total}</Text>
       <Button title="Iniciar capítulo 1" disabled={!prepare.isSuccess} onPress={() => { void playChapter(0); }} />
       <Button title={status === 'paused' ? 'Retomar' : 'Pausar'} disabled={chapter === 0 || status === 'stopped'} onPress={() => { void run(async () => { if (status === 'paused') await player.current?.resume(); else await player.current?.pause(); }); }} />
@@ -114,6 +124,11 @@ function HarnessScreen() {
         revision.current += 1;
         void run(async () => { revision.current += 1; await speechSession.stop(); player.current = null; setStatus('stopped'); log('Player descartado. Não deve haver fala posterior.'); });
       }} />
+      <ReadingControls preferences={preferences} onChange={update} />
+      <Text style={{ fontSize: fontSizes[preferences.sizeIndex] ?? 18, fontFamily: fonts[preferences.fontIndex]?.family,
+        color: themes[preferences.themeIndex]?.text, backgroundColor: themes[preferences.themeIndex]?.background }}>
+        Prévia sintética das preferências de leitura. Rolagem e imersão serão compostas no leitor em F5.
+      </Text>
       <Text accessibilityRole="header">Eventos da sessão</Text>
       <Text selectable>{events.join('\n')}</Text>
       <Modal visible={picker} onRequestClose={() => setPicker(false)}>

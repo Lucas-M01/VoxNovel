@@ -131,6 +131,29 @@ capítulo e verifica descarte. As exportações Hermes do harness Android/iOS
 foram executadas, mas a execução física continua pendente. Instruções e matriz
 de resultados ficam em S1.md. O dono foi avisado de que já pode testar no Android.
 
+## Controles e conectividade (C31)
+
+Primitivos usados no harness: ação acessível com estado ocupado/desabilitado,
+modal com fechamento pelo botão voltar, erro com tentativa explícita e barra de
+progresso limitada a 0–100. Controles de leitura expõem as opções observadas de
+tamanho/família/tema/espaçamento/largura e velocidade de rolagem, além de estado
+de controles visíveis e rolagem automática. Preferências usam Zod e estado da
+montagem, sem MMKV, Zustand ou gravação nova em disco. A composição da rolagem,
+imersão e do texto do leitor permanece em F5; o harness apresenta uma prévia.
+
+NetInfo 12.0.1 compartilha uma única inscrição nativa entre consumidores.
+Conforme o protótipo, somente `isInternetReachable === false` indica offline;
+valor desconhecido permite tentar acessar a rede. O estado alimenta o
+onlineManager do TanStack Query. Consultas de texto/biblioteca local continuam
+executando offline. Escritas têm networkMode always e retry false: uma falha
+não vira fila de sincronização de progresso para quando a conexão voltar.
+
+O aviso de falta de internet é composto nas superfícies de leitura/fala que o
+usam, com as mensagens existentes. O título inicial do produto não ganhou aviso
+ou badge novo. Testes verificam inscrição/remoção, mudanças de conectividade,
+disponibilidade local, ausência de fila de escrita offline, opções de leitura,
+preferências descartadas na desmontagem e ações acessíveis.
+
 ## Validação física S1
 
 O dono informou disponibilidade de Android físico. iOS continua pendente.
@@ -138,3 +161,15 @@ Testes simulados de callbacks ou exportação Hermes não comprovam fala em segu
 plano; essa evidência será registrada com aparelho, versão do sistema, motor,
 vozes instaladas e resultados do harness privado. A ausência de iOS não equivale
 a dispensa expressa do portão.
+
+## Limite observado no diagnóstico de tradução
+
+Em 2026-11-20, uma URL fornecida pelo dono foi verificada separadamente dos
+testes determinísticos. O adaptador protegido recebeu HTTP 403 com indicação
+de desafio; o GoogleTranslator recebeu HTTP 429 para uma frase sintética curta.
+Não foi possível certificar extração/tradução completa desse capítulo no ambiente.
+O fallback por bloco continua o contratado em P15: falha externa mantém o texto
+original. Não inferir que o problema relatado no protótipo foi corrigido, nem
+que essa é sua causa definitiva. URL e relatórios estão somente no espaço privado;
+nenhum conteúdo do capítulo foi incorporado aos testes versionados. A validação
+integrada de fontes/tradução continua pendente antes de afirmar paridade final.

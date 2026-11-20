@@ -1,6 +1,6 @@
 # Status individual dos pacotes WBS
 
-Data: 2026-11-20. Fundação, persistência e API F3 implementadas; produto ainda sem paridade final validada. Análise e plano aprovados. Estados dos blocos atualizados; pacotes compostos não contam como integralmente entregues.
+Data: 2026-11-20. Fundação, persistência, API F3 e serviços mobile F4 implementados; F4 aguarda S1 físico e o produto permanece sem paridade final validada. Análise e plano aprovados. Estados dos blocos atualizados; pacotes compostos não contam como integralmente entregues.
 
 “Não iniciado — adaptar” cobre apenas a parte de paridade descrita em ANALISE.md; não autoriza executar o pacote inteiro. “Fora de escopo” não significa funcionalidade implementada nem infra aprovada. Misturas de áudio/texto devem seguir a seção 6 da análise.
 
@@ -107,7 +107,7 @@ Data: 2026-11-20. Fundação, persistência e API F3 implementadas; produto aind
 | 4.1.3 | `queries.ts` com staleTime/gcTime por domínio | Feito — paridade adaptada | C26: queryOptions/mutationOptions tipados, provider único e invalidação após sucesso; sem repetição automática de requests. |
 | 4.1.4 | Módulos de API: novels, chapters, sources, tts, downloads, filters, glossary | Feito — paridade adaptada | C26: novels/chapters/sources/downloads/filters/settings/system com schemas de todas as respostas. Sem tts remoto/glossary/auth. |
 | 4.2.1 | `session-store.ts` (MMKV encrypted) | Fora de escopo | Capacidade nova ou motor diferente; não consta da paridade. |
-| 4.2.2 | `app-store.ts` (tema, locale, fontSize, target_language_global, storage_limit_bytes) | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
+| 4.2.2 | `app-store.ts` (tema, locale, fontSize, target_language_global, storage_limit_bytes) | Feito — preferências de sessão | C31: opções existentes de leitura com Zod/useState; sem locale EN, target_language global, storage limit, MMKV ou persistência nova. Composição do leitor em F5. |
 | 4.2.3 | `player-store.ts` (MMKV) | Feito — estado de sessão | C29: estado na instância do player; sem MMKV ou persistência nova de voz/posição por frase. |
 | 4.2.4 | `download-store.ts` (memória) | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
 | 4.3.1 | `audio-service.ts`: setupPlayer, addToQueue, resolveTrackUrl, scheduleNextChapters | Implementado — S1 físico pendente | C29/C30: expo-speech por frases e cancelamento serializado; sem TrackPlayer/áudio remoto/fila durável. Harness privado e testes de corrida/UI/exportações prontos; evidência física Android/iOS ainda ausente. |
@@ -120,8 +120,8 @@ Data: 2026-11-20. Fundação, persistência e API F3 implementadas; produto aind
 | 4.6.2 | `auth-provider.tsx` + bootstrap em `screens/_layout.tsx` | Não iniciado — adaptar | Somente bootstrap necessário; Supabase Auth/onAuthStateChange não entram. |
 | 4.6.3 | `i18n.ts` com pt-BR.json e en.json | Fora de escopo | i18n e opção de UI EN não existem. Referências offline da análise foram corrigidas para FileSystem/queries. |
 | 4.6.4 | MSW: `mocks/browser.ts` + handlers todos os domínios | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
-| 4.7.1 | Design system: button, text, input, badge, card, loading, skeleton, toast, progress-bar | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
-| 4.7.2 | Componentes extras: sheet, slider, icon, storage-indicator, chapter-status-badge | Não iniciado — adaptar | Somente controles realmente usados; storage-indicator/status-badge novos fora de escopo. |
+| 4.7.1 | Design system: button, text, input, badge, card, loading, skeleton, toast, progress-bar | Feito — controles necessários | C31: button com ocupado/desabilitado/selecionado, erro com retry e progress-bar acessível usados no harness. Não criar card/badge/skeleton/toast sem consumidores de paridade. |
+| 4.7.2 | Componentes extras: sheet, slider, icon, storage-indicator, chapter-status-badge | Feito — modal necessário | C31: Dialog e controles de preferências usados no harness; sem storage-indicator, chapter-status-badge, slider ou ícones sem uso. |
 | 5.1.1 | `features/reader/hooks.ts` (useChapter, useReaderSettings, useFilterPipeline) | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
 | 5.1.2 | `filter-pipeline.tsx` + `glossary-pipeline.tsx` (priority DESC) | Não iniciado — adaptar | Reutilizar limpeza existente; glossário eliminado do escopo, sem aplicar filtro novo. |
 | 5.1.3 | `text-renderer.tsx` (fonte, espaçamento, tema) | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |

@@ -12,7 +12,7 @@ import { keys } from '@core/keys';
 import { localStorage, type ChapterScope, type LocalStorage } from '@core/local-storage';
 
 export function createQueryClient() {
-  return new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } });
+  return new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false, networkMode: 'always' } } });
 }
 
 export function apiQueries(request: HttpResource = httpResource, storage: LocalStorage = localStorage) {

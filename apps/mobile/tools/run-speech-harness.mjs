@@ -8,7 +8,7 @@ const repository = path.resolve(mobile, '../..');
 const project = path.join(repository, '.private/voxnovel-speech-harness');
 const require = createRequire(import.meta.url);
 const dependencies = JSON.parse(await readFile(path.join(mobile, 'package.json'), 'utf8')).dependencies;
-const names = ['expo', 'expo-speech', 'expo-file-system', 'react', 'react-native', '@tanstack/react-query', 'zod'];
+const names = ['expo', 'expo-speech', 'expo-file-system', 'react', 'react-native', '@tanstack/react-query', 'zod', '@react-native-community/netinfo'];
 await mkdir(project, { recursive: true, mode: 0o700 });
 await Promise.all([
   writeFile(path.join(project, 'package.json'), JSON.stringify({

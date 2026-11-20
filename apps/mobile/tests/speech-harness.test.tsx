@@ -2,6 +2,7 @@ import { act, fireEvent, render, screen, waitFor } from '@testing-library/react-
 import { nativeSpeech } from '@core/native-speech';
 import SpeechHarness from '../tools/speech-harness-screen';
 
+jest.mock('@react-native-community/netinfo', () => jest.requireActual('@react-native-community/netinfo/jest/netinfo-mock.js'));
 jest.mock('@core/native-speech', () => {
   const { createSpeechSession } = jest.requireActual<typeof import('@core/tts-service')>('@core/tts-service');
   const driver: import('@core/tts-service').SpeechDriver = {
