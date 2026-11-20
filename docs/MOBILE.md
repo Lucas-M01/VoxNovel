@@ -348,3 +348,17 @@ na posição escolhida, em vez de tratar o número sequencial como ID do site.
 Ao colar uma URL de capítulo com lista ordenada, o capítulo inicial é o índice
 desse identificador; um ID ausente gera erro, sem abrir outro capítulo. Leitura,
 fala e downloads compartilham a mesma resolução e o cache continua por fonte.
+
+## Biblioteca (C42)
+
+A biblioteca usa capas, fonte ativa, capítulo/progresso e contagem de capítulos
+locais, mantendo a ordenação por capítulo decrescente. A última lista válida é
+salva para reabertura sem rede; o modo cache é indicado e bloqueia exclusão.
+Lista vazia salva é distinta de cache ausente. Atualização por gesto recarrega
+lista e contagens. Respostas canceladas não substituem a lista mais recente;
+gravar snapshots em sequência também protege o cache em disco.
+
+Excluir exige confirmação e resposta válida da API antes de remover a obra do
+cache. Os arquivos de capítulos permanecem preservados, como no protótipo;
+sua remoção explícita continua na tela de downloads. Testes usam biblioteca,
+URLs e arquivos sintéticos. A composição da entrada principal fica em C44.

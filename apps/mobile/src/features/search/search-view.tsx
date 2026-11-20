@@ -46,7 +46,7 @@ export function SearchView({ onOpen, request = httpResource, existing }: Props) 
     return saveSearchSelection(request, draft.selected, parsed.data, draft.existing);
   }, onSuccess: async result => {
     client.setQueryData(keys.novel(result.novel.id), result.novel);
-    await client.invalidateQueries({ queryKey: keys.novels() });
+    await Promise.all([client.invalidateQueries({ queryKey: keys.novels() }), client.invalidateQueries({ queryKey: keys.library() })]);
     if (!result.failedProviders.length) onOpen(result.novel);
   }, onError: failure => setError(failure.message) });
   const busy = search.isPending || inspect.isPending || save.isPending;

@@ -1,6 +1,7 @@
 import type { ChapterScope } from '@core/local-storage';
 
 export const keys = {
+  library: () => ['library'],
   novels: () => ['novels'],
   novel: (id: string) => ['novels', id],
   sourceSearch: (name: string) => ['sources', 'search', name],

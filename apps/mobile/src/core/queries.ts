@@ -72,7 +72,7 @@ export function apiMutations(client: QueryClient, request: HttpResource = httpRe
       },
     });
   }
-  const libraryKeys = () => [keys.novels(), keys.logs()];
+  const libraryKeys = () => [keys.novels(), keys.library(), keys.logs()];
   const filterKeys = () => [keys.filters(), ['chapters'], ['reading'], keys.logs()];
   const downloadKeys = (input: { id: string }) => [keys.downloads(input.id), keys.logs()];
   return {

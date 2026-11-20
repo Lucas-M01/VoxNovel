@@ -1,9 +1,9 @@
 # Progresso
 
 - Atualizado: 2026-11-20.
-- Fase atual: Fase 3 — bloco F5 concluído; F6 autorizado em ADR-009. Executar C40–C45 com visual simples e consistente, sem funcionalidades extras. C40–C41 concluídos; próximo C42, sem nova aprovação necessária.
-- Último commit: C41, commit que contém este registro; predecessor ac55251 (C40). Fechamento marcado por `fase-3-f5`. Base F4: 44313b1, tag `fase-3-f4`. Histórico aprovado preservado, sem push.
-- Próximo item: C42, biblioteca e cache offline, já autorizado. F6 tem seis commits C40–C45, seguidos pelo portão da Fase 4 — validação final C46.
+- Fase atual: Fase 3 — bloco F5 concluído; F6 autorizado em ADR-009. Executar C40–C45 com visual simples e consistente, sem funcionalidades extras. C40–C42 concluídos; próximo C43, sem nova aprovação necessária.
+- Último commit: C42, commit que contém este registro; predecessor e97d91f (C41). Fechamento marcado por `fase-3-f5`. Base F4: 44313b1, tag `fase-3-f4`. Histórico aprovado preservado, sem push.
+- Próximo item: C43, detalhes, fontes e progresso, já autorizado. F6 tem seis commits C40–C45, seguidos pelo portão da Fase 4 — validação final C46.
 - Autorização: análise/plano em ADR-003, F3 em ADR-006, F4 em ADR-007 e fechamento F4/avanço F5 em ADR-008. Docker local descartável somente para testes aprovado em ADR-005. F6 aprovado em ADR-009; sem aprovação para push, deploy ou importação pessoal. Licença pública ainda não escolhida.
 
 ## Entregas F5
@@ -52,3 +52,5 @@ Na raiz, executar `yarn workspace @voxnovel/mobile reader:harness` e abrir o QR 
 - Gate C40: 170 testes backend com dez integrações reais, 208 mobile, 20 casos de lint, ESLint/tsc/Ruff/mypy/arquitetura/compileall, Hermes Android/iOS e Gitleaks aprovados. Teste de interface repetido após timeout durante espera de disco; limite do fluxo ajustado para 60s, sem remover cenários. Busca/cadastro ainda serão ligados à navegação principal em C44.
 
 - Gate C41: backend 170 testes com integrações e Ruff/mypy/arquitetura passou; após corrigir campo excedente na fixture, checks mobile completos passaram com 210 testes, ESLint/20 casos/tsc, Hermes Android/iOS e Gitleaks. IDs são preservados e a URL RoyalRoad resolve o índice escolhido. Próximo C42.
+
+- Gate C42: 170 testes backend com integrações, 214 mobile, lint/20 casos/tsc/Ruff/mypy/arquitetura/compileall, Hermes Android/iOS e Gitleaks aprovados. Biblioteca offline identificada, respostas antigas descartadas e exclusão confirmada somente online; arquivos de capítulos preservados como no protótipo. C42 ainda depende da entrada principal C44 para uso no produto.
