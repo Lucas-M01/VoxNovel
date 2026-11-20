@@ -1,6 +1,10 @@
 from pydantic import Field, HttpUrl, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+DEFAULT_REGEX_TIMEOUT = 0.1
+DEFAULT_PROCESSING_MAX_CHARS = 1_000_000
+DEFAULT_SCRAPER_MAX_BYTES = 4_000_000
+
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
@@ -73,9 +77,24 @@ class Settings(BaseSettings):
     scraper_dns_timeout: float = Field(default=5, gt=0, le=30)
     scraper_request_timeout: float = Field(default=20, gt=0, le=120)
     scraper_total_timeout: float = Field(default=45, gt=0, le=180)
-    scraper_max_bytes: int = Field(default=4_000_000, ge=1024)
+    scraper_max_bytes: int = Field(default=DEFAULT_SCRAPER_MAX_BYTES, ge=1024)
     scraper_max_redirects: int = Field(default=5, ge=0, le=10)
     scraper_retries: int = Field(default=2, ge=0, le=3)
+
+    processing_concurrency: int = Field(default=2, ge=1, le=8)
+    processing_wait_timeout: float = Field(default=15, ge=0, le=60)
+    processing_max_chars: int = Field(
+        default=DEFAULT_PROCESSING_MAX_CHARS, ge=64, le=4_000_000
+    )
+    filter_regex_timeout: float = Field(default=DEFAULT_REGEX_TIMEOUT, gt=0, le=2)
+    filter_max_items: int = Field(default=1000, ge=1, le=5000)
+    filter_max_term_chars: int = Field(default=4096, ge=1, le=16384)
+    api_max_body_bytes: int = Field(default=1_000_000, ge=64, le=4_000_000)
+    server_concurrency_limit: int = Field(default=64, ge=4, le=256)
+    access_log: bool = False
+    persistence_timeout: int = Field(default=20, ge=1, le=120)
+    translation_total_timeout: float = Field(default=120, gt=0, le=600)
+    translation_block_output_chars: int = Field(default=20_000, ge=4500, le=100_000)
 
     app_name: str = "VoxNovel API"
     host: str = "127.0.0.1"

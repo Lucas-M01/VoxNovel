@@ -15,17 +15,19 @@ from src.repositories.models import Novel, Source
 from src.repositories.preferences import PreferencesRepository
 from src.services.chapters import ChapterService
 from src.services.downloads import DownloadService
-from src.services.logs import LogBuffer
+from src.services.logs import Event, LogBuffer
 from src.services.translation import TextTranslator
 
 
 def test_log_buffer_is_bounded_and_does_not_expose_mutable_storage() -> None:
     logs = LogBuffer()
-    for number in range(501):
-        logs.add(f"Synthetic event {number}")
+    logs.add(Event.SOURCE_ACCESS)
+    for _ in range(499):
+        logs.add(Event.CACHE_HIT)
+    logs.add(Event.TEXT_READY)
     values = logs.messages()
-    assert len(values) == 500 and values[0].endswith("event 1")
-    assert values[-1].endswith("event 500")
+    assert len(values) == 500 and values[0].endswith(Event.CACHE_HIT.value)
+    assert values[-1].endswith(Event.TEXT_READY.value)
     values.clear()
     assert len(logs.messages()) == 500
     with TestClient(create_app(Settings())) as client:

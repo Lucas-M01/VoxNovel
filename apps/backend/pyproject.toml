@@ -17,12 +17,14 @@ lxml = ">=6,<7"
 cloudscraper = "1.2.71"
 curl-cffi = ">=0.13,<1"
 deep-translator = ">=1.11,<2"
+regex = ">=2026.1,<2027"
 
 [tool.poetry.group.dev.dependencies]
 httpx = ">=0.28,<1"
 mypy = ">=1.0,<2"
 pytest = ">=8,<10"
 ruff = ">=0.14,<1"
+types-regex = "^2026.11.19.20261119"
 
 [tool.ruff]
 target-version = "py312"

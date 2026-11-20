@@ -27,7 +27,12 @@ class SupabaseTransport:
             create_client(
                 str(settings.supabase_url).rstrip("/"),
                 settings.supabase_service_key.get_secret_value(),
-                options=ClientOptions(persist_session=False, auto_refresh_token=False),
+                options=ClientOptions(
+                    persist_session=False,
+                    auto_refresh_token=False,
+                    postgrest_client_timeout=settings.persistence_timeout,
+                    storage_client_timeout=settings.persistence_timeout,
+                ),
             )
         )
 

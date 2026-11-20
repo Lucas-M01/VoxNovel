@@ -233,3 +233,29 @@ def test_expired_connection_cannot_reopen(monkeypatch: pytest.MonkeyPatch) -> No
         connection.connect()
     sock.connect.assert_not_called()
     sock.close.assert_called_once()
+
+
+def test_dns_retry_remains_bounded_and_can_recover() -> None:
+    http = SimulatedHttp([Page("", 200, {}, b"ok")], scraper_retries=2)
+    calls = [0]
+
+    def resolver(host: str, timeout: float) -> list[str]:
+        calls[0] += 1
+        if calls[0] == 1:
+            raise BusinessError("Synthetic DNS failure", status=502)
+        return ["8.8.8.8"]
+
+    http.resolver = resolver
+    assert http.get("https://public.example/").content == b"ok"
+    assert calls[0] == 2
+    failed = SimulatedHttp([], scraper_retries=2)
+    calls[0] = 0
+
+    def unavailable_dns(host: str, timeout: float) -> list[str]:
+        calls[0] += 1
+        raise BusinessError("Synthetic DNS failure", status=502)
+
+    failed.resolver = unavailable_dns
+    with pytest.raises(BusinessError):
+        failed.get("https://public.example/")
+    assert calls[0] == 3 and failed.calls == []

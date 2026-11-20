@@ -310,7 +310,13 @@ class PublicHttp:
         redirects = 0
         retries = 0
         while True:
-            parsed, addresses, remaining = self._destination(url, deadline)
+            try:
+                parsed, addresses, remaining = self._destination(url, deadline)
+            except BusinessError as exc:
+                if exc.status == 502 and retries < self.settings.scraper_retries:
+                    retries += 1
+                    continue
+                raise
             try:
                 page = self._exchange(
                     parsed,

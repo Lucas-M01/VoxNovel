@@ -8,7 +8,7 @@ from src.repositories.chapter_text import ChapterText, ChapterTextRepository
 from src.repositories.library import LibraryRepository
 from src.services.chapter_urls import pattern_url
 from src.services.chapters import ChapterService
-from src.services.logs import LogBuffer
+from src.services.logs import Event, LogBuffer
 
 
 class DownloadResult(BaseModel):
@@ -42,7 +42,7 @@ class DownloadService:
     def generate(self, novel_id: UUID, chapter: int) -> DownloadResult:
         novel = self.library.get(novel_id)
         if self.cache.exists(novel_id, chapter):
-            self.logs.add("Texto remoto já está no cache")
+            self.logs.add(Event.CACHE_HIT)
             return DownloadResult(status="cache", novel_id=novel_id, chapter=chapter)
         source = next(
             (source for source in novel.sources if source.id == novel.active_source_id),
@@ -59,7 +59,7 @@ class DownloadService:
         assert url is not None
         text = self.chapters.text(url, chapter, require_content=True, resolved=True)
         self.cache.save(novel_id, ChapterText(chapter=chapter, text=text.text))
-        self.logs.add("Texto remoto salvo")
+        self.logs.add(Event.CACHE_SAVED)
         return DownloadResult(status="ok", novel_id=novel_id, chapter=chapter)
 
     def list_chapters(self, novel_id: UUID) -> DownloadList:
@@ -82,7 +82,7 @@ class DownloadService:
             raise BusinessError(
                 "Chapter is not downloaded.", status=404, title="Not Found"
             )
-        self.logs.add("Texto remoto removido")
+        self.logs.add(Event.CACHE_REMOVED)
         return RemovedPaths(removed=paths)
 
     def remove_novel(self, novel_id: UUID) -> RemovedPaths:

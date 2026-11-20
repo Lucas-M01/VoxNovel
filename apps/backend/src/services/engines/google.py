@@ -18,11 +18,18 @@ class GoogleEngine:
     def __init__(self, settings: Settings):
         self.settings = settings
 
-    def translate(self, text: str) -> str | None:
-        deadline = time.monotonic() + self.settings.translation_timeout
+    def translate(self, text: str, *, timeout: float | None = None) -> str | None:
+        budget = (
+            min(self.settings.translation_timeout, timeout)
+            if timeout is not None
+            else self.settings.translation_timeout
+        )
+        if budget <= 0:
+            raise unavailable()
+        deadline = time.monotonic() + budget
         # Upstream exposes no injected HTTP client. Only this module binding is
         # changed, under a lock; the requests module itself is never patched.
-        if not GOOGLE_LOCK.acquire(timeout=self.settings.translation_timeout):
+        if not GOOGLE_LOCK.acquire(timeout=budget):
             raise unavailable()
         previous = google.requests
         try:

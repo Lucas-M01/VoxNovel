@@ -9,6 +9,7 @@ from slugify import slugify
 from src.adapters.http import Page, parse_url
 from src.core.config import Settings
 from src.core.exceptions import BusinessError
+from src.services.limits import ProcessingLimit
 
 
 class Fetcher(Protocol):
@@ -64,7 +65,10 @@ def page_exists(soup: BeautifulSoup) -> bool:
 
 
 class MetadataService:
-    def __init__(self, http: Fetcher, settings: Settings):
+    def __init__(
+        self, http: Fetcher, settings: Settings, limit: ProcessingLimit | None = None
+    ):
+        self.limit = limit if limit is not None else ProcessingLimit(settings)
         self.http = http
         self.settings = settings
 
@@ -226,7 +230,7 @@ class MetadataService:
         result.total_chapters = max(numbers) if numbers and max(numbers) > 0 else None
         return result
 
-    def identify(self, url: str) -> SourceMetadata:
+    def _identify(self, url: str) -> SourceMetadata:
         host = (parse_url(url).hostname or "").lower().rstrip(".").removeprefix("www.")
         for base, parser in (
             (self.settings.freewebnovel_base, self.freewebnovel),
@@ -238,7 +242,7 @@ class MetadataService:
                 return parser(url)
         return self.generic(url)
 
-    def search(self, name: str) -> list[SourceMetadata]:
+    def _search(self, name: str) -> list[SourceMetadata]:
         slug = slugify(name)
         if not slug:
             raise BusinessError("Search name cannot be empty.")
@@ -254,3 +258,11 @@ class MetadataService:
             except BusinessError:
                 continue
         return results
+
+    def identify(self, url: str) -> SourceMetadata:
+        with self.limit.slot():
+            return self._identify(url)
+
+    def search(self, name: str) -> list[SourceMetadata]:
+        with self.limit.slot():
+            return self._search(name)

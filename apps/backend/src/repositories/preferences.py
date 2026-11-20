@@ -65,6 +65,16 @@ class PreferencesRepository:
         )
 
     def save_filters(self, filters: Filters) -> FilterState:
+        values = filters.words + filters.phrases + filters.regex
+        if len(values) > self.settings.filter_max_items or any(
+            len(value) > self.settings.filter_max_term_chars for value in values
+        ):
+            raise BusinessError("Filter configuration exceeds its size limit.")
+        for pattern in filters.regex:
+            try:
+                re.compile(pattern)
+            except re.error as exc:
+                raise BusinessError("Invalid regular expression.") from exc
         self.transport.send(
             Operation(
                 "filters",
@@ -83,6 +93,8 @@ class PreferencesRepository:
 
     def add_filter(self, kind: FilterKind, value: str) -> FilterState:
         value = value.strip()
+        if len(value) > self.settings.filter_max_term_chars:
+            raise BusinessError("Filter exceeds its size limit.")
         if not value:
             raise BusinessError("Filter cannot be empty.")
         if kind == "regex":

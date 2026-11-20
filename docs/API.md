@@ -1,10 +1,16 @@
-# API local em construção — F3
+# API local — F3
 
-C21 disponibiliza biblioteca, fontes, progresso, identificação/busca e utilitários de URL em `/api/v1`. Não há ainda interface funcional de leitura no Expo. As rotas seguintes entram nos commits restantes de F3. Use somente dados sintéticos na stack descartável; projetos pessoais não são bancos de teste.
+F3 disponibiliza biblioteca, fontes, progresso, identificação/busca, texto, filtros, velocidade, cache remoto e logs em `/api/v1`. A interface funcional de leitura no Expo permanece nos blocos mobile. Use somente dados sintéticos na stack descartável; projetos pessoais não são bancos de teste.
 
 ## Rodar com a stack descartável já iniciada
 
-Na raiz do repositório, defina STACK_DIR como o diretório privado da stack local saudável. As migrations de biblioteca e preferências devem estar aplicadas. O comando consulta apenas status local, valida loopback e passa credenciais por ambiente sem imprimi-las:
+Nesta sessão, a configuração de teste foi preservada em um diretório ignorado pelo git. Na raiz do repositório:
+
+```sh
+export STACK_DIR="$PWD/.private/voxnovel-f3-supabase"
+```
+
+A stack local deve estar saudável. As migrations de biblioteca e preferências devem estar aplicadas. O comando consulta apenas status local, valida loopback e passa credenciais por ambiente sem imprimi-las:
 
 ```sh
 python3 - "$STACK_DIR" <<'PY'
@@ -70,3 +76,11 @@ Se a API já estava aberta antes de novos commits, reinicie o processo para carr
 - GET `/api/v1/logs`: últimas 500 mensagens de processo em memória; GET `/api/v1/status`: disponibilidade da API, sem probe Redis ou observabilidade comercial.
 
 A integração cria seu próprio bucket privado aleatório e o remove ao final. O bucket de uso manual deve ser criado privadamente, aceitando application/json, e indicado por VOXNOVEL_SUPABASE_TEXT_BUCKET. Os arquivos conservam cap/texto no Storage; a API de leitura retorna chapter/text. Não há migração de dados pessoais. C24 preserva IDs reais em URLs RoyalRoad já resolvidas. Na geração remota, chapter é o índice sequencial (base 1) e chapter_ids fornece o ID real; o arquivo de cache continua identificado pelo índice lógico. Fontes sem IDs usam seu padrão sequencial.
+
+## Limites de C25 e evidência do bloco
+
+A API padrão usa bind local, CORS explícito, processamento concorrente limitado e prazo de espera. Sobrecarga retorna indisponibilidade; o status permanece independente do processamento de conteúdo. Corpos grandes retornam 413. Texto/normalização, quantidade/tamanho de filtros, regex, persistência e tradução têm limites em core/config.py e .env.example. Access log de query strings fica desativado por padrão; falhas inesperadas retornam erro genérico e somente eventos fixos entram no buffer.
+
+F3 foi verificado com banco/Storage locais reais e corpus sintético para fontes/tradução. Isso não certifica layouts atuais de sites nem sucesso em qualquer desafio Cloudflare. A validação final de paridade e testes físicos de voz permanecem nas fases posteriores. Não há APK novo validado neste bloco.
+
+A stack local pode permanecer ativa para teste manual. Para encerrá-la, consulte `npx --yes supabase@3 stop --help` e use `--workdir "$STACK_DIR"` com o project-id daquela stack. Preserve os volumes e evite --all/--no-backup para não afetar outras instâncias ou apagar dados.

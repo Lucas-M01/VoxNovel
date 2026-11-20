@@ -12,5 +12,5 @@ def logs(context: Context) -> LogResult:
 
 
 @router.get("/status")
-def status() -> ApiStatus:
+async def status() -> ApiStatus:
     return ApiStatus()

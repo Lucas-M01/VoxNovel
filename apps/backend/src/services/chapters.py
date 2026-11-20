@@ -5,7 +5,8 @@ from src.core.exceptions import BusinessError
 from src.repositories.preferences import PreferencesRepository
 from src.services.chapter_urls import resolved_chapter_url
 from src.services.content import apply_filters, extract_chapter
-from src.services.logs import LogBuffer
+from src.services.limits import ProcessingLimit
+from src.services.logs import Event, LogBuffer
 from src.services.providers import Fetcher
 from src.services.translation import TextTranslator
 
@@ -25,14 +26,16 @@ class ChapterService:
         logs: LogBuffer | None = None,
         *,
         settings: Settings | None = None,
+        limit: ProcessingLimit | None = None,
     ):
         self.settings = settings if settings is not None else get_settings()
+        self.limit = limit if limit is not None else ProcessingLimit(self.settings)
         self.http = http
         self.preferences = preferences
         self.translator = translator
         self.logs = logs
 
-    def text(
+    def _text(
         self,
         url: str,
         chapter: int,
@@ -50,9 +53,13 @@ class ChapterService:
             )
         )
         if self.logs:
-            self.logs.add("Acessando fonte")
+            self.logs.add(Event.SOURCE_ACCESS)
         try:
-            extracted = extract_chapter(self.http.get(target).content)
+            extracted = extract_chapter(
+                self.http.get(target).content,
+                max_chars=self.settings.processing_max_chars,
+                max_bytes=self.settings.scraper_max_bytes,
+            )
             if require_content and not extracted:
                 raise BusinessError(
                     "The source chapter has no content.",
@@ -60,17 +67,35 @@ class ChapterService:
                     title="Source unavailable",
                 )
             if self.logs:
-                self.logs.add("Aplicando filtros globais")
-            filtered = apply_filters(extracted, self.preferences.filters())
+                self.logs.add(Event.FILTERS_APPLY)
+            filtered = apply_filters(
+                extracted,
+                self.preferences.filters(),
+                timeout=self.settings.filter_regex_timeout,
+                max_chars=self.settings.processing_max_chars,
+            )
             if self.logs:
-                self.logs.add("Traduzindo capítulo")
+                self.logs.add(Event.TRANSLATION_START)
             result = ChapterResult(
                 url=target, chapter=chapter, text=self.translator.translate(filtered)
             )
             if self.logs:
-                self.logs.add("Texto pronto")
+                self.logs.add(Event.TEXT_READY)
             return result
         except Exception:
             if self.logs:
-                self.logs.add("Falha ao processar capítulo")
+                self.logs.add(Event.CHAPTER_FAILURE)
             raise
+
+    def text(
+        self,
+        url: str,
+        chapter: int,
+        *,
+        require_content: bool = False,
+        resolved: bool = False,
+    ) -> ChapterResult:
+        with self.limit.slot():
+            return self._text(
+                url, chapter, require_content=require_content, resolved=resolved
+            )

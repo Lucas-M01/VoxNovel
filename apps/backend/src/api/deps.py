@@ -12,6 +12,7 @@ from src.repositories.library import LibraryRepository
 from src.repositories.preferences import PreferencesRepository
 from src.services.chapters import ChapterService
 from src.services.downloads import DownloadService
+from src.services.limits import ProcessingLimit
 from src.services.logs import LogBuffer
 from src.services.providers import MetadataService
 from src.services.translation import TextTranslator
@@ -21,6 +22,7 @@ class Resources:
     def __init__(self, settings: Settings):
         self.settings = settings
         self.logs = LogBuffer()
+        self.limit = ProcessingLimit(settings)
         self._transport: SupabaseTransport | None = None
         self._lock = Lock()
 
@@ -46,7 +48,9 @@ def library(context: Context) -> LibraryRepository:
 
 
 def metadata(context: Context) -> MetadataService:
-    return MetadataService(ProviderHttp(context.settings), context.settings)
+    return MetadataService(
+        ProviderHttp(context.settings), context.settings, context.limit
+    )
 
 
 Library = Annotated[LibraryRepository, Depends(library)]
@@ -64,6 +68,7 @@ def chapters(context: Context) -> ChapterService:
         TextTranslator(context.settings),
         context.logs,
         settings=context.settings,
+        limit=context.limit,
     )
 
 

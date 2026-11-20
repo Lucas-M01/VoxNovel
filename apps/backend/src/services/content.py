@@ -1,11 +1,19 @@
 """Chapter extraction and the shared, observable cleaning stages."""
 
 import re
+import time
 import unicodedata
 from functools import lru_cache
 
+import regex
 from bs4 import BeautifulSoup
 
+from src.core.config import (
+    DEFAULT_PROCESSING_MAX_CHARS,
+    DEFAULT_REGEX_TIMEOUT,
+    DEFAULT_SCRAPER_MAX_BYTES,
+)
+from src.core.exceptions import BusinessError
 from src.repositories.preferences import Filters
 
 CHAPTER_TITLE = re.compile(r"(?:cap[ií]tulo|chapter)\s+\d+", re.I)
@@ -58,8 +66,12 @@ def normalize_homoglyphs(text: str) -> str:
     )
 
 
-def remove_watermarks(text: str) -> str:
+def remove_watermarks(
+    text: str, *, max_chars: int = DEFAULT_PROCESSING_MAX_CHARS
+) -> str:
+    check_text_size(text, max_chars)
     text = unicodedata.normalize("NFKC", text)
+    check_text_size(text, max_chars)
     lowered = text.lower()
     removed = bytearray(len(text))
     for domain in WATERMARKS:
@@ -80,11 +92,11 @@ def remove_watermarks(text: str) -> str:
     return re.sub(r"[ \t]+\n", "\n", re.sub(r"[ \t]{2,}", " ", result))
 
 
-def clean_chapter(text: str) -> str:
+def clean_chapter(text: str, *, max_chars: int = DEFAULT_PROCESSING_MAX_CHARS) -> str:
     result: list[str] = []
     title: str | None = None
     previous: str | None = None
-    for line in remove_watermarks(text).splitlines():
+    for line in remove_watermarks(text, max_chars=max_chars).splitlines():
         line = line.strip()
         if not line:
             continue
@@ -103,7 +115,21 @@ def clean_chapter(text: str) -> str:
     return "\n\n".join(result)
 
 
-def apply_filters(text: str, filters: Filters) -> str:
+def check_text_size(text: str, maximum: int) -> None:
+    if len(text) > maximum:
+        raise BusinessError(
+            "The chapter is too large.", status=502, title="Source unavailable"
+        )
+
+
+def apply_filters(
+    text: str,
+    filters: Filters,
+    *,
+    timeout: float = DEFAULT_REGEX_TIMEOUT,
+    max_chars: int = DEFAULT_PROCESSING_MAX_CHARS,
+) -> str:
+    check_text_size(text, max_chars)
     normalized = normalize_homoglyphs(text)
     terms = [term.lower() for term in filters.words + filters.phrases]
     filtered = "\n".join(
@@ -111,16 +137,34 @@ def apply_filters(text: str, filters: Filters) -> str:
         for line in normalized.splitlines()
         if not any(term in line.lower() for term in terms)
     )
+    deadline = time.monotonic() + timeout
     for pattern in filters.regex:
         try:
-            filtered = re.sub(pattern, "", filtered, flags=re.I)
-        except re.error:
+            re.compile(pattern, re.I)
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise TimeoutError()
+            filtered = regex.sub(
+                pattern, "", filtered, flags=regex.I | regex.V0, timeout=remaining
+            )
+        except (re.error, regex.error):
             # Previously saved invalid patterns never prevent reading.
             continue
-    return clean_chapter(filtered).strip()
+        except TimeoutError as exc:
+            raise BusinessError("A filter exceeded its processing budget.") from exc
+    return clean_chapter(filtered, max_chars=max_chars).strip()
 
 
-def extract_chapter(html: bytes) -> str:
+def extract_chapter(
+    html: bytes,
+    *,
+    max_chars: int = DEFAULT_PROCESSING_MAX_CHARS,
+    max_bytes: int = DEFAULT_SCRAPER_MAX_BYTES,
+) -> str:
+    if len(html) > max_bytes:
+        raise BusinessError(
+            "The source response is too large.", status=502, title="Source unavailable"
+        )
     soup = BeautifulSoup(html, "lxml")
     for element in soup.select(
         "script,style,nav,footer,header,aside,form,button,iframe,noscript"
@@ -166,11 +210,14 @@ def extract_chapter(html: bytes) -> str:
         or soup.body
     )
     if root is None:
-        return clean_chapter(soup.get_text("\n\n", strip=True))
+        return clean_chapter(soup.get_text("\n\n", strip=True), max_chars=max_chars)
     paragraphs = root.find_all("p")
     pieces = ([title] if title else []) + (
         [paragraph.get_text(" ", strip=True) for paragraph in paragraphs]
         if paragraphs
         else root.get_text("\n\n", strip=True).split("\n\n")
     )
-    return clean_chapter("\n".join(piece.strip() for piece in pieces if piece.strip()))
+    return clean_chapter(
+        "\n".join(piece.strip() for piece in pieces if piece.strip()),
+        max_chars=max_chars,
+    )

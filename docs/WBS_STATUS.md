@@ -1,6 +1,6 @@
 # Status individual dos pacotes WBS
 
-Data: 2026-11-18. Fundação e persistência F2 implementadas; produto ainda sem paridade final validada. Análise e plano aprovados. Estados dos blocos atualizados; pacotes compostos não contam como integralmente entregues.
+Data: 2026-11-20. Fundação, persistência e API F3 implementadas; produto ainda sem paridade final validada. Análise e plano aprovados. Estados dos blocos atualizados; pacotes compostos não contam como integralmente entregues.
 
 “Não iniciado — adaptar” cobre apenas a parte de paridade descrita em ANALISE.md; não autoriza executar o pacote inteiro. “Fora de escopo” não significa funcionalidade implementada nem infra aprovada. Misturas de áudio/texto devem seguir a seção 6 da análise.
 
@@ -61,47 +61,47 @@ Data: 2026-11-18. Fundação e persistência F2 implementadas; produto ainda sem
 | 2.5.1 | SOLO_MODE bootstrap (criar usuário padrão automaticamente) | Fora de escopo | Capacidade nova ou motor diferente; não consta da paridade. |
 | 3.1.1 | `src/core/security.py` (SOLO_MODE bypass em `get_current_user`) | Fora de escopo | Capacidade nova ou motor diferente; não consta da paridade. |
 | 3.1.2 | `src/api/v1/auth.py` (POST /login, POST /refresh) | Eliminado (v2.1) | Auth próprio substituído no adendo; login também fora da paridade. |
-| 3.1.3 | `src/api/deps.py` (get_session, get_current_user com SOLO_MODE, get_engines) | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
-| 3.2.1 | `text_pipeline/pipeline.py` com `TextPipeline` e `PipelineStage` | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
-| 3.2.2 | `stages/html_cleaner.py` | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
-| 3.2.3 | `stages/global_filters.py` (Discord, Patreon, links, TL Notes) | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
+| 3.1.3 | `src/api/deps.py` (get_session, get_current_user com SOLO_MODE, get_engines) | Feito — paridade adaptada | C21: Resources/Depends usados, sem auth, usuário Solo ou camada de sessão fictícia. |
+| 3.2.1 | `text_pipeline/pipeline.py` com `TextPipeline` e `PipelineStage` | Feito — paridade adaptada | C16/C22: composição extração → limpeza/filtros → tradução em serviços usados; sem framework de stages vazio. |
+| 3.2.2 | `stages/html_cleaner.py` | Feito — paridade adaptada | C16: heurística HTML e limpeza compartilhada; corpus sintético e preservação de acentos. |
+| 3.2.3 | `stages/global_filters.py` (Discord, Patreon, links, TL Notes) | Feito — paridade adaptada | C16/C22/C25: filtros globais existentes, listas vazias, validação e timeout efetivo; sem filtros por obra. |
 | 3.2.4 | `stages/novel_filters.py` | Fora de escopo | Capacidade nova ou motor diferente; não consta da paridade. |
 | 3.2.5 | `stages/glossary_replacer.py` (priority DESC, `\b` word boundary) | Fora de escopo | Capacidade nova ou motor diferente; não consta da paridade. |
-| 3.3.1 | `scraper/base.py` com `ScraperAdapter` ABC | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
-| 3.3.2 | `user_agents.py` + `session_store.py` | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
+| 3.3.1 | `scraper/base.py` com `ScraperAdapter` ABC | Feito — paridade adaptada | C15/C19: Fetcher/PublicHttp com DNS validado, connect numérico e URLs existentes. |
+| 3.3.2 | `user_agents.py` + `session_store.py` | Feito — paridade adaptada | C15/C18: somente headers/sessões necessários, com cookies e limites; sem store persistente novo. |
 | 3.3.3 | `extractor_templates.py` (madara, novelbin, royalroad_clone, wordpress_generic) | Fora de escopo | Templates e seletor manual não existem no fluxo fornecido. |
-| 3.3.4 | `providers/freewebnovel.py` | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
-| 3.3.5 | `providers/novelfire.py` | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
-| 3.3.6 | `providers/royalroad.py` | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
-| 3.3.7 | `providers/generic.py` (heurísticas + templates + seletor manual) | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
-| 3.3.8 | `orchestrator.py` (seleção por URL, template, fallback por SourceHealthScore, anti-403) | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
-| 3.3.9 | Anti-403: HTTPX → User-Agent rotativo → Playwright + stealth → cookies | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
+| 3.3.4 | `providers/freewebnovel.py` | Feito — paridade adaptada | C17: metadados e busca por slug FreeWebNovel; fixtures sintéticas. |
+| 3.3.5 | `providers/novelfire.py` | Feito — paridade adaptada | C18: NovelFire, prefixos book/novel, contagem opcional e bridge JS protegida. |
+| 3.3.6 | `providers/royalroad.py` | Feito — paridade adaptada | C18/C24: RoyalRoad, IDs ordenados e preservação na leitura/download; TLS com destino fixo. |
+| 3.3.7 | `providers/generic.py` (heurísticas + templates + seletor manual) | Feito — paridade adaptada | C16/C19: heurística genérica e metadados mínimos, sem templates ou seletor manual. |
+| 3.3.8 | `orchestrator.py` (seleção por URL, template, fallback por SourceHealthScore, anti-403) | Feito — paridade adaptada | C19: seleção por hostname inteiro e fallback observado; sem score ou troca automática de fonte. |
+| 3.3.9 | Anti-403: HTTPX → User-Agent rotativo → Playwright + stealth → cookies | Feito — paridade adaptada | C15/C18/C25: SSRF em todos os transportes usados, budgets, concorrência e falhas redigidas; sem Playwright ou novas camadas pagas. |
 | 3.3.10 | Cache Redis TTL 24h como primeira camada | Fora de escopo | Capacidade nova ou motor diferente; não consta da paridade. |
-| 3.3.11 | Fixtures HTML reais por provider em `tests/unit/scrapers/fixtures/` | Não iniciado — melhoria quality | Antecipar controles/testes necessários aos módulos existentes; não criar workers ou libs só para testar a spec. |
-| 3.4.1 | `translation/base.py` Protocol `TranslationEngine` | Não iniciado — adaptar | Interface/factory para GoogleTranslator existente (P15); não trocar por MarianMT/OpenAI. |
+| 3.3.11 | Fixtures HTML reais por provider em `tests/unit/scrapers/fixtures/` | Parcial — corpus sintético | C16–C24: estruturas observadas no protótipo em fixtures sintéticas; páginas reais atuais não foram certificadas. Validação final permanece na Fase 4. |
+| 3.4.1 | `translation/base.py` Protocol `TranslationEngine` | Feito — paridade adaptada | C20: GoogleEngine e injeção por callable, auto→PT; sem MarianMT/OpenAI. |
 | 3.4.2 | `marian_engine.py` (pool de modelos, divisão por parágrafo) | Fora de escopo | Capacidade nova ou motor diferente; não consta da paridade. |
 | 3.4.3 | `openai_engine.py` (system prompt literário) | Fora de escopo | Capacidade nova ou motor diferente; não consta da paridade. |
-| 3.4.4 | `translation/factory.py` | Não iniciado — adaptar | Interface/factory para GoogleTranslator existente (P15); não trocar por MarianMT/OpenAI. |
+| 3.4.4 | `translation/factory.py` | Feito — paridade adaptada | C20: somente composição do GoogleTranslator existente, HTTP protegido e fallback por bloco. |
 | 3.4.5 | Download + validação modelos MarianMT (EN→PT, ZH→EN, JP→EN, KR→EN) | Fora de escopo | Capacidade nova ou motor diferente; não consta da paridade. |
 | 3.5.1 | `tts/base.py` Protocol `TTSEngine` | Eliminado (v2.2) | Somente áudio remoto; sem objeto no fluxo de texto + fala local. |
 | 3.5.2 | `kokoro_engine.py` | Eliminado (v2.2) | Somente áudio remoto; sem objeto no fluxo de texto + fala local. |
 | 3.5.3 | `tts/factory.py` + módulo storage (local/b2/r2) | Eliminado (v2.2) | Somente áudio remoto; sem objeto no fluxo de texto + fala local. |
 | 3.5.4 | Cache TTS: MD5 de `"{lang}:{texto}"` → verifica AudioCache → StreamingResponse | Eliminado (v2.2) | Somente áudio remoto; sem objeto no fluxo de texto + fala local. |
 | 3.6.1 | `tasks/worker.py` com WorkerSettings ARQ | Fora de escopo por padrão | Infra ausente/dispensável; exigir necessidade de paridade e decisão antes de adotar. Em 2.4.3, AudioCache eliminado (v2.2). |
-| 3.6.2 | `scrape_task.py` (scrape → pipeline → salva com content_hash e chapter_status) | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
-| 3.6.3 | `translate_task.py` (traduz N + prefetch N+1..N+K + atualiza translated_hash) | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
+| 3.6.2 | `scrape_task.py` (scrape → pipeline → salva com content_hash e chapter_status) | Feito — paridade adaptada | C16/C22: responsabilidade de scraping/limpeza entregue em serviço síncrono fora do event loop; sem task ARQ, hashes ou ChapterStatus. |
+| 3.6.3 | `translate_task.py` (traduz N + prefetch N+1..N+K + atualiza translated_hash) | Feito — paridade adaptada | C20/C22: tradução de texto existente; sem worker, hashes ou prefetch remoto novo. |
 | 3.6.4 | `tts_task.py` | Eliminado (v2.2) | Somente áudio remoto; sem objeto no fluxo de texto + fala local. |
 | 3.6.5 | `download_batch_task.py` (itera DownloadChapters; pause/resume) | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
 | 3.6.6 | `health_update_task.py` (cron diário — recalcula SourceHealthScore) | Fora de escopo | Capacidade nova ou motor diferente; não consta da paridade. |
-| 3.7.1 | Endpoints novels: GET/POST/DELETE obras, GET capítulos, GET capítulo?lang= | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
-| 3.7.2 | Endpoints sources: POST, PUT activate, POST identify (com templates) | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
+| 3.7.1 | Endpoints novels: GET/POST/DELETE obras, GET capítulos, GET capítulo?lang= | Feito — paridade adaptada | C21/C22/C24: biblioteca/progresso e texto JSON em API EN; sem áudio nem lang novo. |
+| 3.7.2 | Endpoints sources: POST, PUT activate, POST identify (com templates) | Feito — paridade adaptada | C21/C24: adicionar/trocar/remover fontes e identificação; sem templates. |
 | 3.7.3 | GET /sources/{id}/health | Fora de escopo | Capacidade nova ou motor diferente; não consta da paridade. |
 | 3.7.4 | GET /tts/{chapterId}?lang= com StreamingResponse | Eliminado (v2.2) | Somente áudio remoto; sem objeto no fluxo de texto + fala local. |
-| 3.7.5 | Endpoints downloads: POST /jobs, GET status, PUT pause/resume, DELETE, POST retry-failed | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
-| 3.7.6 | Endpoints filters: CRUD | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
+| 3.7.5 | Endpoints downloads: POST /jobs, GET status, PUT pause/resume, DELETE, POST retry-failed | Feito — paridade adaptada | C23/C24: gerar/listar/ler/remover texto por capítulo/obra; sem jobs, polling ou pause/resume remotos. |
+| 3.7.6 | Endpoints filters: CRUD | Feito — paridade adaptada | C22: filtros globais, tipos explícitos, capacidades antigas e limpar sem restaurar defaults. |
 | 3.7.7 | Endpoints glossary: GET/POST/DELETE por novelId | Fora de escopo | Capacidade nova ou motor diferente; não consta da paridade. |
-| 3.7.8 | GET /health, /health/db, /health/redis | Não iniciado — adaptar | Somente disponibilidade/configuração existente; /health/redis não exige introduzir Redis. |
-| 3.7.9 | Montar `router.py` com prefixo `/api/v1` | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
+| 3.7.8 | GET /health, /health/db, /health/redis | Feito — paridade adaptada | C23: status e últimos 500 logs em memória; sem /health/redis, métricas ou monitoramento comercial. |
+| 3.7.9 | Montar `router.py` com prefixo `/api/v1` | Feito — paridade adaptada | C21–C23: rotas tipadas sob /api/v1 com Depends e erros padronizados. |
 | 4.1.1 | `http-resource.ts` (defineApiRoute, httpResource, FriendlyError, refresh token) | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
 | 4.1.2 | `constants.ts` + `keys.ts` (com lang em chapters e tts) | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
 | 4.1.3 | `queries.ts` com staleTime/gcTime por domínio | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
@@ -154,7 +154,7 @@ Data: 2026-11-18. Fundação e persistência F2 implementadas; produto ainda sem
 
 | ID | Pacote original | Estado | Motivo/limite |
 |---|---|---|---|
-| 3.3.12 | Adicionar `providers/centralnovel.py` | Não iniciado — adaptar | CentralNovel já existe: antecipar por P04/P05, apesar do rótulo Beta. |
+| 3.3.12 | Adicionar `providers/centralnovel.py` | Feito — paridade adaptada | C17: CentralNovel existente antecipado por paridade, com busca por nome e fallback de página. |
 | 3.3.13 | Implementar API externa de scraping (ScraperAPI/ZenRows) como 5ª camada anti-403 | Fora de escopo | Beta/Launch novo; tratamento interno de falhas já existentes pode entrar como melhoria separada. |
 | 3.7.10 | GET /novels/{id}/chapters/{num}/status (retorna ChapterStatus para o mobile mostrar badge) | Fora de escopo | Beta/Launch novo; tratamento interno de falhas já existentes pode entrar como melhoria separada. |
 | 3.7.11 | PUT /novels/{id}/sources/migrate (migra progresso + downloads entre fontes com canonical_index) | Fora de escopo | Beta/Launch novo; tratamento interno de falhas já existentes pode entrar como melhoria separada. |
@@ -192,9 +192,9 @@ Data: 2026-11-18. Fundação e persistência F2 implementadas; produto ainda sem
 | 8.1.3 | Fingerprinting Sentry: SourceUnavailableError, TranslationFailedError, CloudflareBlockedError | Fora de escopo | Beta/Launch novo; tratamento interno de falhas já existentes pode entrar como melhoria separada. |
 | 8.1.4 | Instalar + configurar Sentry React Native | Fora de escopo | Beta/Launch novo; tratamento interno de falhas já existentes pode entrar como melhoria separada. |
 | 8.1.5 | Breadcrumbs: transições de tela, mudanças de capítulo, TaskQueue failures | Fora de escopo | Beta/Launch novo; tratamento interno de falhas já existentes pode entrar como melhoria separada. |
-| 8.2.1 | Testes unitários backend: repositórios, pipeline, scrapers (fixtures), templates, MarianEngine | Não iniciado — melhoria quality | Antecipar controles/testes necessários aos módulos existentes; não criar workers ou libs só para testar a spec. |
+| 8.2.1 | Testes unitários backend: repositórios, pipeline, scrapers (fixtures), templates, MarianEngine | Feito — paridade adaptada | C10–C25: testes dos repositories/serviços/providers/engine usados; sem templates ou MarianEngine fora do escopo. |
 | 8.2.2 | Testes workers: scrape_task, translate_task, download_batch, health_update (fakeredis) | Fora de escopo como pacote de workers | Nenhum ARQ/fakeredis a adicionar. Concorrência dos serviços existentes terá testes em C25/C39. |
-| 8.2.3 | Testes integração backend: endpoints com httpx.AsyncClient + banco memória | Não iniciado — melhoria quality | Antecipar controles/testes necessários aos módulos existentes; não criar workers ou libs só para testar a spec. |
+| 8.2.3 | Testes integração backend: endpoints com httpx.AsyncClient + banco memória | Feito — paridade adaptada | C11–C25: HTTP com FastAPI/TestClient e banco/Storage reais descartáveis, além de cenários sintéticos; sem depender só de mocks. |
 | 8.2.4 | Cobertura 80% em `src/services/` e `src/api/` | Não iniciado — melhoria quality | Antecipar controles/testes necessários aos módulos existentes; não criar workers ou libs só para testar a spec. |
 | 8.2.5 | Testes unitários mobile: core/ (task-queue, storage-manager, event-bus, stores) | Não iniciado — melhoria quality | Antecipar controles/testes necessários aos módulos existentes; não criar workers ou libs só para testar a spec. |
 | 8.2.6 | Testes componentes: ui/ com Testing Library RN | Não iniciado — melhoria quality | Antecipar controles/testes necessários aos módulos existentes; não criar workers ou libs só para testar a spec. |
@@ -227,7 +227,7 @@ Itens novos do v2.2 sem ID: tts-service e configuração de vozes mapeados para 
 
 ## Vínculo ao plano da Fase 2
 
-Plano aprovado em PLANO_COMMITS.md. IDs abaixo cobrem apenas a parte adaptada descrita nos respectivos commits. Demais IDs preservam a classificação individual acima; testes acompanham os módulos, sem pacote extra só para cada ferramenta. F1 e F2 entregues; F3 aguarda o próximo portão.
+Plano aprovado em PLANO_COMMITS.md. IDs abaixo cobrem apenas a parte adaptada descrita nos respectivos commits. Demais IDs preservam a classificação individual acima; testes acompanham os módulos, sem pacote extra só para cada ferramenta. F1–F3 entregues; F4 aguarda aprovação.
 
 | WBS | Commits previstos |
 |---|---|
