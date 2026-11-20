@@ -2,14 +2,14 @@ import type { ReactNode } from 'react';
 import { Modal, StyleSheet, Text, View } from 'react-native';
 import { Button } from '@ui/button';
 
-type Props = { title: string; visible: boolean; onClose: () => void; children: ReactNode };
-export function Dialog({ title, visible, onClose, children }: Props) {
+type Props = { title: string; visible: boolean; onClose: () => void; children: ReactNode; closeTitle?: string };
+export function Dialog({ title, visible, onClose, children, closeTitle = 'Fechar' }: Props) {
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <View style={styles.backdrop}><View style={styles.panel} accessibilityViewIsModal>
         <Text accessibilityRole="header" style={styles.title}>{title}</Text>
         {children}
-        <Button title="Fechar" onPress={onClose} />
+        <Button title={closeTitle} onPress={onClose} />
       </View></View>
     </Modal>
   );

@@ -259,3 +259,16 @@ parâmetro explícito recria a sessão; atualização de progresso nos metadados
 reinicia uma reprodução já aberta. Testes verificam escolha/fallback, entrada
 pelo leitor e fala/gravação somente do capítulo escolhido. Downloads usarão o
 mesmo parâmetro em C38, sem alterar progresso independente por fonte.
+
+## Filtros globais (C37)
+
+A tela usa queries/mutations com respostas validadas, sem fetch em efeitos.
+Palavra/frase/regex permanecem tipos explícitos; remover um literal de um tipo
+não remove o mesmo literal de outro. A validação de expressão usa RegExp JS como
+na tela observada e o backend continua autoridade para suas regras. Erros ficam
+visíveis sem limpar listas existentes. Termos vazios/longos são rejeitados pelo
+schema de entrada. Limpar todos exige confirmação e mantém listas realmente vazias.
+
+Mutations invalidam filtros, texto em memória e leitura ativa; não alteram os
+arquivos baixados nem criam filtros por obra/glossário. O harness do leitor oferece
+filtros sintéticos em memória, separados da configuração real do backend.

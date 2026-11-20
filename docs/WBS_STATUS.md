@@ -140,7 +140,7 @@ Data: 2026-11-20. Fundação, persistência, API F3 e serviços mobile F4 implem
 | 5.3.3 | Criar DownloadJob no WatermelonDB + POST /downloads/jobs | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
 | 5.3.4 | Polling 5s via TaskQueue + `FileSystem.createDownloadResumable` para áudio | Fora de escopo | Polling de jobs novos não entra; transferência de áudio eliminada (v2.2). Texto baixa por HTTP/FileSystem em C38/C39. |
 | 5.3.5 | EventBus DOWNLOAD_FINISHED → invalidar queries do capítulo | Não iniciado — adaptar | Atualização de queries ao concluir C38/C39; sem EventBus obrigatório. |
-| 5.4.1 | `filter-manager.tsx` (CRUD, globais + por obra) | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
+| 5.4.1 | `filter-manager.tsx` (CRUD, globais + por obra) | Feito — filtros globais | C37: palavra/frase/regex explícitos, validação da expressão, remoção exata, limpar com confirmação e listas vazias; sem glossário/filtros por obra. |
 | 5.4.2 | `glossary-manager.tsx` (CRUD com priority e enabled) | Fora de escopo | Capacidade nova ou motor diferente; não consta da paridade. |
 | 6.1.1 | `features/search/hooks.ts` + `search-bar.tsx` | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
 | 6.1.2 | `source-results.tsx` + `extractor-template-picker.tsx` | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |

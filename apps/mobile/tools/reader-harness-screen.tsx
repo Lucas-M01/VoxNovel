@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { Button, Text, View } from 'react-native';
 import { QueryClientProvider, useMutation } from '@tanstack/react-query';
-import { novelSchema } from '@core/api/schemas';
+import { z } from 'zod';
+import { filterStateSchema, novelSchema } from '@core/api/schemas';
 import { createQueryClient } from '@core/queries';
 import { createHttpResource } from '@core/http-resource';
 import { localStorage } from '@core/local-storage';
 import ReadingScreen from '@screens/reading-screen';
 import SpeechScreen from '@screens/speech-screen';
+import FiltersScreen from '@screens/filters-screen';
 import { nativeSpeech, speechSession } from '@core/native-speech';
 
 const novel = novelSchema.parse({
@@ -15,23 +17,34 @@ const novel = novelSchema.parse({
   sources: [{ id: '22222222-2222-4222-8222-222222222222', novel_id: '11111111-1111-4111-8111-111111111111', provider: 'Synthetic', title: 'Obra sintética', url_base: 'https://example.org/', chapter_url_pattern: 'https://example.org/chapter-{cap}', current_chapter: 1, updated_at: '2026-11-20T00:00:00Z' }],
 });
 const scope = { novelId: novel.id, sourceId: novel.active_source_id ?? '' };
+let filters = filterStateSchema.parse({ words: ['synthetic'], phrases: [], regex: [], updated_at: '2026-11-20T00:00:00Z' });
+const termSchema = z.object({ kind: z.enum(['words', 'phrases', 'regex']), value: z.string() });
 const request = createHttpResource({ baseUrl: () => 'https://synthetic.invalid', transport: async (_url, init) => {
+  if (_url.includes('/filters')) {
+    if (_url.endsWith('/term')) {
+      const input = termSchema.parse(JSON.parse(String(init.body)));
+      filters = { ...filters, [input.kind]: init.method === 'DELETE' ? filters[input.kind].filter(value => value !== input.value) : [...new Set([...filters[input.kind], input.value])] };
+    } else if (init.method === 'DELETE') filters = { ...filters, words: [], phrases: [], regex: [] };
+    return { ok: true, status: 200, text: async () => JSON.stringify(filters) };
+  }
   if (init.method === 'GET' && _url.endsWith('/settings')) return { ok: true, status: 200, text: async () => JSON.stringify({ speed: 1, updated_at: '2026-11-20T00:00:00Z' }) };
   if (init.method !== 'PATCH') throw new Error('No network is available in the synthetic harness');
   return { ok: true, status: 200, text: async () => JSON.stringify(novel) };
 } });
 const services = { request, storage: localStorage };
 function Harness() {
+  const [filterMode, setFilterMode] = useState(false);
   const [listen, setListen] = useState<number | null>(null);
   const prepare = useMutation({ mutationFn: async () => {
     for (const chapter of [1, 2]) await localStorage.saveChapter(scope, chapter,
       `Obra sintética - Capítulo ${chapter}: Leitura\n\n` + Array.from({ length: 30 }, (_, index) => `Parágrafo sintético ${index + 1}. Este texto local permite testar a apresentação e as preferências de leitura.\n— Este diálogo tem recuo ${index + 1}.`).join('\n'));
   } });
+  if (prepare.isSuccess && filterMode) return <View style={{ flex: 1 }}><Button title="Voltar ao leitor sintético" onPress={() => setFilterMode(false)} /><FiltersScreen request={request} /></View>;
   if (prepare.isSuccess && listen !== null) return <View style={{ flex: 1 }}>
     <Button title="Voltar ao leitor sintético" onPress={() => setListen(null)} />
     <SpeechScreen novel={novel} initialChapter={listen} services={{ ...services, driver: nativeSpeech, session: speechSession }} />
   </View>;
-  if (prepare.isSuccess) return <ReadingScreen novel={novel} services={services} onListen={setListen} />;
+  if (prepare.isSuccess) return <View style={{ flex: 1 }}><Button title="Abrir filtros sintéticos" onPress={() => setFilterMode(true)} /><ReadingScreen novel={novel} services={services} onListen={setListen} /></View>;
   return <View style={{ padding: 24 }}><Text accessibilityRole="header">Leitor sintético privado</Text>
     <Text>Texto local e progresso simulado. Fonte externa/tradução não são exercitadas por este harness.</Text>
     <Button title="Preparar e abrir leitor" disabled={prepare.isPending} onPress={() => prepare.mutate()} />
