@@ -1,4 +1,31 @@
-# Serviços mobile
+# Aplicativo mobile
+
+## Abrir o aplicativo integrado (C44)
+
+O comando normal agora abre splash, biblioteca, detalhes, busca, leitura, voz,
+filtros e downloads. O harness continua opcional para diagnóstico isolado.
+
+1. Iniciar a API conforme API.md. Para Android físico na rede local, definir
+   `VOXNOVEL_HOST=0.0.0.0` no terminal da API antes do comando de inicialização.
+2. Na raiz, copiar `apps/mobile/.env.example` para `apps/mobile/.env`, se ainda
+   não existir. Configurar `EXPO_PUBLIC_API_URL` com o endereço LAN da máquina
+   da API e a porta configurada, sem `/api/v1`. No celular, localhost é o próprio
+   celular; nunca colocar chaves Supabase nesse arquivo público do mobile.
+3. Em outro terminal, na raiz, rodar `yarn workspace @voxnovel/mobile start`.
+   Abrir o QR no Expo Go compatível com SDK 58, na mesma rede. Se um harness
+   estiver aberto, encerrar seu servidor antes para evitar conflito de porta.
+4. Adicionar obra por nome/URL, selecionar fonte e capítulo e iniciar voz.
+   Voltar à biblioteca, abrir os detalhes e testar leitura, fontes e downloads.
+   Nos downloads, abrir o capítulo escolhido em texto/voz; filtros ficam na
+   biblioteca e permanecem globais.
+
+A stack local descartável é compartilhada pelos testes automatizados: usar
+somente dados de teste nela. Uso pessoal duradouro exige um destino separado,
+configurado conforme PERSISTENCIA.md; importação pessoal não foi executada.
+As fontes e a tradução dependem de serviços externos. O caso relatado de
+tradução permanece sem sucesso real certificado; integração da interface não
+é evidência de que HTTP 403/429 foi resolvido. Sem APK novo ou iOS físico validado.
+
 
 ## Cliente da API (C26)
 
@@ -34,9 +61,8 @@ erros e payload incompatível em cada operação, além de URL encoding, valida�
 de entrada, cancelamento, timeout e comportamento do cache/mutations. Não
 certificam conectividade de um aparelho com o backend.
 
-A rota principal ainda mostra o título inicial até a composição da navegação em
-F6. Leitor, player, filtros e downloads de F5 já podem ser testados no harness
-privado descrito ao final deste guia.
+A rota principal abre a biblioteca integrada em C44. Leitor, player, filtros e
+downloads também continuam disponíveis no harness privado descrito neste guia.
 
 ## Arquivos locais (C27)
 
@@ -376,3 +402,23 @@ Respostas de alterações atualizam o cache da obra e o snapshot da biblioteca,
 cancelando leituras antigas antes de gravar. Sem rede, detalhes recuperam a obra
 da biblioteca salva e mantêm atalhos para os capítulos locais; não há fila de
 escritas offline. A integração dos atalhos com as rotas reais fica em C44.
+
+## Navegação e apresentação (C44)
+
+Sete destinos reais do Expo Router substituem a entrada de fundação. Rotas
+transportam IDs e capítulo explícito, sem serializar obras/URLs no endereço.
+Guards rejeitam parâmetros inválidos e capítulos acima do total conhecido antes
+de buscar conteúdo ou gravar progresso. O splash mantém os 1,5 segundos
+observados, com identidade visual simples e timer limpo ao desmontar.
+
+Biblioteca recarrega lista e contagens ao receber foco. Detalhes reutilizam
+snapshots offline; busca/edição de filtros exigem rede. A navegação de downloads
+preserva o capítulo selecionado tanto para texto quanto para voz. Cadastrar ou
+abrir duplicata encaminha ao player, como o destino Leitor do protótipo.
+
+A apresentação compartilha fundo escuro, cartões, tipografia nativa, campos e
+botões com contraste, área segura e cabeçalhos de navegação. Sem dependências,
+fontes remotas, imagens geradas ou funcionalidades extras para o acabamento.
+Testes montam as rotas reais com transporte/arquivos/fala sintéticos e verificam
+biblioteca→detalhe→leitura→voz→downloads→capítulo escolhido, duplicatas, filtros e
+links inválidos; não substituem a execução física com backend/fontes reais.

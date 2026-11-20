@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react-native';
-import HomeRoute from '../app/index';
+import SplashScreen from '@screens/splash-screen';
 
-test('the initial route composes an accessible application title', async () => {
-  await render(<HomeRoute />);
+test('startup presents an accessible brand before the library mounts', async () => {
+  await render(<SplashScreen />);
   expect(screen.getByRole('header', { name: 'VoxNovel' })).toBeOnTheScreen();
 });

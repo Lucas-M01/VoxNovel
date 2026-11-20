@@ -12,6 +12,6 @@ export function Button({ title, onPress, disabled = false, busy = false, selecte
   );
 }
 const styles = StyleSheet.create({
-  button: { backgroundColor: '#1E1E2E', borderRadius: 8, padding: 12, minHeight: 44, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 },
+  button: { backgroundColor: '#2B2940', borderColor: '#45415E', borderWidth: 1, borderRadius: 10, padding: 12, minHeight: 44, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 },
   selected: { backgroundColor: '#6C63FF' }, disabled: { opacity: 0.45 }, label: { color: '#FFFFFF', fontSize: 14 },
 });

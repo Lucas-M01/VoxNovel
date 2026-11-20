@@ -1,9 +1,9 @@
 # Progresso
 
 - Atualizado: 2026-11-20.
-- Fase atual: Fase 3 — bloco F5 concluído; F6 autorizado em ADR-009. Executar C40–C45 com visual simples e consistente, sem funcionalidades extras. C40–C43 concluídos; próximo C44, sem nova aprovação necessária.
-- Último commit: C43, commit que contém este registro; predecessor 0246a4d (C42). Fechamento marcado por `fase-3-f5`. Base F4: 44313b1, tag `fase-3-f4`. Histórico aprovado preservado, sem push.
-- Próximo item: C44, navegação e entrada principal do aplicativo, já autorizado. F6 tem seis commits C40–C45, seguidos pelo portão da Fase 4 — validação final C46.
+- Fase atual: Fase 3 — bloco F5 concluído; F6 autorizado em ADR-009. Executar C40–C45 com visual simples e consistente, sem funcionalidades extras. C40–C44 concluídos; próximo C45, sem nova aprovação necessária.
+- Último commit: C44, commit que contém este registro; predecessor 587f4eb (C43). Fechamento marcado por `fase-3-f5`. Base F4: 44313b1, tag `fase-3-f4`. Histórico aprovado preservado, sem push.
+- Próximo item: C45, importador privado com dry-run, já autorizado; nenhuma importação pessoal automática. F6 tem seis commits C40–C45, seguidos pelo portão da Fase 4 — validação final C46.
 - Autorização: análise/plano em ADR-003, F3 em ADR-006, F4 em ADR-007 e fechamento F4/avanço F5 em ADR-008. Docker local descartável somente para testes aprovado em ADR-005. F6 aprovado em ADR-009; sem aprovação para push, deploy ou importação pessoal. Licença pública ainda não escolhida.
 
 ## Entregas F5
@@ -23,7 +23,7 @@
 
 - Gate C39 aprovado: Ruff/format/mypy/arquitetura/compileall, 170 testes backend (dez integrações reais na stack descartável), ESLint/20 casos das regras/TypeScript strict e 203 testes mobile. Bundles Hermes Android/iOS do produto e do harness privado aprovados. Gitleaks de candidatos/histórico aprovado; conteúdo staged conferido antes do commit. Sem nova certificação física ou de fontes/tradução externas.
 - Regras React revisadas: dados por queries/mutations e eventos, sem efeitos para fetch/estado derivado; imports diretos e mensagens/controles acessíveis. Nenhuma dependência adicionada em F5.
-- F5 tem cobertura automatizada de leitura/voz/filtros/downloads e isolamento por fonte. Isso não certifica toda a jornada do produto ou paridade física final. A tela principal ainda mostra a fundação; busca/biblioteca/detalhes/navegação serão compostos em F6.
+- F5 tem cobertura automatizada de leitura/voz/filtros/downloads e isolamento por fonte. Isso não certifica toda a jornada do produto ou paridade física final. A tela principal já abre a biblioteca integrada em C44; fluxo real de fontes/tradução e hardware ainda depende da validação final.
 
 ## Teste disponível ao dono
 
@@ -56,3 +56,6 @@ Na raiz, executar `yarn workspace @voxnovel/mobile reader:harness` e abrir o QR 
 - Gate C42: 170 testes backend com integrações, 214 mobile, lint/20 casos/tsc/Ruff/mypy/arquitetura/compileall, Hermes Android/iOS e Gitleaks aprovados. Biblioteca offline identificada, respostas antigas descartadas e exclusão confirmada somente online; arquivos de capítulos preservados como no protótipo. C42 ainda depende da entrada principal C44 para uso no produto.
 
 - Gate C43: 170 testes backend com integrações, 216 mobile, lint/20 casos/tsc/Ruff/mypy/arquitetura/compileall, Hermes Android/iOS e Gitleaks aprovados. Detalhes, edição de capítulo, troca/remoção de fontes e atalhos implementados; próxima etapa é conectar a jornada em C44.
+
+- Gate C44: 170 testes backend com integrações passaram; mobile repetido após ajustes nas fixtures da jornada, com 220 testes, ESLint/20 casos/tsc, Hermes Android/iOS do produto integrado e Gitleaks aprovados. Splash e sete destinos reais conectados, IDs/capítulos guardados e capítulo explícito preservado.
+- Avisado ao dono: app principal testável por `yarn workspace @voxnovel/mobile start`, após API e EXPO_PUBLIC_API_URL configurados conforme MOBILE.md. Não confundir transporte sintético dos testes com validação externa; stack descartável somente para dados de teste. Nenhum servidor Expo/API foi iniciado ou deixado aberto pelo agente neste bloco.

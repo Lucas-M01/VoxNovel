@@ -1,6 +1,6 @@
 # Status individual dos pacotes WBS
 
-Data: 2026-11-20. Fundação, persistência, API F3 e serviços mobile F4 implementados; F4 fechado com relato Android e dispensa expressa dos limites restantes (ADR-008); F5 concluído com gate C39 aprovado (170 testes backend, 203 mobile e bundles Android/iOS); F6 autorizado em ADR-009, produto sem paridade final validada. Análise e plano aprovados. Estados dos blocos atualizados; pacotes compostos não contam como integralmente entregues.
+Data: 2026-11-20. Fundação, persistência, API F3 e serviços mobile F4 implementados; F4 fechado com relato Android e dispensa expressa dos limites restantes (ADR-008); F5 concluído com gate C39 aprovado (170 testes backend, 203 mobile e bundles Android/iOS); F6 autorizado em ADR-009, C40–C44 concluídos e C45 pendente; produto sem paridade final validada. Análise e plano aprovados. Estados dos blocos atualizados; pacotes compostos não contam como integralmente entregues.
 
 “Não iniciado — adaptar” cobre apenas a parte de paridade descrita em ANALISE.md; não autoriza executar o pacote inteiro. “Fora de escopo” não significa funcionalidade implementada nem infra aprovada. Misturas de áudio/texto devem seguir a seção 6 da análise.
 
@@ -31,7 +31,7 @@ Data: 2026-11-20. Fundação, persistência, API F3 e serviços mobile F4 implem
 | 1.4.8 | Instalar react-native-track-player + configurar serviço nativo | Eliminado (v2.2) | Somente áudio remoto; sem objeto no fluxo de texto + fala local. |
 | 1.4.9 | Instalar expo-background-fetch, expo-task-manager, expo-file-system | Feito — somente FileSystem | C27: biblioteca offline e arquivos de texto persistentes com validação e testes de IO. Sem background-fetch/task-manager; C28 isola arquivos por fonte e preserva os antigos. |
 | 1.4.10 | Criar estrutura de pastas `src/core/`, `ui/`, `pattern/`, `features/`, `screens/` | Feito — fundação adaptada | C01–C08; evidências em FUNDACAO.md. Somente base e camadas usadas, sem funções extras da WBS. |
-| 1.4.11 | Configurar Expo Router + layouts base | Parcial — base feita | C07: Router e entrada mínima; jornada P01 completa permanece em C44. |
+| 1.4.11 | Configurar Expo Router + layouts base | Feito — navegação C44 | Splash e sete destinos reais, guards e jornadas de leitura/voz/downloads, parâmetros por ID e capítulo explícito. Sem telas de debug. |
 | 2.1.1 | Criar `src/database/connection.py` (engine + session, SQLite/PostgreSQL compatível) | Feito — paridade adaptada | C11: SDK Supabase no adaptador; sem SQLAlchemy/SQLite. ADR-001/005 e PERSISTENCIA.md. |
 | 2.1.2 | Modelo `User` | Fora de escopo | Capacidade nova ou motor diferente; não consta da paridade. |
 | 2.1.3 | Modelo `Obra` (incl. `idioma_original`, `canonical_base_index`) | Feito — paridade adaptada | C10: contrato Novel e fontes; somente campos observados na paridade. |

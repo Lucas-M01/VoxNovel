@@ -1,6 +1,6 @@
 # API local — F3
 
-F3 disponibiliza biblioteca, fontes, progresso, identificação/busca, texto, filtros, velocidade, cache remoto e logs em `/api/v1`. A interface funcional de leitura no Expo permanece nos blocos mobile. Use somente dados sintéticos na stack descartável; projetos pessoais não são bancos de teste.
+F3 disponibiliza biblioteca, fontes, progresso, identificação/busca, texto, filtros, velocidade, cache remoto e logs em `/api/v1`. A interface Expo integrada em F6 usa esses contratos; instruções de execução em MOBILE.md. Use somente dados sintéticos na stack descartável; projetos pessoais não são bancos de teste.
 
 ## Rodar com a stack descartável já iniciada
 
