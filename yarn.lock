@@ -3581,6 +3581,11 @@ expo-server@^58.1.0:
   resolved "https://registry.npmjs.org/expo-server/-/expo-server-58.1.0.tgz#72da3e7c4f2ed5798a635a0534ad36e78ab77792"
   integrity sha512-jo7I6uHnP5OQYKx3+7lbpdVVnOEwFj2ryDkQdauUQSwgh2HuMUkiFXWUIVe01ts6DLRoff5U0Tv+uNb3CMq/kw==
 
+expo-speech@58.0.4:
+  version "58.0.4"
+  resolved "https://registry.yarnpkg.com/expo-speech/-/expo-speech-58.0.4.tgz#8634e9c995362ac75849d13db8e40cc82c7d90bc"
+  integrity sha512-AOwi6VkWfLh4OVUlK1bpvMqTgXHVMqcb+sqBu+mHfiCp4DZpsdDC7JGJEterXz7jdF9qPFwqwrtIarA2EaDHuQ==
+
 expo-status-bar@58.0.5, expo-status-bar@^58.0.5:
   version "58.0.5"
   resolved "https://registry.npmjs.org/expo-status-bar/-/expo-status-bar-58.0.5.tgz#7889c5b559a9855235bf23cd4bef317176b99559"

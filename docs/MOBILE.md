@@ -83,6 +83,32 @@ proveniência por fonte. O fluxo de downloads mobile observado busca texto pela
 URL da fonte e grava no aparelho; não usa esse cache remoto como origem de texto
 local. Alterar o contrato remoto exige mudança própria e não está no C28 mobile.
 
+## Fala por frases (C29)
+
+`tts-service.ts` mantém posição, status e opções somente na instância do player.
+O adaptador `native-speech.ts` usa `expo-speech` 58.0.4, compatível com SDK 58.
+A segmentação preserva a regra observada: separar espaços após ponto, exclamação,
+interrogação ou reticências. Cada conclusão encadeia a próxima frase e informa
+índice/total; o término do texto é um callback para a composição futura da tela.
+
+Pause usa stop nativo, guarda a frase corrente e a retoma desde o começo.
+Alterar velocidade ou voz durante a reprodução também reinicia a frase corrente.
+O serviço permite parar, avançar/voltar e posicionar a frase, além de descartar
+os callbacks após a destruição. Não usa pause/resume nativos incompatíveis com
+Android, nem grava opções de voz ou áudio no disco.
+
+As vozes instaladas são validadas e agrupadas pelo idioma informado pelo motor,
+com PT-BR antes de PT-PT e demais variantes PT, seguido dos nomes dos idiomas.
+A escolha sugerida prioriza PT-BR, qualquer PT e a primeira voz disponível;
+sem enumeração válida, mantém a voz padrão do sistema. Isso não comprova que
+uma voz funcione sem rede: tal condição depende do motor/pacote instalado e S1.
+Erros de fala recebem mensagem fixa sem refletir diagnóstico nativo sensível.
+
+Os testes usam driver injetado para verificar sequência, progresso, callbacks,
+pausa/retomada, parada, limites de posição, configuração e agrupamento/fallback.
+A serialização completa de cancelamentos e substituição do player é C30;
+nenhum resultado de teste simulado certifica background ou tela bloqueada.
+
 ## Validação física S1
 
 O dono informou disponibilidade de Android físico. iOS continua pendente.

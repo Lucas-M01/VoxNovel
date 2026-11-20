@@ -108,10 +108,10 @@ Data: 2026-11-20. Fundação, persistência e API F3 implementadas; produto aind
 | 4.1.4 | Módulos de API: novels, chapters, sources, tts, downloads, filters, glossary | Feito — paridade adaptada | C26: novels/chapters/sources/downloads/filters/settings/system com schemas de todas as respostas. Sem tts remoto/glossary/auth. |
 | 4.2.1 | `session-store.ts` (MMKV encrypted) | Fora de escopo | Capacidade nova ou motor diferente; não consta da paridade. |
 | 4.2.2 | `app-store.ts` (tema, locale, fontSize, target_language_global, storage_limit_bytes) | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
-| 4.2.3 | `player-store.ts` (MMKV) | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
+| 4.2.3 | `player-store.ts` (MMKV) | Feito — estado de sessão | C29: estado na instância do player; sem MMKV ou persistência nova de voz/posição por frase. |
 | 4.2.4 | `download-store.ts` (memória) | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
-| 4.3.1 | `audio-service.ts`: setupPlayer, addToQueue, resolveTrackUrl, scheduleNextChapters | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
-| 4.3.2 | Emitir PLAYER_PROGRESS via `event-bus.ts` | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
+| 4.3.1 | `audio-service.ts`: setupPlayer, addToQueue, resolveTrackUrl, scheduleNextChapters | Parcial — C29 implementado | C29: expo-speech por frases, pausa simulada, opções e agrupamento de vozes; sem TrackPlayer, áudio remoto ou fila durável. Serialização e S1 em C30 pendentes. |
+| 4.3.2 | Emitir PLAYER_PROGRESS via `event-bus.ts` | Feito — callbacks de paridade | C29: callback de índice/total por frase e status/término/erro; sem EventBus sem consumidores. |
 | 4.4.1 | `task-queue.ts` com TaskType, enqueue, dequeue, priority, retryFailed | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
 | 4.4.2 | Registrar SYNC_SOURCE + UPDATE_NOVEL no expo-task-manager | Fora de escopo | Capacidade nova ou motor diferente; não consta da paridade. |
 | 4.5.1 | `storage-manager.ts`: enforceAudioLimit (LRU), calculateUsage | Eliminado (v2.2) | Somente áudio remoto; sem objeto no fluxo de texto + fala local. |
