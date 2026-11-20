@@ -1,6 +1,6 @@
 # Status individual dos pacotes WBS
 
-Data: 2026-11-20. Fundação, persistência, API F3 e serviços mobile F4 implementados; F4 fechado com relato Android e dispensa expressa dos limites restantes (ADR-008); F5 autorizado, produto sem paridade final validada. Análise e plano aprovados. Estados dos blocos atualizados; pacotes compostos não contam como integralmente entregues.
+Data: 2026-11-20. Fundação, persistência, API F3 e serviços mobile F4 implementados; F4 fechado com relato Android e dispensa expressa dos limites restantes (ADR-008); F5 concluído com gate C39 aprovado (170 testes backend, 203 mobile e bundles Android/iOS); F6 aguarda aprovação, produto sem paridade final validada. Análise e plano aprovados. Estados dos blocos atualizados; pacotes compostos não contam como integralmente entregues.
 
 “Não iniciado — adaptar” cobre apenas a parte de paridade descrita em ANALISE.md; não autoriza executar o pacote inteiro. “Fora de escopo” não significa funcionalidade implementada nem infra aprovada. Misturas de áudio/texto devem seguir a seção 6 da análise.
 
@@ -39,7 +39,7 @@ Data: 2026-11-20. Fundação, persistência, API F3 e serviços mobile F4 implem
 | 2.1.5 | Modelo `FonteHealth` (success_count, failure_count, avg_response_ms) | Fora de escopo | Capacidade nova ou motor diferente; não consta da paridade. |
 | 2.1.6 | Modelo `Capitulo` (incl. `content_hash`, `translated_hash`, `chapter_status`) | Feito — paridade adaptada | C14: valor ChapterText validado e JSON no Storage; sem tabela, hash ou chapter_status. |
 | 2.1.7 | Modelo `Progresso` | Feito — paridade adaptada | C10/C11: contrato de progresso e persistência por fonte ativa. |
-| 2.1.8 | Modelo `DownloadJob` + `DownloadChapter` | Fora de escopo | Modelos duráveis DownloadJob/DownloadChapter ausentes; faixa existente será coordenada em memória em C39. |
+| 2.1.8 | Modelo `DownloadJob` + `DownloadChapter` | Fora de escopo | Modelos duráveis DownloadJob/DownloadChapter ausentes; C39 coordena somente a faixa observada em memória. |
 | 2.1.9 | Modelo `Filtro` | Feito — paridade adaptada | C13: filtros globais singleton; listas vazias preservadas, sem escopo por obra. |
 | 2.1.10 | Modelo `AudioCache` (incl. `lang`) | Eliminado (v2.2) | Somente áudio remoto; sem objeto no fluxo de texto + fala local. |
 | 2.1.11 | Modelo `GlossaryEntry` (incl. `priority`, `enabled`) | Fora de escopo | Capacidade nova ou motor diferente; não consta da paridade. |
@@ -107,12 +107,12 @@ Data: 2026-11-20. Fundação, persistência, API F3 e serviços mobile F4 implem
 | 4.1.3 | `queries.ts` com staleTime/gcTime por domínio | Feito — paridade adaptada | C26: queryOptions/mutationOptions tipados, provider único e invalidação após sucesso; sem repetição automática de requests. |
 | 4.1.4 | Módulos de API: novels, chapters, sources, tts, downloads, filters, glossary | Feito — paridade adaptada | C26: novels/chapters/sources/downloads/filters/settings/system com schemas de todas as respostas. Sem tts remoto/glossary/auth. |
 | 4.2.1 | `session-store.ts` (MMKV encrypted) | Fora de escopo | Capacidade nova ou motor diferente; não consta da paridade. |
-| 4.2.2 | `app-store.ts` (tema, locale, fontSize, target_language_global, storage_limit_bytes) | Feito — preferências de sessão | C31: opções existentes de leitura com Zod/useState; sem locale EN, target_language global, storage limit, MMKV ou persistência nova. Composição do leitor em F5. |
+| 4.2.2 | `app-store.ts` (tema, locale, fontSize, target_language_global, storage_limit_bytes) | Feito — preferências de sessão | C31: opções existentes de leitura com Zod/useState; sem locale EN, target_language global, storage limit, MMKV ou persistência nova. Composição do leitor entregue em C32. |
 | 4.2.3 | `player-store.ts` (MMKV) | Feito — estado de sessão | C29: estado na instância do player; sem MMKV ou persistência nova de voz/posição por frase. |
-| 4.2.4 | `download-store.ts` (memória) | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
+| 4.2.4 | `download-store.ts` (memória) | Feito — adaptação de paridade C39 | Estado de lote em memória com progresso por tentativas e erros por capítulo; sem store durável. |
 | 4.3.1 | `audio-service.ts`: setupPlayer, addToQueue, resolveTrackUrl, scheduleNextChapters | Feito — limites físicos registrados | C29/C30: expo-speech por frases e cancelamento serializado; sem TrackPlayer/áudio remoto/fila durável. Harness privado e testes de corrida/UI/exportações prontos; dono relatou sucesso no POCO X5, voz pt-br-x-ptd-local (Enhanced); demais cenários/iOS pendentes, dispensados como impedimento F4 em ADR-008. |
 | 4.3.2 | Emitir PLAYER_PROGRESS via `event-bus.ts` | Feito — callbacks de paridade | C29: callback de índice/total por frase e status/término/erro; sem EventBus sem consumidores. |
-| 4.4.1 | `task-queue.ts` com TaskType, enqueue, dequeue, priority, retryFailed | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
+| 4.4.1 | `task-queue.ts` com TaskType, enqueue, dequeue, priority, retryFailed | Feito — adaptação de paridade C39 | Grupos sequenciais de cinco, faixa até 50 e exclusão de capítulos já locais; sem prioridades, retry automático ou fila genérica. |
 | 4.4.2 | Registrar SYNC_SOURCE + UPDATE_NOVEL no expo-task-manager | Fora de escopo | Capacidade nova ou motor diferente; não consta da paridade. |
 | 4.5.1 | `storage-manager.ts`: enforceAudioLimit (LRU), calculateUsage | Eliminado (v2.2) | Somente áudio remoto; sem objeto no fluxo de texto + fala local. |
 | 4.5.2 | Task CLEANUP_STORAGE enfileirada após download | Eliminado (v2.2) | Somente áudio remoto; sem objeto no fluxo de texto + fala local. |
@@ -135,11 +135,11 @@ Data: 2026-11-20. Fundação, persistência, API F3 e serviços mobile F4 implem
 | 5.2.3 | `player-bar.tsx` (mini player global no MainLayout) | Fora de escopo | Capacidade nova ou motor diferente; não consta da paridade. |
 | 5.2.4 | `player-screen.tsx` (play/pause, skip±15s, velocidade, capítulo ant/prox) | Feito — paridade adaptada | C35/C36: play/pause, frases, capítulo ant/prox/escolha, status/log local e prioridade do capítulo explícito; sem skip em segundos. |
 | 5.2.5 | `voice-settings.tsx` + prefetch adaptativo (áudio se isPlaying, texto se não) | Feito — voz local adaptada | C35: velocidade inicial da API, vozes agrupadas e seleção/velocidade por sessão, refazendo frase corrente; sem prefetch de áudio. |
-| 5.3.1 | `download-section.tsx` (capítulo atual, próximos N, intervalo, incluir áudio) | Parcial — individual C38 | C38: lista e sugestões locais por fonte, download individual, erro/retry e abertura do capítulo escolhido. Faixas em C39 pendentes. |
-| 5.3.2 | `pattern/download-queue.tsx` (progresso granular, pause, resume, cancel, retry) | Parcial — individual C38 | C38: escrita local validada e remoção confirmada com limpeza remota não bloqueante; sem áudio. Coordenação de faixa em C39 pendente. |
-| 5.3.3 | Criar DownloadJob no WatermelonDB + POST /downloads/jobs | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
+| 5.3.1 | `download-section.tsx` (capítulo atual, próximos N, intervalo, incluir áudio) | Feito — adaptação de paridade C38/C39 | Downloads individuais e por intervalo, lista por fonte e abertura em texto/voz; áudio remoto fora de escopo. |
+| 5.3.2 | `pattern/download-queue.tsx` (progresso granular, pause, resume, cancel, retry) | Feito — adaptação de paridade C38/C39 | Progresso por tentativas, erros individuais, retry explícito e remoção confirmada; sem pause/resume/cancel novos. |
+| 5.3.3 | Criar DownloadJob no WatermelonDB + POST /downloads/jobs | Feito — adaptação de paridade C39 | Coordenação apenas em memória; não cria DownloadJob, WatermelonDB ou POST /downloads/jobs. |
 | 5.3.4 | Polling 5s via TaskQueue + `FileSystem.createDownloadResumable` para áudio | Fora de escopo | Polling de jobs novos não entra; transferência de áudio eliminada (v2.2). Texto baixa por HTTP/FileSystem em C38/C39. |
-| 5.3.5 | EventBus DOWNLOAD_FINISHED → invalidar queries do capítulo | Não iniciado — adaptar | Atualização de queries ao concluir C38/C39; sem EventBus obrigatório. |
+| 5.3.5 | EventBus DOWNLOAD_FINISHED → invalidar queries do capítulo | Feito — adaptação de paridade C38/C39 | Atualiza queries locais e cache de texto após gravação; sem EventBus obrigatório. |
 | 5.4.1 | `filter-manager.tsx` (CRUD, globais + por obra) | Feito — filtros globais | C37: palavra/frase/regex explícitos, validação da expressão, remoção exata, limpar com confirmação e listas vazias; sem glossário/filtros por obra. |
 | 5.4.2 | `glossary-manager.tsx` (CRUD com priority e enabled) | Fora de escopo | Capacidade nova ou motor diferente; não consta da paridade. |
 | 6.1.1 | `features/search/hooks.ts` + `search-bar.tsx` | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |

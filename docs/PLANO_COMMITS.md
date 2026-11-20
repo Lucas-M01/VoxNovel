@@ -123,6 +123,8 @@ As telas podem ser testadas com parâmetros sintéticos e mocks enquanto a entra
 
 Portão F5: todos os cenários de leitura/voz/filtros/downloads cobertos, offline sem chamada para conteúdo já local. Suite completa, log C32–C39 e parada.
 
+Registro de execução em 2026-11-20: C32–C39 concluídos; gate com 170 testes backend (dez integrações locais reais), 203 mobile, lint/tipos, bundles Hermes Android/iOS do produto e harness e Gitleaks aprovado. Limites físicos de ADR-008 e tradução externa continuam registrados. F6 aguarda aprovação explícita; nenhuma importação pessoal executada.
+
 ## 8. F6: busca, biblioteca, fontes e migração
 
 | Commit | Título em inglês | WBS | Paridade / classe | Entrega e aceite específico |

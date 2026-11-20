@@ -34,9 +34,9 @@ erros e payload incompatível em cada operação, além de URL encoding, valida�
 de entrada, cancelamento, timeout e comportamento do cache/mutations. Não
 certificam conectividade de um aparelho com o backend.
 
-A interface ainda mostra somente o título inicial. A composição do leitor e da
-biblioteca está prevista nos blocos F5/F6, após os serviços F4 e seu portão.
-Não há um fluxo de leitura disponível nesta etapa do cliente da API.
+A rota principal ainda mostra o título inicial até a composição da navegação em
+F6. Leitor, player, filtros e downloads de F5 já podem ser testados no harness
+privado descrito ao final deste guia.
 
 ## Arquivos locais (C27)
 
@@ -289,3 +289,43 @@ limpa o remoto. Falhas de download continuam visíveis e podem ser tentadas de n
 A fonte diferente conserva arquivos com o mesmo número. O harness privado usa
 texto sintético para baixar/remover e abrir o leitor/player reais; não acessa
 Supabase, Google ou o site da obra.
+
+## Downloads por intervalo (C39)
+
+O formulário valida início/fim, limite conhecido da obra e máximo de 50 capítulos.
+A fila existe somente em memória: exclui os arquivos já locais, executa grupos
+sucessivos de até cinco downloads e espera todos os resultados do grupo antes
+iniciar o próximo. A barra conta tentativas, inclusive falhas; cada falha mantém
+mensagem no capítulo correspondente e pode ser tentada novamente por ação explícita.
+Não existem retries automáticos, jobs remotos, polling, pausa, retomada ou
+cancelamento de lote. Sair da tela não torna o trabalho durável: as promessas em
+andamento podem concluir enquanto o processo continua vivo, sem garantia após
+encerramento do app. Cada gravação reutiliza o isolamento por obra/fonte de C38;
+baixar não grava progresso de leitura.
+
+Para testar F5 no Android, na raiz do projeto:
+
+```sh
+yarn workspace @voxnovel/mobile reader:harness
+```
+
+Abrir o QR no Expo Go compatível com SDK 58, com computador e aparelho na mesma
+rede. O projeto privado tem identificador próprio e prepara somente dois
+capítulos sintéticos; não usa backend, Supabase, dados pessoais ou tradução real.
+
+1. Tocar em **Preparar e abrir leitor**; testar preferências, navegação e rolagem.
+2. Abrir **Ouvir capítulo** no capítulo escolhido; testar voz, velocidade e pausa/retomada.
+3. Voltar ao leitor e abrir **Abrir filtros sintéticos**; adicionar/remover termos
+   e verificar a confirmação ao limpar. Os filtros do harness ficam em memória.
+4. Voltar e abrir **Abrir downloads sintéticos**. Os dois capítulos começam salvos:
+   abrir **Baixar intervalo**, informar 1–2 e conferir a mensagem de já offline.
+5. Cancelar o formulário, remover os dois capítulos com confirmação e baixar
+   novamente o intervalo 1–2. Conferir a lista e abrir o capítulo 2 em texto/voz.
+   O transporte é simulado e a barra pode terminar rapidamente.
+6. Para verificar o limite conhecido, tentar intervalo 1–3; a obra sintética tem
+   somente dois capítulos. Ordem, concorrência de cinco e máximo de 50 também
+   têm testes automatizados com entradas sintéticas maiores.
+
+O harness não certifica as fontes/tradução externas nem a navegação principal,
+que será integrada em F6. A fala usa o motor nativo real do aparelho. Nenhum
+servidor Expo é deixado aberto pelo agente após os checks de exportação.
