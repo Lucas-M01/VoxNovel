@@ -1,5 +1,6 @@
 import type { QueryClient } from '@tanstack/react-query';
-import { speedSchema, type Novel } from '@core/api/schemas';
+import { chapterSchema, speedSchema, type Novel } from '@core/api/schemas';
+import { initialSpeechChapter } from '@core/initial-speech-chapter';
 import { activeSource, sourceChapterUrl } from '@core/chapter-source';
 import { chapterAvailable } from '@core/connectivity';
 import { apiQueries, apiMutations } from '@core/queries';
@@ -16,10 +17,10 @@ export type PlaybackDependencies = ReaderServices & {
   defaults: () => { rate: number; voiceId: string | null };
   offline: () => boolean; downloaded: () => readonly number[];
 };
-export function createPlaybackController(novel: Novel, dependencies: PlaybackDependencies) {
+export function createPlaybackController(novel: Novel, dependencies: PlaybackDependencies, explicitChapter?: number) {
   const source = activeSource(novel);
   const maximum = novel.total_chapters ?? source?.total_chapters ?? (source?.chapter_ids?.length || null);
-  let snapshot: PlaybackSnapshot = { chapter: novel.current_chapter, status: 'idle', index: 0, total: 0, rate: null, voiceId: null, log: '', error: null, finished: false };
+  let snapshot: PlaybackSnapshot = { chapter: chapterSchema.parse(initialSpeechChapter(novel, explicitChapter)), status: 'idle', index: 0, total: 0, rate: null, voiceId: null, log: '', error: null, finished: false };
   const listeners = new Set<() => void>();
   let player: SpeechPlayer | null = null;
   let generation = 0;

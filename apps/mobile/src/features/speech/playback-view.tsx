@@ -22,8 +22,8 @@ import { ProgressBar } from '@ui/progress-bar';
 
 export type PlaybackServices = ReaderServices & { driver: SpeechDriver; session: ReturnType<typeof createSpeechSession> };
 const defaults: PlaybackServices = { ...readerServices, driver: nativeSpeech, session: speechSession };
-type Props = { novel: Novel; services?: PlaybackServices | undefined };
-export function PlaybackView({ novel, services = defaults }: Props) {
+type Props = { novel: Novel; services?: PlaybackServices | undefined; initialChapter?: number | undefined };
+export function PlaybackView({ novel, services = defaults, initialChapter }: Props) {
   const client = useQueryClient();
   useConnectivity();
   const source = activeSource(novel);
@@ -38,7 +38,7 @@ export function PlaybackView({ novel, services = defaults }: Props) {
     ...services, client,
     defaults: () => ({ rate: client.getQueryData(settingsOptions.queryKey)?.speed ?? 1, voiceId: client.getQueryData(voicesOptions.queryKey)?.selected?.identifier ?? null }),
     offline: () => getConnectivity() === 'offline', downloaded: () => client.getQueryData(localOptions.queryKey) ?? [],
-  }));
+  }, initialChapter));
   usePlaybackLifecycle(controller);
   const state = useSyncExternalStore(controller.subscribe, controller.getSnapshot, controller.getSnapshot);
   const [voicePicker, setVoicePicker] = useState(false);

@@ -248,6 +248,14 @@ Troca de capítulo/discard invalida cargas e callbacks antigos; sair destrói s�
 o player pertencente à tela. Não há estado durável de player, pitch/volume,
 mini-player, salto em segundos ou sincronização de rolagem com voz.
 
-O leitor privado pode abrir a tela de fala real com texto sintético. A correção
-de prioridade do capítulo explícito é o commit C36 separado previsto no plano;
-a biblioteca e os destinos completos ainda serão ligados em F6.
+O leitor privado pode abrir a tela de fala real com texto sintético. A prioridade do capítulo explícito foi corrigida separadamente em C36; biblioteca e destinos completos ainda serão ligados em F6.
+
+## Capítulo escolhido no player (C36)
+
+O capítulo explícito de navegação tem prioridade sobre progresso da fonte ativa,
+que tem prioridade sobre progresso da obra. Valor explícito inválido é rejeitado
+antes de criar player, sem fallback silencioso para outro capítulo. Alteração de
+parâmetro explícito recria a sessão; atualização de progresso nos metadados não
+reinicia uma reprodução já aberta. Testes verificam escolha/fallback, entrada
+pelo leitor e fala/gravação somente do capítulo escolhido. Downloads usarão o
+mesmo parâmetro em C38, sem alterar progresso independente por fonte.
