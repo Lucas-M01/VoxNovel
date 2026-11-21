@@ -2,7 +2,7 @@
 
 - Atualizado: 2026-11-20.
 - Fase atual: Fase 4 autorizada em ADR-010, em andamento: auditoria P01–P35, correções necessárias e documentação C46. Android integrado ainda não testado pelo dono.
-- Último commit: C45, commit que contém este registro; predecessor eb8ecf8 (C44). Fechamento marcado por `fase-3-f6` e `fase-3`. F5 preservado em c0b81aa (`fase-3-f5`), F4 em 44313b1 (`fase-3-f4`). Sem push ou reescrita de histórico.
+- Último commit: correção de acesso FreeWebNovel, commit que contém este registro; predecessor 70a4caa (P14). Fechamento marcado por `fase-3-f6` e `fase-3`. F5 preservado em c0b81aa (`fase-3-f5`), F4 em 44313b1 (`fase-3-f4`). Sem push ou reescrita de histórico.
 - Próximo item: Fase 4 — validação final P01–P35, correções próprias se necessárias e C46 (MELHORIAS/README/documentação final). Já autorizado em ADR-010.
 - Autorização: plano ADR-003; F3 ADR-006; F4 ADR-007; fechamento F4/avanço F5 ADR-008; F6 e visual simples/coerente ADR-009. Docker local descartável apenas para testes ADR-005. Sem aprovação para publicar, deploy ou importação pessoal. Licença pública ainda aberta.
 
@@ -52,3 +52,7 @@ Stack local descartável de integração em .private/voxnovel-f3-supabase; somen
 
 - Fase 4: comparação sem rede de 1.296 caracteres sintéticos com helpers puros do legado encontrou troca indevida entre и (U+0438) e і (U+0456). P14 corrigido com regressão; depois da correção houve zero diferenças nesse corpus e igualdade em quatro casos de limpeza. Gate: 188 backend e 220 mobile, lint/tipos/arquitetura/Hermes/Gitleaks aprovados. Próximo: incompatibilidade real de CONNECT_TO no curl-cffi detectada no probe; não presumir que todo erro de provedor é Cloudflare.
 - Dono confirmou Android integrado ainda não testado. ADR-011 prioriza FreeWebNovel e permite limitar a versão aos provedores operacionais. Fonte FreeWebNovel continua 403 com cabeçalhos padrão e do original; Google recusou uma frase sintética por limite de requisições. Sem tradução completa certificada.
+
+- Fase 4/P13: incompatibilidade de lista em CONNECT_TO corrigida usando RESOLVE permanente; perfil passa a anunciar somente gzip/deflate. FreeWebNovel usa o transporte Curl guardado. URL autorizada retornou HTTP 200/gzip e 11.327 caracteres extraídos; metadados reais também passaram (título, total, padrão e imagem presentes). Demais provedores permanecem sem certificação real, secundários conforme ADR-011.
+- Gate dessa correção: 192 testes backend (12 integrações locais), 220 mobile, Ruff/format/mypy/arquitetura/compileall, ESLint/20 casos/tsc, Hermes Android/iOS e Gitleaks aprovados. Teste com libcurl real sem rede detecta incompatibilidades que os mocks não capturavam.
+- Tradução continua pendente: controle isolado com o mesmo GoogleTranslator e outro cliente guardado retornou redirecionamento seguido de HTTP 429. Sem troca de motor ou novas traduções em lote. Próximo: concluir a documentação C46 e manter Fase 4 aberta para teste Android integrado e tradução real; sem tag fase-4 prematura.

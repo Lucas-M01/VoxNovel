@@ -5,10 +5,17 @@ from urllib.parse import SplitResult
 
 import pytest
 from curl_cffi import CurlOpt
+from curl_cffi import requests as curl_requests
+from pydantic import HttpUrl
 from requests import Request, Session
 
 from src.adapters.http import Page, PublicHttp
-from src.adapters.providers import ChallengeAdapter, CurlHttp, challenge_get
+from src.adapters.providers import (
+    ChallengeAdapter,
+    CurlHttp,
+    ProviderHttp,
+    challenge_get,
+)
 from src.core.config import Settings
 from src.core.exceptions import BusinessError
 
@@ -106,13 +113,12 @@ def test_curl_pins_connect_and_bounds_compressed_response(
             == b"x" * 10
         )
     factory.assert_called_once_with(impersonate="chrome", trust_env=False)
-    assert session.curl_options[CurlOpt.CONNECT_TO] == [
-        b"www.royalroad.com:443:8.8.8.8:443"
-    ]
+    assert session.curl_options[CurlOpt.RESOLVE] == [b"www.royalroad.com:443:8.8.8.8"]
     assert session.curl_options[CurlOpt.PROXY] == b""
     assert session.curl_options[CurlOpt.HTTP_CONTENT_DECODING] == 0
     assert session.get.call_args.kwargs["allow_redirects"] is False
     assert session.get.call_args.kwargs["verify"] is True
+    assert session.get.call_args.kwargs["headers"]["Accept-Encoding"] == "gzip, deflate"
     session.close.assert_called_once()
 
 
@@ -161,3 +167,46 @@ def test_unsupported_challenge_returns_safe_access_error(
         challenge_get("https://novelfire.net/book/synthetic", FixtureNetwork([]))
     assert failure.value.status == 502
     assert "sensitive" not in failure.value.detail
+
+
+def test_real_curl_accepts_the_pinned_options_without_performing_network_io(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    configured: list[CurlOpt] = []
+
+    def configure(session: Any, *args: Any, **kwargs: Any) -> Any:
+        for option, value in session.curl_options.items():
+            session.curl.setopt(option, value)
+            configured.append(option)
+        kwargs["content_callback"](b"Synthetic body")
+        return MagicMock(status_code=200, headers={})
+
+    monkeypatch.setattr(curl_requests.Session, "get", configure)
+    http = CurlHttp(Settings(), lambda host, timeout: ["8.8.8.8"])
+    assert http.get("https://source.example/chapter-1").content == b"Synthetic body"
+    assert CurlOpt.RESOLVE in configured
+    assert CurlOpt.PROXY in configured
+
+
+@pytest.mark.parametrize(
+    "host", ["source.example", "www.source.example", "source.example.other"]
+)
+def test_configured_freewebnovel_routes_exact_hosts_to_guarded_curl(
+    monkeypatch: pytest.MonkeyPatch, host: str
+) -> None:
+    curl = MagicMock()
+    factory = MagicMock(return_value=curl)
+    monkeypatch.setattr("src.adapters.providers.CurlHttp", factory)
+    settings = Settings(freewebnovel_base=HttpUrl("https://source.example"))
+    http = ProviderHttp(settings)
+    public = MagicMock()
+    http.public = public
+    url = f"https://{host}/novel/synthetic/chapter-1"
+    http.get(url)
+    if host == "source.example.other":
+        factory.assert_not_called()
+        public.get.assert_called_once_with(url)
+    else:
+        factory.assert_called_once_with(settings)
+        curl.get.assert_called_once_with(url)
+        public.get.assert_not_called()

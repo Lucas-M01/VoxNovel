@@ -173,9 +173,6 @@ class CurlHttp(PublicHttp):
             return len(chunk)
 
         self.session.curl_options = {
-            CurlOpt.CONNECT_TO: [
-                f"{host_entry}:{port}:{address_entry}:{port}".encode()
-            ],
             CurlOpt.RESOLVE: [f"{host_entry}:{port}:{address_entry}".encode()],
             CurlOpt.PROXY: b"",
             CurlOpt.NOPROXY: b"*",
@@ -194,6 +191,7 @@ class CurlHttp(PublicHttp):
                 allow_redirects=False,
                 verify=True,
                 accept_encoding="gzip, deflate",
+                headers={"Accept-Encoding": "gzip, deflate"},
                 content_callback=consume,
             )
         except OSError as exc:
@@ -238,6 +236,10 @@ class ProviderHttp:
         host = (parse_url(url).hostname or "").lower().removeprefix("www.").rstrip(".")
         if host == self.settings.novelfire_base.host:
             return challenge_get(url, self.public)
-        if host == (self.settings.royalroad_base.host or "").removeprefix("www."):
+        curl_hosts = {
+            (base.host or "").lower().removeprefix("www.").rstrip(".")
+            for base in (self.settings.royalroad_base, self.settings.freewebnovel_base)
+        }
+        if host in curl_hosts:
             return CurlHttp(self.settings).get(url)
         return self.public.get(url)
