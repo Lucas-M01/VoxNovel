@@ -74,3 +74,18 @@ As escolhas de implementação, divisão de commits e tags constam de PLANO_COMM
 - Estado: aprovado pelo dono: “Tá bom pode prosseguir”, após explicar o fechamento F5 e a integração/acabamento básico pendentes.
 - Decisão: executar C40–C45 e integrar as jornadas de paridade com visual simples e consistente, adequado para uso e demonstração. Priorizar o necessário; melhorias adicionais ficam para depois.
 - Limites: não amplia funcionalidades, não autoriza publicação/push/deploy nem importação pessoal. Tradução externa e limites físicos continuam pendentes. Ao fim de F6, suíte, documentos, tag/log e parada para aprovação da Fase 4.
+
+## ADR-010 — Iniciar a validação final
+
+- Data: 2026-11-20.
+- Estado: aprovado pelo dono: “Comece a Fase 4”.
+- Decisão: executar a validação P01–P35, comparar comportamento observado com evidências, corrigir impedimentos em commits próprios e preparar MELHORIAS/README/C46. Manter foco no necessário para uso e portfólio.
+- Evidência física: o dono respondeu “Ainda não testei” para o aplicativo principal integrado. O teste S1 anterior não substitui esta jornada. Registrar os cenários ausentes, sem certificá-los ou repetir a dispensa de ADR-008.
+- Limites: sem publicação, deploy, importação pessoal, troca de motor ou funcionalidades novas. Fonte/tradução externas continuam sem comprovação de sucesso completo.
+
+## ADR-011 — Priorizar provedores operacionais na versão inicial
+
+- Data: 2026-11-20.
+- Estado: aprovado explicitamente pelo dono: o original funcionava apenas com FreeWebNovel; os outros apresentavam erros possivelmente associados a Cloudflare. Autorizou manter apenas FreeWebNovel ou os provedores que funcionarem, se os demais não puderem ser recuperados.
+- Decisão: priorizar o caso FreeWebNovel na validação real; outros provedores indisponíveis não impedem uma versão inicial limitada e não serão anunciados como validados. Manter evidência separada por provedor; não remover adaptadores funcionais apenas por ausência de teste atual.
+- Limites: a hipótese Cloudflare não é causa comprovada para todos os sites. A autorização não elimina a pendência de acesso ao próprio FreeWebNovel, não autoriza troca de tradutor nem contorno de desafios. Redução visível de suporte será registrada caso efetivamente necessária.

@@ -71,3 +71,13 @@ def test_invalid_stored_regex_and_nonconsecutive_duplicates() -> None:
 def test_title_detection_only_considers_the_first_eighty_characters() -> None:
     paragraph = "x" * 85 + " chapter 7 is mentioned in the story"
     assert clean_chapter(paragraph) == paragraph
+
+
+def test_cyrillic_i_matches_reference_without_remapping_ukrainian_i() -> None:
+    assert normalize_homoglyphs("Sиntétиco і") == "Sintético і"
+    assert (
+        apply_filters(
+            "Sиntétиco anúncio\nNarrativa com і.", Filters(words=["sintético"])
+        )
+        == "Narrativa com і."
+    )

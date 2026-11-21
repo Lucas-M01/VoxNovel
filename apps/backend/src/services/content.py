@@ -23,7 +23,7 @@ WATERMARKS = ("freewebnovel.com", "novelfire.net", "novelbin.com")
 CONFUSABLES = str.maketrans(
     dict(
         zip(
-            "агысртеһіўомнквουνραι",
+            "агысртеһиўомнквουνραι",
             "arysptehiyomhkbouvpai",
             strict=True,
         )

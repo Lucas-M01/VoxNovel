@@ -1,9 +1,9 @@
 # Progresso
 
 - Atualizado: 2026-11-20.
-- Fase atual: Fase 3 — F6 (C40–C45) concluído. Parar no portão para aprovação da Fase 4; não iniciar C46 sem aprovação explícita.
+- Fase atual: Fase 4 autorizada em ADR-010, em andamento: auditoria P01–P35, correções necessárias e documentação C46. Android integrado ainda não testado pelo dono.
 - Último commit: C45, commit que contém este registro; predecessor eb8ecf8 (C44). Fechamento marcado por `fase-3-f6` e `fase-3`. F5 preservado em c0b81aa (`fase-3-f5`), F4 em 44313b1 (`fase-3-f4`). Sem push ou reescrita de histórico.
-- Próximo item: Fase 4 — validação final P01–P35, correções próprias se necessárias e C46 (MELHORIAS/README/documentação final). Depende da aprovação do dono.
+- Próximo item: Fase 4 — validação final P01–P35, correções próprias se necessárias e C46 (MELHORIAS/README/documentação final). Já autorizado em ADR-010.
 - Autorização: plano ADR-003; F3 ADR-006; F4 ADR-007; fechamento F4/avanço F5 ADR-008; F6 e visual simples/coerente ADR-009. Docker local descartável apenas para testes ADR-005. Sem aprovação para publicar, deploy ou importação pessoal. Licença pública ainda aberta.
 
 ## Entregas F6
@@ -42,10 +42,13 @@ O dono foi avisado de que o app principal já é testável. Ainda não relatou t
 - S1: POCO X5, voz pt-br-x-ptd-local (Enhanced), com sucesso relatado em capítulo 2, pausa/retomada, voz/velocidade, troca de app e bloqueio. Android/motor/Expo versus build/duração não informados. Interrupções, voz sem rede/sem PT, saída e iOS não certificados. ADR-008 dispensou esses cenários como impedimento F4→F5, sem aprová-los como testes. Não repetir a mesma solicitação de dispensa.
 - S2: prebuild Android concluído em F1; assembleDebug executou 63 tarefas e falhou no acesso a Maven por resolução de rede (ADR-004). Sem APK novo validado; iOS nativo requer ambiente Apple. Hermes e Jest não substituem execução física/build nativo.
 - Importação pessoal não executada. Formatos conhecidos/dry-run/aplicação explícita e recuperação em IMPORTACAO.md. Arquivos antigos sem fonte comprovada ficam preservados, sem atribuição automática; nenhum acesso ao sandbox antigo do Android.
-- Licença pública ainda aberta. Fase 4/README de apresentação aguardam aprovação. Sem publicação, push, deploy, conta/auth, áudio remoto, jobs duráveis, Redis/ARQ, MMKV, WatermelonDB ou novos recursos fora da paridade.
+- Licença pública ainda aberta. Fase 4/README em andamento; dono confirmou que ainda não testou a integração Android. Sem publicação, push, deploy, conta/auth, áudio remoto, jobs duráveis, Redis/ARQ, MMKV, WatermelonDB ou novos recursos fora da paridade.
 
 ## Continuidade
 
 Ler AGENTS.md e este registro antes de qualquer ação em nova sessão. Consultar PLANO_COMMITS.md, ANALISE.md (contrato P01–P35), DECISIONS.md, WBS_STATUS.md, MOBILE.md, S1.md, API.md, PERSISTENCIA.md e IMPORTACAO.md.
 
 Stack local descartável de integração em .private/voxnovel-f3-supabase; somente banco/Storage locais, sem projeto remoto alterado e sem chave no mobile. RLS/ACL/advisors auditados em F3 sem achados. Testes de importação usam schema/bucket isolados nessa stack. _legacy permanece somente leitura e ignorado. Checklist P01–P35 ainda não certificado na Fase 4.
+
+- Fase 4: comparação sem rede de 1.296 caracteres sintéticos com helpers puros do legado encontrou troca indevida entre и (U+0438) e і (U+0456). P14 corrigido com regressão; depois da correção houve zero diferenças nesse corpus e igualdade em quatro casos de limpeza. Gate: 188 backend e 220 mobile, lint/tipos/arquitetura/Hermes/Gitleaks aprovados. Próximo: incompatibilidade real de CONNECT_TO no curl-cffi detectada no probe; não presumir que todo erro de provedor é Cloudflare.
+- Dono confirmou Android integrado ainda não testado. ADR-011 prioriza FreeWebNovel e permite limitar a versão aos provedores operacionais. Fonte FreeWebNovel continua 403 com cabeçalhos padrão e do original; Google recusou uma frase sintética por limite de requisições. Sem tradução completa certificada.
