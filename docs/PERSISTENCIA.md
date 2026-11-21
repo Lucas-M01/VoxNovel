@@ -1,5 +1,29 @@
 # Persistência — F2
 
+Registro histórico de F2. Estado e instalação atuais no README; evidências em VALIDACAO.md.
+
+## Preparar um destino vazio para o aplicativo
+
+1. Escolher um projeto Supabase dedicado, separado do protótipo e da stack de
+   testes. Não aplicar migrations ou testes em dados pessoais existentes por
+   tentativa.
+2. Aplicar, nesta ordem, [biblioteca/fontes](../apps/backend/src/repositories/migrations/20261118234557_atomic_library.sql)
+   e [preferências](../apps/backend/src/repositories/migrations/20261119002243_preferences.sql).
+   Usar o SQL editor do destino escolhido ou psql com ON_ERROR_STOP e transação,
+   como descrito abaixo. Não executar o arquivo de rollback no bootstrap.
+3. Criar o bucket privado de texto, aceitando application/json; seu nome vem de
+   VOXNOVEL_SUPABASE_TEXT_BUCKET. O backend não cria buckets na inicialização.
+4. No arquivo ignorado apps/backend/.env, configurar a URL e a chave de serviço
+   desse destino conforme .env.example. A chave não vai para o app mobile.
+
+Para a stack descartável já preparada neste ambiente, API.md inicia o backend
+sem imprimir credenciais. Em outro checkout, preparar uma stack local separada
+com a CLI Supabase antes de usar check_integration.py; o runner verifica destino
+loopback e não inicializa ou vincula projetos remotos. A aplicação não precisa de
+Docker quando conectada ao seu destino Supabase; a aprovação de Docker aqui é
+somente para os testes locais.
+
+
 C10: contratos de domínio com testes. C11: repositories e adaptador Supabase, com round-trip real validado em uma stack local descartável. O app ainda não tem rotas de biblioteca nem interface funcional de leitura; o primeiro fluxo disponível será avisado ao dono, com instruções.
 
 Não usar projetos pessoais como ambiente de integração. O dono aprovou Docker apenas para testes locais descartáveis (ADR-005). A configuração e credenciais temporárias ficam fora do git. A stack não é vinculada a um projeto remoto.

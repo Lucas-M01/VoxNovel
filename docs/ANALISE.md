@@ -116,7 +116,7 @@ Mobile: Expo ~54.0.34, React 19.1.0, RN 0.81.5, navegação 7, NetInfo 11.4.1, e
 
 ## 3. Checklist de paridade funcional (contrato proposto)
 
-Cada item deve receber evidência automatizada e/ou roteiro em dispositivo na validação. Caixas vazias significam **não reconstruído nem validado**. IDs WBS indicam destino parcial; não autorizam o restante do pacote. P32–P35 são capacidades de API existentes cuja preservação foi aceita na aprovação de Q4 (ADR-002), com rotas EN no produto reconstruído.
+Cada item deve receber evidência automatizada e/ou roteiro em dispositivo na validação. Caixas vazias indicam **aceite final ainda pendente**, não ausência de código. Implementação e evidências por ambiente estão em VALIDACAO.md; testes automáticos não certificam cenários manuais ausentes. IDs WBS indicam destino parcial; não autorizam o restante do pacote. P32–P35 são capacidades de API existentes cuja preservação foi aceita na aprovação de Q4 (ADR-002), com rotas EN no produto reconstruído.
 
 | Estado/ID | Critério verificável | Evidência no legado | Destino WBS / módulo |
 |---|---|---|---|

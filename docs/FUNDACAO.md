@@ -1,5 +1,7 @@
 # Fundação — F1
 
+Registro histórico de F1. Estado e instalação atuais no README; evidências em VALIDACAO.md.
+
 Estado: fechamento de C01–C09; resultados finais registrados em PROGRESS.md e pela tag fase-3-f1. Este bloco fornece infraestrutura de desenvolvimento; os itens P01–P35 continuam sem declaração de paridade completa.
 
 ## Ambiente reproduzível

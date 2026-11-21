@@ -148,6 +148,8 @@ Registro de execução em 2026-11-20: C40–C45 concluídos. Gate final com 187 
 |---|---|---|---|---|
 | C46 | `docs(docs): publish parity evidence and reconstruction guidance` | — | P01–P35 como evidência; Improvement: dx | Percorrer todos os itens com links para testes/roteiros/resultados reais; comparar legado×novo com entrada sintética ou URL pública autorizada quando possível. MELHORIAS, README de instalação/config/build/dev/estrutura, WBS_STATUS e PROGRESS finais. Sem marcar teste manual ausente como concluído. |
 
+Execução autorizada em ADR-010; o dono confirmou que ainda não testou o app integrado. ADR-011 prioriza FreeWebNovel e permite limitar a versão aos provedores operacionais. Correções P14 em 70a4caa e P05/P13 em e068531; documentação/evidências C46 preparadas, mantendo o fechamento físico/externo pendente.
+
 Se a validação revelar falha, corrigir em commit próprio com teste, rodapé Improvement e referência P correspondente antes de C46. Não absorver correções em commit de documentação nem ampliar escopo. Repetir apenas checks afetados durante investigação e suíte completa antes de qualquer commit.
 
 ## 10. Cobertura e limites

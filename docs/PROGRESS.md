@@ -1,58 +1,43 @@
 # Progresso
 
 - Atualizado: 2026-11-20.
-- Fase atual: Fase 4 autorizada em ADR-010, em andamento: auditoria P01–P35, correções necessárias e documentação C46. Android integrado ainda não testado pelo dono.
-- Último commit: correção de acesso FreeWebNovel, commit que contém este registro; predecessor 70a4caa (P14). Fechamento marcado por `fase-3-f6` e `fase-3`. F5 preservado em c0b81aa (`fase-3-f5`), F4 em 44313b1 (`fase-3-f4`). Sem push ou reescrita de histórico.
-- Próximo item: Fase 4 — validação final P01–P35, correções próprias se necessárias e C46 (MELHORIAS/README/documentação final). Já autorizado em ADR-010.
-- Autorização: plano ADR-003; F3 ADR-006; F4 ADR-007; fechamento F4/avanço F5 ADR-008; F6 e visual simples/coerente ADR-009. Docker local descartável apenas para testes ADR-005. Sem aprovação para publicar, deploy ou importação pessoal. Licença pública ainda aberta.
+- Fase atual: **Fase 4 em andamento**, autorizada em ADR-010. Auditoria P01–P35 e documentação C46 entregues, com duas correções. Fechamento ainda pendente de teste Android integrado e comprovação da tradução/decisão sobre sua indisponibilidade. Não criar tag fase-4 nem declarar release validada antes desse aceite.
+- Último commit: C46/documentação, commit que contém este registro; predecessor e068531 (restauração FreeWebNovel). Correção anterior 70a4caa (P14). Base fase-3/fase-3-f6 em 86c60b8; F5 c0b81aa, F4 44313b1. Sem push, deploy ou reescrita de histórico.
+- Próximo passo: dono executar o roteiro do README/MOBILE no POCO com backend real e informar resultados/erros; tradução continua recebendo HTTP 429. Não repetir chamadas em lote ou trocar motor sem decisão explícita. Continuar correções dentro do escopo quando houver evidência nova.
+- Autorizações: plano ADR-003; Docker local descartável de testes ADR-005; F3 ADR-006; F4 ADR-007; F5 e limites físicos ADR-008; F6/visual simples ADR-009; Fase 4 ADR-010. ADR-011 permite priorizar FreeWebNovel e somente provedores operacionais na versão inicial. Sem autorização para importar dados pessoais/publicar/deploy. Licença pública ainda não escolhida.
 
-## Entregas F6
+## Entregue nesta fase
 
-| Item | Commit | Entrega |
-|---|---|---|
-| C40 | ac55251 | Busca por nome/URL, metadados, seleção de fontes, capítulo inicial, duplicatas e erro parcial. |
-| C41 | e97d91f | Preservar chapter_ids RoyalRoad e resolver ID da URL para índice; correção separada. |
-| C42 | 0246a4d | Biblioteca com capas/progresso, ordenação, refresh, cache offline identificado e exclusão confirmada online. |
-| C43 | 587f4eb | Detalhes, edição de capítulo, adicionar/trocar/remover fontes e progresso próprio de cada fonte. |
-| C44 | eb8ecf8 | Splash e sete destinos reais; jornada completa e guardas de IDs/capítulos, com apresentação simples compartilhada. |
-| C45 | HEAD deste registro | Importador privado opcional, dry-run padrão, formatos conhecidos, conflitos, backups, idempotência e recuperação; nenhuma importação pessoal. |
+| Item | Evidência |
+|---|---|
+| P14 — normalização de и/і | 70a4caa; regressão e comparação somente leitura com o legado: 1.296 caracteres sintéticos passaram de duas diferenças a zero; quatro casos de limpeza iguais. |
+| P05/P13 — acesso FreeWebNovel | e068531; CONNECT_TO incompatível removido, DNS fixado por RESOLVE e Accept-Encoding explícito gzip/deflate. O caso autorizado retornou HTTP 200/gzip e 11.327 caracteres extraídos; metadados reais também passaram. Sem desativar TLS, SSRF, limites ou redirects controlados. |
+| Documentação C46 | README de instalação/config/dev/build/estrutura, VALIDACAO com 35 itens/evidências/pendências e MELHORIAS com mudanças e motivos. Documentos históricos distinguem estado anterior do aplicativo integrado. |
 
-- F5 entregou leitor, preferências, navegação/autoscroll, prefetch em memória, player nativo, prioridade do capítulo escolhido, filtros e downloads individuais/intervalo. Serviços F4 e namespace de cache por obra/fonte permanecem preservados.
-- O dono reforçou o objetivo de uso e portfólio com o necessário, deixando melhorias extras para depois. Não ampliar funcionalidades além da paridade.
+- Gate atual: Ruff/format/mypy/arquitetura/compileall; **192 testes backend** (180 unitários + 12 integrações reais locais), ESLint/20 casos das regras/TypeScript strict e **220 testes mobile**. Bundles Hermes Android/iOS do app integrado e Gitleaks de candidatos/histórico aprovados; staged conferido antes de cada commit.
+- O teste Curl novo aplica opções ao libcurl real sem I/O, cobrindo incompatibilidade que os mocks não detectavam. Testes de redes privadas/redirects/limites continuam passando.
+- Comparações executadas usam somente helpers puros do legado, sem importar seus serviços de banco, carregar dados pessoais ou modificar _legacy. Relatórios/URL de reprodução ficam somente em .private/phase4 e .private/translation-repro, ignorados. Nenhum texto do capítulo entrou no git.
+- Fonte real positiva não comprova tradução. Controle isolado com o mesmo GoogleTranslator e cliente Curl guardado retornou 302→429; o produto mantém o mesmo tradutor e fallback por bloco. Não foi feita tradução completa bem sucedida nem sequência de tentativas contra o limite.
 
-## Verificação de fechamento
+## Uso e teste disponíveis
 
-- Gate final F6 aprovado: Ruff/format/mypy/arquitetura/compileall; 187 testes backend (175 unitários + 12 integrações reais locais), ESLint/20 casos das regras/TypeScript strict e 220 testes mobile. Bundles Hermes Android/iOS do aplicativo principal integrado e Gitleaks de candidatos/histórico aprovados. Conteúdo staged conferido antes do commit.
-- Jornada automatizada monta rotas reais: biblioteca→detalhe→leitura→voz→downloads→capítulo escolhido; duplicata→player; filtros e links inválidos. Transporte, fala e arquivos são sintéticos nos testes; não certificar backend/fontes reais no Android por essa evidência.
-- Importador: testes de validação, privacidade, backup/compensação com I/O injetado; SQL real em schema local isolado confirma idempotência, conflitos/rollback, filtros vazios, velocidade e progresso por fonte. Bucket privado local comprova criação sem sobrescrita. Schema/bucket sintéticos removidos. Launcher exercitado com dry-run privado e caminhos relativos. Nenhuma aplicação pessoal ou em projeto remoto.
-- Nenhuma dependência foi adicionada em F6. Regras React revisadas: queries/mutations e eventos, lifecycle para recursos, imports diretos, rotas guardadas e controles acessíveis. Ajustes em fixtures/tipagem foram verificados, sem remover cenários ou desativar regras.
+O app principal já abre biblioteca, busca, detalhe, leitura, voz, filtros e downloads. Fluxos foram testados com Expo Router real e transporte/arquivos/fala sintéticos; os bundles não certificam execução física. F6 e seu importador opcional foram concluídos em 86c60b8; nenhuma importação pessoal foi executada.
 
-## Teste disponível ao dono
+Iniciar backend conforme README/API.md. Em Android físico, configurar VOXNOVEL_HOST=0.0.0.0 e EXPO_PUBLIC_API_URL com o endereço LAN da API, sem /api/v1, somente no .env ignorado do mobile; chaves ficam no backend. Na raiz: `yarn workspace @voxnovel/mobile start`; abrir QR no Expo Go compatível com SDK 58, mesma rede. A stack descartável é compartilhada pela suíte: usar somente dados de teste; destino pessoal deve ser separado.
 
-O aplicativo principal está integrado. Iniciar API conforme API.md; para Android na mesma rede, definir VOXNOVEL_HOST=0.0.0.0 antes do comando do backend. Copiar/configurar apps/mobile/.env a partir do exemplo com EXPO_PUBLIC_API_URL apontando ao endereço LAN da API, sem /api/v1. Nenhuma chave Supabase entra no mobile.
+O dono respondeu **“Ainda não testei”** para esta jornada. Não repetir o pedido de dispensa S1 anterior; aguardar resultado do app principal. Harnesses speech:harness/reader:harness permanecem opcionais. Nenhum servidor Expo/API foi iniciado ou deixado aberto pelo agente nesta fase.
 
-Na raiz: `yarn workspace @voxnovel/mobile start`; abrir QR no Expo Go compatível com SDK 58, na mesma rede. Testar adicionar obra, biblioteca/detalhes, leitura/voz, capítulo selecionado em downloads e filtros. Guia em MOBILE.md. A stack descartável é compartilhada pela suíte: somente dados de teste; uso pessoal duradouro exige destino separado. Nenhum servidor Expo/API foi iniciado ou deixado aberto pelo agente neste bloco.
+## Pendências e limites
 
-O dono foi avisado de que o app principal já é testável. Ainda não relatou teste desta integração; o relato anterior foi do harness S1. Harnesses opcionais preservados: speech:harness e reader:harness, com dados sintéticos e identidade privada própria.
-
-## Limites e decisões pendentes
-
-- Tradução: no diagnóstico autorizado, o adaptador protegido recebeu HTTP 403 com desafio e o GoogleTranslator HTTP 429 para frase sintética curta. Nenhum capítulo completo foi traduzido com sucesso nesse teste; P13/P15 reais continuam pendentes. Não afirmar que o problema original foi resolvido ou atribuir causa definitiva. URL/relatórios apenas privados em .private/translation-repro e arquivo associado, ignorados pelo git. Sem bypass, troca de motor ou repetição de chamadas sem evidência nova.
-- Providers têm testes determinísticos, sem certificação de layouts/desafios externos atuais. Verificar fontes/tradução e corrigir impedimentos antes de declarar a versão validada para uso/apresentação.
-- S1: POCO X5, voz pt-br-x-ptd-local (Enhanced), com sucesso relatado em capítulo 2, pausa/retomada, voz/velocidade, troca de app e bloqueio. Android/motor/Expo versus build/duração não informados. Interrupções, voz sem rede/sem PT, saída e iOS não certificados. ADR-008 dispensou esses cenários como impedimento F4→F5, sem aprová-los como testes. Não repetir a mesma solicitação de dispensa.
-- S2: prebuild Android concluído em F1; assembleDebug executou 63 tarefas e falhou no acesso a Maven por resolução de rede (ADR-004). Sem APK novo validado; iOS nativo requer ambiente Apple. Hermes e Jest não substituem execução física/build nativo.
-- Importação pessoal não executada. Formatos conhecidos/dry-run/aplicação explícita e recuperação em IMPORTACAO.md. Arquivos antigos sem fonte comprovada ficam preservados, sem atribuição automática; nenhum acesso ao sandbox antigo do Android.
-- Licença pública ainda aberta. Fase 4/README em andamento; dono confirmou que ainda não testou a integração Android. Sem publicação, push, deploy, conta/auth, áudio remoto, jobs duráveis, Redis/ARQ, MMKV, WatermelonDB ou novos recursos fora da paridade.
+- **Android integrado:** testar biblioteca/busca FreeWebNovel, leitura/voz, capítulo escolhido em downloads, offline e filtros, conforme README/MOBILE. Evidência do aparelho ainda ausente.
+- **Tradução:** Google recusou a frase sintética por HTTP 429 nos controles. Original já tinha falha relatada; a causa no original não está comprovada. Não anunciar correção de tradução nem trocar tradutor automaticamente. Precisa de sucesso real posterior ou decisão explícita do dono sobre o limite.
+- **Provedores:** dono relatou que somente FreeWebNovel funcionava no original e liberou foco nele. Acesso/metadados FreeWebNovel passaram no caso autorizado; outros sites não foram certificados nem anunciados como operacionais. Adaptadores preservados para compatibilidade, sem ampliar esforço/funcionalidades por padrão.
+- **S1 parcial anterior:** POCO X5, voz pt-br-x-ptd-local (Enhanced), sucesso relatado em avanço ao capítulo 2, pausa/retomada, voz/velocidade, troca de app e bloqueio. Android/motor/Expo versus build/duração não informados; interrupções, voz sem rede/sem PT, saída e iOS pendentes. ADR-008 dispensou esses limites como impedimento F4→F5, sem transformá-los em testes aprovados.
+- **S2/build nativo:** prebuild Android feito em F1; assembleDebug parou após 63 tarefas por resolução de Maven (ADR-004). Sem APK novo validado; iOS requer Apple/Xcode. Hermes/Jest não substituem build e aparelho.
+- **Dados/licença/publicação:** sem importação pessoal, push/deploy ou concessão automática de licença. Arquivos antigos sem fonte comprovada ficam preservados; IMPORTACAO.md cobre apenas formatos conhecidos e aplicação explícita. Nenhum projeto remoto alterado.
 
 ## Continuidade
 
-Ler AGENTS.md e este registro antes de qualquer ação em nova sessão. Consultar PLANO_COMMITS.md, ANALISE.md (contrato P01–P35), DECISIONS.md, WBS_STATUS.md, MOBILE.md, S1.md, API.md, PERSISTENCIA.md e IMPORTACAO.md.
+Ler AGENTS.md e este registro antes de qualquer ação em nova sessão. README, VALIDACAO.md e MELHORIAS.md são as entradas atuais; consultar ANALISE.md (contrato), PLANO_COMMITS.md, DECISIONS.md, WBS_STATUS.md, MOBILE.md, S1.md, API.md, PERSISTENCIA.md e IMPORTACAO.md para detalhes.
 
-Stack local descartável de integração em .private/voxnovel-f3-supabase; somente banco/Storage locais, sem projeto remoto alterado e sem chave no mobile. RLS/ACL/advisors auditados em F3 sem achados. Testes de importação usam schema/bucket isolados nessa stack. _legacy permanece somente leitura e ignorado. Checklist P01–P35 ainda não certificado na Fase 4.
-
-- Fase 4: comparação sem rede de 1.296 caracteres sintéticos com helpers puros do legado encontrou troca indevida entre и (U+0438) e і (U+0456). P14 corrigido com regressão; depois da correção houve zero diferenças nesse corpus e igualdade em quatro casos de limpeza. Gate: 188 backend e 220 mobile, lint/tipos/arquitetura/Hermes/Gitleaks aprovados. Próximo: incompatibilidade real de CONNECT_TO no curl-cffi detectada no probe; não presumir que todo erro de provedor é Cloudflare.
-- Dono confirmou Android integrado ainda não testado. ADR-011 prioriza FreeWebNovel e permite limitar a versão aos provedores operacionais. Fonte FreeWebNovel continua 403 com cabeçalhos padrão e do original; Google recusou uma frase sintética por limite de requisições. Sem tradução completa certificada.
-
-- Fase 4/P13: incompatibilidade de lista em CONNECT_TO corrigida usando RESOLVE permanente; perfil passa a anunciar somente gzip/deflate. FreeWebNovel usa o transporte Curl guardado. URL autorizada retornou HTTP 200/gzip e 11.327 caracteres extraídos; metadados reais também passaram (título, total, padrão e imagem presentes). Demais provedores permanecem sem certificação real, secundários conforme ADR-011.
-- Gate dessa correção: 192 testes backend (12 integrações locais), 220 mobile, Ruff/format/mypy/arquitetura/compileall, ESLint/20 casos/tsc, Hermes Android/iOS e Gitleaks aprovados. Teste com libcurl real sem rede detecta incompatibilidades que os mocks não capturavam.
-- Tradução continua pendente: controle isolado com o mesmo GoogleTranslator e outro cliente guardado retornou redirecionamento seguido de HTTP 429. Sem troca de motor ou novas traduções em lote. Próximo: concluir a documentação C46 e manter Fase 4 aberta para teste Android integrado e tradução real; sem tag fase-4 prematura.
+Stack descartável local em .private/voxnovel-f3-supabase, sem chaves no mobile. Integrações criam e removem somente dados/schema/bucket sintéticos. RLS/ACL/advisors locais auditados em F3; sem alteração remota. _legacy somente leitura e ignorado. Manter o foco no necessário para uso/portfólio; extras ficam para depois.
