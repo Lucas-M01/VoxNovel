@@ -11,6 +11,9 @@ router = APIRouter(prefix="/api/v1/chapters", tags=["Chapters"])
 
 @router.get("/text")
 def text(
-    url: HttpUrl, chapter: Annotated[int, Query(gt=0)], service: Chapters
+    url: HttpUrl,
+    chapter: Annotated[int, Query(gt=0)],
+    service: Chapters,
+    translate: bool = True,
 ) -> ChapterResult:
-    return service.text(str(url), chapter)
+    return service.text(str(url), chapter, translate=translate)

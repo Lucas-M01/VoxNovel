@@ -42,6 +42,7 @@ class ChapterService:
         *,
         require_content: bool = False,
         resolved: bool = False,
+        translate: bool = True,
     ) -> ChapterResult:
         if chapter < 1:
             raise BusinessError("Invalid chapter.")
@@ -74,10 +75,12 @@ class ChapterService:
                 timeout=self.settings.filter_regex_timeout,
                 max_chars=self.settings.processing_max_chars,
             )
-            if self.logs:
+            if self.logs and translate:
                 self.logs.add(Event.TRANSLATION_START)
             result = ChapterResult(
-                url=target, chapter=chapter, text=self.translator.translate(filtered)
+                url=target,
+                chapter=chapter,
+                text=self.translator.translate(filtered) if translate else filtered,
             )
             if self.logs:
                 self.logs.add(Event.TEXT_READY)
@@ -94,8 +97,13 @@ class ChapterService:
         *,
         require_content: bool = False,
         resolved: bool = False,
+        translate: bool = True,
     ) -> ChapterResult:
         with self.limit.slot():
             return self._text(
-                url, chapter, require_content=require_content, resolved=resolved
+                url,
+                chapter,
+                require_content=require_content,
+                resolved=resolved,
+                translate=translate,
             )
