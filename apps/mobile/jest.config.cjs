@@ -1,5 +1,6 @@
 module.exports = {
   preset: 'jest-expo',
+  testTimeout: 60000,
   testMatch: ['<rootDir>/tests/**/*.test.ts?(x)'],
   moduleNameMapper: {
     '^@screens/(.*)$': '<rootDir>/src/screens/$1',

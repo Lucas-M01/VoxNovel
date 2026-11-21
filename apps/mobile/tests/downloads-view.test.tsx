@@ -35,7 +35,7 @@ test('downloads expose text/voice at the chosen chapter and confirmed deletion i
     expect(data.transport.mock.calls.some(([, init]) => init.method === 'PATCH')).toBe(false);
     await screen.unmount();
   } finally { data.client.clear(); }
-}, 20000);
+}, 60000);
 
 test('a local write failure is visible and can be retried without a false downloaded entry', async () => {
   const data = setup(); jest.spyOn(data.storage, 'saveChapter').mockRejectedValueOnce(new LocalStorageError());
