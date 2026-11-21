@@ -4,11 +4,13 @@
 - Estado: **Fase 4 concluída para a entrega Android aprovada pelo dono**. Após o
   reteste, informou “Terminei e tá tudo certo agora”; depois aprovou o visual e
   autorizou prosseguir. Nenhum novo teste geral do dono é exigido.
+- Fechamento versionado: 571f398, tag fase-4. O registro documental de entrega
+  das capturas acompanha este arquivo, sem alterar a versão funcional.
 - Último commit de produto: **d63c677**, revisão visual/preferências ADR-015–020.
   Anteriores: d369bae (tradução local), 3d0e10f (P36 mobile), c8fcd3f (API original).
   O commit documental de fechamento contém este registro e recebe a tag fase-4.
-- Próximo trabalho solicitado: capturar telas reais do Android para uso posterior.
-  Capturas com biblioteca/progresso pessoal ficam inicialmente fora do Git.
+- Capturas solicitadas: seis screenshots reais foram feitas pelo dono e copiadas
+  do telefone por USB/MTP. Entregues com nomes e ZIP em diretório privado, fora do Git.
   GitHub/deploy não foram publicados; licença pública ainda não foi escolhida.
 
 ## Entrega e evidência
@@ -66,7 +68,14 @@ com endpoints validados antes de qualquer escrita. Nenhum projeto remoto alterad
 ## Continuidade
 
 Ler AGENTS.md e este registro em nova sessão. Não reabrir aprovações recebidas
-nem marcar cenários ausentes como executados. Capturas pedidas pelo dono dependem
-da conexão ADB: o sistema reconheceu Xiaomi em MTP, mas a interface ADB ainda
-não apareceu após a autorização relatada. Continuar diagnóstico/captura sem
-mudar o app ou dados pessoais. Nunca publicar capturas pessoais automaticamente.
+nem marcar cenários ausentes como executados. As capturas solicitadas foram entregues em .private/screenshots/2026-11-21,
+com seis imagens nomeadas, originais preservados e capturas-voxnovel.zip.
+Conferência visual e SHA-256 confirmaram a cópia sem edição. Conjunto: biblioteca,
+detalhe, player, leitura com controles, leitura imersiva e Personalização;
+busca/downloads não estão neste conjunto. Nada foi publicado ou incluído no Git.
+
+O ADB não expôs dispositivo, apesar da autorização relatada; o dono escolheu
+capturar manualmente e copiar por USB. O MTP inicialmente veio vazio, depois o
+armazenamento ficou disponível. Copiados somente screenshots de hoje do Expo;
+fotos/capturas de outros aplicativos não foram copiadas. Diagnósticos com dados
+do dispositivo ficam privados. Não publicar capturas pessoais automaticamente.
