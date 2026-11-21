@@ -7,8 +7,8 @@ do protótipo pessoal **Leitor Web em Voz Alta**.
 **Estado:** implementação integrada; validação final em andamento. Em 2026-11-21,
 o dono confirmou no Android biblioteca, busca/cadastro, leitura, voz e downloads
 inclusive sem internet. A busca também encontrou algumas obras no CentralNovel,
-além do FreeWebNovel. A tradução ainda não funcionou no teste e permanece aberta
-em [VALIDACAO.md](docs/VALIDACAO.md). O relato não certifica todos os sites,
+além do FreeWebNovel. Após a falha de tradução, o modelo local inglês→português passou no teste real
+da API; o reteste no celular permanece aberto em [VALIDACAO.md](docs/VALIDACAO.md). O relato não certifica todos os sites,
 capítulos ou cenários de dispositivo.
 
 ## Funcionalidades implementadas
@@ -19,11 +19,12 @@ capítulos ou cenários de dispositivo.
   sem garantia de disponibilidade dos sites atuais.
 - Fontes com progresso independente, capítulo inicial e navegação por capítulo.
 - Leitor com temas, fontes, espaçamento, largura e rolagem automática.
+- Escolha entre original e português na leitura e na voz; downloads mantidos em PT.
 - Voz nativa por frases, pausa/retomada, voz/velocidade e avanço de capítulo.
 - Texto offline, downloads individuais e intervalos de até 50 em grupos de cinco.
 - Filtros globais de palavra, frase e expressão regular.
 
-O escopo acompanha o que o protótipo já fazia. Contrato e limites em
+O escopo acompanha o protótipo, com o seletor de idioma aprovado como extensão P36. Contrato e limites em
 [ANALISE.md](docs/ANALISE.md); mudanças em [MELHORIAS.md](docs/MELHORIAS.md).
 
 ## Stack
@@ -33,7 +34,7 @@ O escopo acompanha o que o protótipo já fazia. Contrato e limites em
 | Mobile | React Native 0.88, Expo SDK 58, React 19, TypeScript strict e Expo Router |
 | Dados no mobile | TanStack Query, Zod e arquivos JSON no sandbox do app |
 | Voz | expo-speech, com motor/vozes instalados no aparelho |
-| Backend | Python 3.12, FastAPI, Pydantic, BeautifulSoup/lxml e deep-translator |
+| Backend | Python 3.12, FastAPI, Pydantic, BeautifulSoup/lxml e tradução local CTranslate2/SentencePiece |
 | Persistência | Supabase Postgres e Storage privado, acessados pelo backend |
 | Qualidade | Ruff, mypy, pytest, ESLint boundaries, Jest/Testing Library e Gitleaks |
 
@@ -62,6 +63,16 @@ Se já houver `.env`, preserve-o. Configure um destino Supabase dedicado conform
 No `.env` mobile, configure apenas `EXPO_PUBLIC_API_URL` com o endereço da API,
 sem `/api/v1`. Em Android físico, localhost aponta para o próprio celular: use
 o endereço LAN do computador. Credenciais de serviço ficam somente no backend.
+
+Instale uma vez o modelo de tradução seguindo [TRADUCAO.md](docs/TRADUCAO.md).
+Com o caminho do modelo configurado no `.env`, execute de `apps/backend`:
+
+```sh
+poetry run python -m tools.install_translation_model
+```
+
+Não exige conta/cartão; o instalador verifica o arquivo oficial e preserva sua
+atribuição. Modelos e configurações privadas ficam fora do git.
 
 ## Rodar
 
@@ -92,17 +103,17 @@ receber somente dados de teste.
 
 1. Adicione uma obra por nome/URL, selecione a fonte e escolha o capítulo.
 2. Volte à biblioteca, abra os detalhes e confira o progresso.
-3. Abra leitura e voz; teste capítulo, pausa/retomada e preferências.
+3. Abra leitura, alterne original/português e abra a voz; teste capítulo, pausa e preferências.
 4. Baixe um capítulo, abra-o em texto/voz e confira o número escolhido.
 5. Com o conteúdo já salvo, teste a abertura sem rede sem reiniciar o Metro.
 6. Adicione/remova um filtro e confira a confirmação ao limpar.
 
-A tradução depende do serviço externo. Uma falha de tradução preserva o bloco
-original; isso pode resultar em texto parcialmente traduzido. O terminal do
-backend e os logs existentes registram uma razão fixa para esse fallback,
-inclusive limite do Google (HTTP 429), sem conteúdo do capítulo. Respostas de
-proteção do site podem impedir a extração. O caso relatado pelo dono continua
-aberto; não se presume sucesso com qualquer URL.
+A tradução local suporta inglês→português brasileiro e mantém textos em português.
+Outros idiomas, falhas e limites de tempo preservam o original, com razão fixa no
+terminal/buffer, sem conteúdo do capítulo. Arquivos antigos não são regravados:
+para atualizar um download que ficou em inglês, exclua esse capítulo e baixe-o
+novamente. Recursos, licença do modelo e consequências para deploy em
+[TRADUCAO.md](docs/TRADUCAO.md). Proteções do site ainda podem impedir a extração.
 
 ## Verificar e gerar bundles
 

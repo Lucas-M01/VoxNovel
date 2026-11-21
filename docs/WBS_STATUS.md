@@ -78,11 +78,11 @@ Data: 2026-11-20. Fundação, persistência, API F3 e serviços mobile F4 implem
 | 3.3.9 | Anti-403: HTTPX → User-Agent rotativo → Playwright + stealth → cookies | Feito — paridade adaptada | C15/C18/C25: SSRF em todos os transportes usados, budgets, concorrência e falhas redigidas; sem Playwright ou novas camadas pagas. |
 | 3.3.10 | Cache Redis TTL 24h como primeira camada | Fora de escopo | Capacidade nova ou motor diferente; não consta da paridade. |
 | 3.3.11 | Fixtures HTML reais por provider em `tests/unit/scrapers/fixtures/` | Parcial — corpus sintético | C16–C24: fixtures sintéticas; Fase 4 validou extração/metadados FreeWebNovel em uma URL autorizada, com dados privados fora do git. Demais layouts reais não certificados. Validação final permanece na Fase 4. |
-| 3.4.1 | `translation/base.py` Protocol `TranslationEngine` | Feito — paridade adaptada | C20: GoogleEngine e injeção por callable, auto→PT; sem MarianMT/OpenAI. |
-| 3.4.2 | `marian_engine.py` (pool de modelos, divisão por parágrafo) | Fora de escopo | Capacidade nova ou motor diferente; não consta da paridade. |
+| 3.4.1 | `translation/base.py` Protocol `TranslationEngine` | Feito — paridade adaptada | C20/ADR-013: Google original preservado como seleção explícita; padrão local EN→PT-BR, injeção por callable, sem OpenAI. |
+| 3.4.2 | `marian_engine.py` (pool de modelos, divisão por parágrafo) | Feito — exceção ADR-013 adaptada | Um modelo Argos/OPUS en_pb em CTranslate2 CPU, carga sob demanda, lotes limitados; sem pool de idiomas ou serviço adicional. |
 | 3.4.3 | `openai_engine.py` (system prompt literário) | Fora de escopo | Capacidade nova ou motor diferente; não consta da paridade. |
-| 3.4.4 | `translation/factory.py` | Feito — paridade adaptada | C20: somente composição do GoogleTranslator existente, HTTP protegido e fallback por bloco. |
-| 3.4.5 | Download + validação modelos MarianMT (EN→PT, ZH→EN, JP→EN, KR→EN) | Fora de escopo | Capacidade nova ou motor diferente; não consta da paridade. |
+| 3.4.4 | `translation/factory.py` | Feito — paridade adaptada | C20/C50: composição local ou Google por configuração explícita; fallback por bloco sem troca automática de rede. |
+| 3.4.5 | Download + validação modelos MarianMT (EN→PT, ZH→EN, JP→EN, KR→EN) | Parcial — exceção ADR-013 | Instalador explícito do modelo en_pb 1.9, SHA-256/metadados/extração limitados e atribuição. Demais pares continuam fora do escopo. |
 | 3.5.1 | `tts/base.py` Protocol `TTSEngine` | Eliminado (v2.2) | Somente áudio remoto; sem objeto no fluxo de texto + fala local. |
 | 3.5.2 | `kokoro_engine.py` | Eliminado (v2.2) | Somente áudio remoto; sem objeto no fluxo de texto + fala local. |
 | 3.5.3 | `tts/factory.py` + módulo storage (local/b2/r2) | Eliminado (v2.2) | Somente áudio remoto; sem objeto no fluxo de texto + fala local. |
@@ -103,7 +103,7 @@ Data: 2026-11-20. Fundação, persistência, API F3 e serviços mobile F4 implem
 | 3.7.8 | GET /health, /health/db, /health/redis | Feito — paridade adaptada | C23: status e últimos 500 logs em memória; sem /health/redis, métricas ou monitoramento comercial. |
 | 3.7.9 | Montar `router.py` com prefixo `/api/v1` | Feito — paridade adaptada | C21–C23: rotas tipadas sob /api/v1 com Depends e erros padronizados. |
 | 4.1.1 | `http-resource.ts` (defineApiRoute, httpResource, FriendlyError, refresh token) | Feito — paridade adaptada | C26: fetch central, configuração por env, cancelamento/timeout, validação e ApiError amigável; sem refresh token/auth. |
-| 4.1.2 | `constants.ts` + `keys.ts` (com lang em chapters e tts) | Feito — paridade adaptada | C26/C28: configuração central, query keys de capítulo por obra/fonte/URL/número e namespace local por fonte. Somente tradução PT; sem tts remoto. Arquivos antigos preservados sem atribuição presumida. |
+| 4.1.2 | `constants.ts` + `keys.ts` (com lang em chapters e tts) | Feito — paridade adaptada | C26/C28: configuração central, query keys de capítulo por obra/fonte/URL/número e namespace local por fonte. P36/ADR-014 acrescenta modo original em memória, isolado de PT; sem tts remoto. Arquivos antigos preservados sem atribuição presumida. |
 | 4.1.3 | `queries.ts` com staleTime/gcTime por domínio | Feito — paridade adaptada | C26: queryOptions/mutationOptions tipados, provider único e invalidação após sucesso; sem repetição automática de requests. |
 | 4.1.4 | Módulos de API: novels, chapters, sources, tts, downloads, filters, glossary | Feito — paridade adaptada | C26: novels/chapters/sources/downloads/filters/settings/system com schemas de todas as respostas. Sem tts remoto/glossary/auth. |
 | 4.2.1 | `session-store.ts` (MMKV encrypted) | Fora de escopo | Capacidade nova ou motor diferente; não consta da paridade. |
@@ -196,7 +196,7 @@ Data: 2026-11-20. Fundação, persistência, API F3 e serviços mobile F4 implem
 | 8.2.2 | Testes workers: scrape_task, translate_task, download_batch, health_update (fakeredis) | Fora de escopo como pacote de workers | Nenhum ARQ/fakeredis a adicionar. Concorrência dos serviços existentes terá testes em C25/C39. |
 | 8.2.3 | Testes integração backend: endpoints com httpx.AsyncClient + banco memória | Feito — paridade adaptada | C11–C25: HTTP com FastAPI/TestClient e banco/Storage reais descartáveis, além de cenários sintéticos; sem depender só de mocks. |
 | 8.2.4 | Cobertura 80% em `src/services/` e `src/api/` | Parcial — percentual não medido | 186 testes unitários backend e 12 integrações locais no gate da Fase 4. Meta percentual de 80% não medida; não declarar cobertura não aferida. |
-| 8.2.5 | Testes unitários mobile: core/ (task-queue, storage-manager, event-bus, stores) | Feito — testes da paridade | 222 testes mobile incluem serviços/arquivos/cache/fala/prefetch/faixas. Sem criar EventBus ou stores adicionais para atender a spec. |
+| 8.2.5 | Testes unitários mobile: core/ (task-queue, storage-manager, event-bus, stores) | Feito — testes da paridade | 228 testes mobile incluem serviços/arquivos/cache/fala/prefetch/faixas. Sem criar EventBus ou stores adicionais para atender a spec. |
 | 8.2.6 | Testes componentes: ui/ com Testing Library RN | Feito — componentes da paridade | Controles acessíveis e telas testados com Testing Library RN, incluindo estados de falha e confirmação. |
 | 8.2.7 | Testes integração mobile: busca, leitura, player, downloads (MSW) | Feito — jornadas C44 | Expo Router real com transporte injetado: busca/duplicata, biblioteca/detalhe, leitura/voz/downloads e filtros; execução física ainda pendente. |
 | 8.3.1 | `.github/workflows/backend.yml`: ruff + mypy + pytest em cada push | Feito — CI mínimo definido | C09: workflow e comandos validados localmente; execução remota ainda não realizada. Sem deploy. |
@@ -319,3 +319,5 @@ Plano aprovado em PLANO_COMMITS.md. IDs abaixo cobrem apenas a parte adaptada de
 ## Migração privada sem pacote WBS próprio
 
 C45 concluído: scripts/import_legacy.py com formatos conhecidos, dry-run padrão, exportação/backup/mapa privados, conflitos sem sobrescrita, transação/idempotência e compensação de objetos novos. Testes somente sintéticos em schema/bucket locais isolados. Nenhum dado pessoal importado; limites e recuperação em IMPORTACAO.md.
+
+C48–C50: extensão P36 em leitura/voz implementada e testada; tradução local com 215 testes backend totais. Reteste físico pendente. Detalhes e limites em VALIDACAO.md e TRADUCAO.md.

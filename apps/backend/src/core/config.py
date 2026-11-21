@@ -1,4 +1,6 @@
 import os
+from pathlib import Path
+from typing import Literal
 
 from pydantic import Field, HttpUrl, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -76,6 +78,15 @@ class Settings(BaseSettings):
             "64:ff9b::/96",
             "64:ff9b:1::/48",
         ]
+    )
+    translation_engine: Literal["local", "google"] = "local"
+    local_model_path: Path | None = None
+    local_translation_threads: int = Field(default=1, ge=1, le=4)
+    local_model_url: HttpUrl = HttpUrl(
+        "https://argos-net.com/v1/translate-en_pb-1_9.argosmodel"
+    )
+    local_model_sha256: str = (
+        "1d1cd5e9540c6b38c258bed002a42d3b311b8a189acb74feaa311ef30d175c5b"
     )
     google_translation_base: HttpUrl = HttpUrl("https://translate.google.com/m")
     translation_timeout: float = Field(default=45, gt=0, le=180)

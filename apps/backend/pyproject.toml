@@ -18,6 +18,9 @@ cloudscraper = "1.2.71"
 curl-cffi = ">=0.13,<1"
 deep-translator = ">=1.11,<2"
 regex = ">=2026.1,<2027"
+ctranslate2 = "4.9.0"
+sentencepiece = "0.2.3"
+langdetect = "1.0.9"
 
 [tool.poetry.group.dev.dependencies]
 httpx = ">=0.28,<1"
@@ -44,5 +47,5 @@ addopts = "-ra --strict-markers"
 pythonpath = ["."]
 
 [[tool.mypy.overrides]]
-module = ["cloudscraper.*", "deep_translator.*"]
+module = ["cloudscraper.*", "deep_translator.*", "langdetect.*", "sentencepiece.*", "ctranslate2.*"]
 ignore_missing_imports = true

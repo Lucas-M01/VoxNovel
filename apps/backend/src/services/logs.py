@@ -11,6 +11,12 @@ class Event(StrEnum):
     TRANSLATION_LIMITED = (
         "Google limitou a tradução (HTTP 429); bloco original preservado"
     )
+    TRANSLATION_UNAVAILABLE = (
+        "Modelo local indisponível ou resposta incompleta; original preservado"
+    )
+    TRANSLATION_UNSUPPORTED = (
+        "Idioma não suportado pelo modelo local; original preservado"
+    )
     TRANSLATION_FAILURE = "Falha na tradução; bloco original preservado"
     TRANSLATION_EMPTY = (
         "Resposta de tradução ausente ou inválida; bloco original preservado"

@@ -3,8 +3,14 @@ import time
 from collections.abc import Callable
 
 from src.core.config import Settings
-from src.core.exceptions import TranslationRateLimited
+from src.core.exceptions import (
+    TranslationRateLimited,
+    TranslationTimeout,
+    TranslationUnavailable,
+    TranslationUnsupported,
+)
 from src.services.engines.google import GoogleEngine
+from src.services.engines.local import LocalEngine
 from src.services.logs import Event, LogBuffer
 
 logger = logging.getLogger(__name__)
@@ -20,7 +26,15 @@ class TextTranslator:
         logs: LogBuffer | None = None,
     ):
         self.settings = settings
-        self.engine = GoogleEngine(settings) if block is None else None
+        self.engine = (
+            (
+                LocalEngine(settings)
+                if settings.translation_engine == "local"
+                else GoogleEngine(settings)
+            )
+            if block is None
+            else None
+        )
         self.block = block
         self.pause = pause
         self.logs = logs
@@ -34,6 +48,19 @@ class TextTranslator:
     def translate(self, text: str) -> str:
         if not text.strip():
             return text
+        if isinstance(self.engine, LocalEngine):
+            try:
+                if not self.engine.needs_translation(text):
+                    return text
+            except TranslationUnsupported:
+                self._fallback(Event.TRANSLATION_UNSUPPORTED)
+                return text
+            except TranslationUnavailable:
+                self._fallback(Event.TRANSLATION_UNAVAILABLE)
+                return text
+            except Exception:
+                self._fallback(Event.TRANSLATION_FAILURE)
+                return text
         parts: list[str] = []
         deadline = time.monotonic() + self.settings.translation_total_timeout
         size = self.settings.translation_block_chars
@@ -66,6 +93,12 @@ class TextTranslator:
                         max(0, deadline - time.monotonic()),
                     )
                 )
+            except TranslationTimeout:
+                parts.append(original)
+                self._fallback(Event.TRANSLATION_TIMEOUT)
+            except TranslationUnavailable:
+                parts.append(original)
+                self._fallback(Event.TRANSLATION_UNAVAILABLE)
             except TranslationRateLimited:
                 parts.append(original)
                 self._fallback(Event.TRANSLATION_LIMITED)

@@ -57,3 +57,15 @@ def register_exception_handlers(app: FastAPI) -> None:
 
 class TranslationRateLimited(Exception):
     """The translation provider rejected a request with a rate limit."""
+
+
+class TranslationTimeout(Exception):
+    """Inference or its bounded admission exceeded the time budget."""
+
+
+class TranslationUnavailable(Exception):
+    """A required local model or a complete inference result is unavailable."""
+
+
+class TranslationUnsupported(Exception):
+    """The installed model does not support the detected source language."""

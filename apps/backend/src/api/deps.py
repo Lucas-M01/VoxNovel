@@ -23,6 +23,7 @@ class Resources:
         self.settings = settings
         self.logs = LogBuffer()
         self.limit = ProcessingLimit(settings)
+        self.translator = TextTranslator(settings, logs=self.logs)
         self._transport: SupabaseTransport | None = None
         self._lock = Lock()
 
@@ -65,7 +66,7 @@ def chapters(context: Context) -> ChapterService:
     return ChapterService(
         ProviderHttp(context.settings),
         preferences(context),
-        TextTranslator(context.settings, logs=context.logs),
+        context.translator,
         context.logs,
         settings=context.settings,
         limit=context.limit,

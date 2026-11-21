@@ -211,3 +211,5 @@ Solicitações explícitas ADR-013/ADR-014; não é nova fase nem execução da 
 | C50 | Traduzir localmente no backend, se spike viável | Parity: P15; ADR-013 | Modelo/versão/licença, tempo/RAM medidos, CPU, budgets, instalação reproduzível e texto real sem fallback |
 
 Não publicar nem escolher plano pago. Não sobrescrever mudanças de interface em andamento no working tree; integrar os controles necessários preservando o visual existente.
+
+Execução C48–C50: C48 c8fcd3f, C49 3d0e10f; C50 integra modelo local en_pb conforme ADR-013. Gate 215 backend/228 mobile; API real original/PT passou, sem fallback. Aceite físico de P36 e tradução mantém Fase 4 aberta, sem tag final.
