@@ -57,8 +57,8 @@ com endpoints validados antes de qualquer escrita. Nenhum projeto remoto alterad
   informou pt-br-x-ptd-local (Enhanced) com controles, avanço e troca/bloqueio;
   iOS, interrupções, duração e vozes ausentes permanecem sem certificação específica.
 - Sem APK/IPA novo validado; spike Android encontrou limitação Maven. Bundles
-  Hermes/Jest não substituem esse build. Nenhum CI remoto usado como evidência.
-- Sem auth novo, jobs duráveis, voz paga, publicação/deploy ou importação pessoal.
+  Hermes/Jest não substituem esse build. Execuções remotas da publicação ficam no GitHub Actions.
+- Sem auth novo, jobs duráveis, voz paga, deploy do app ou importação pessoal.
   Documentação final: README, VALIDACAO.md, MELHORIAS.md e TRADUCAO.md.
 - package.json/yarn.lock modificados e package-lock.json externo foram preservados
   fora dos commits da entrega. Não declarar o working tree inteiro limpo ou o
@@ -107,3 +107,16 @@ Trabalhar em clones desta linha para os próximos commits públicos. Não enviar
 as refs de reconstrução local: elas foram preservadas separadamente por escolha
 do dono. Números de commits e tags históricos nos documentos são referências de
 análise/execução, não commits incluídos nesta linha pública inicial.
+
+
+## Verificação da publicação
+
+- Repositório público criado com MIT reconhecida pelo GitHub. Branch main e tag
+  fase-4 recebidas; commit inicial 26da4a1 sem pais, sem o histórico local.
+- Primeiro CI: backend aprovado. Mobile passou 232 testes e encontrou uma
+  corrida no teste de troca de idioma, que tentava fechar Personalização durante
+  o carregamento do capítulo. Ajustada somente a espera pelo botão Fechar,
+  mantendo as verificações de texto original e navegação para voz.
+- Acompanhar os checks do commit de correção no GitHub Actions. Não usar esses
+  checks como evidência de integração remota Supabase: as 12 integrações reais
+  foram verificadas exclusivamente na stack local descartável.

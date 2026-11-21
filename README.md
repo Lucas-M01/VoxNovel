@@ -143,8 +143,8 @@ yarn workspace @voxnovel/mobile build
 
 Gera bundles em `apps/mobile/dist`, sem produzir APK/IPA. Build nativo Android
 teve limitação de acesso ao Maven no spike; iOS nativo requer Apple/Xcode.
-Workflows de qualidade estão em `.github/workflows`; nenhum run remoto foi
-executado como evidência desta reconstrução.
+Workflows de qualidade estão em `.github/workflows`. Resultados da publicação
+estão no [GitHub Actions](https://github.com/Lucas-M01/VoxNovel/actions).
 
 ## Estrutura
 
