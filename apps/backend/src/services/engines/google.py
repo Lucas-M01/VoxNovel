@@ -5,11 +5,13 @@ from threading import Lock
 from typing import cast
 
 import deep_translator.google as google
+from deep_translator.exceptions import TooManyRequests
 from requests import Session
 
 from src.adapters.http import PublicHttp, unavailable
 from src.adapters.providers import ChallengeAdapter
 from src.core.config import Settings
+from src.core.exceptions import TranslationRateLimited
 
 GOOGLE_LOCK = Lock()
 
@@ -45,7 +47,10 @@ class GoogleEngine:
                 google.requests = session
                 translator = google.GoogleTranslator(source="auto", target="pt")
                 translator._base_url = str(self.settings.google_translation_base)
-                return cast(str | None, translator.translate(text))
+                try:
+                    return cast(str | None, translator.translate(text))
+                except TooManyRequests:
+                    raise TranslationRateLimited() from None
         finally:
             google.requests = previous
             GOOGLE_LOCK.release()

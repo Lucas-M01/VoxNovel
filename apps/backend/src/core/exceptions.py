@@ -53,3 +53,7 @@ def register_exception_handlers(app: FastAPI) -> None:
         return problem_response(
             500, "Internal Server Error", "An unexpected error occurred."
         )
+
+
+class TranslationRateLimited(Exception):
+    """The translation provider rejected a request with a rate limit."""

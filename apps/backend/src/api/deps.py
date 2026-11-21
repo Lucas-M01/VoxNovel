@@ -65,7 +65,7 @@ def chapters(context: Context) -> ChapterService:
     return ChapterService(
         ProviderHttp(context.settings),
         preferences(context),
-        TextTranslator(context.settings),
+        TextTranslator(context.settings, logs=context.logs),
         context.logs,
         settings=context.settings,
         limit=context.limit,

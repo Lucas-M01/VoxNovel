@@ -8,6 +8,14 @@ class Event(StrEnum):
     SOURCE_ACCESS = "Acessando fonte"
     FILTERS_APPLY = "Aplicando filtros globais"
     TRANSLATION_START = "Traduzindo capítulo"
+    TRANSLATION_LIMITED = (
+        "Google limitou a tradução (HTTP 429); bloco original preservado"
+    )
+    TRANSLATION_FAILURE = "Falha na tradução; bloco original preservado"
+    TRANSLATION_EMPTY = (
+        "Resposta de tradução ausente ou inválida; bloco original preservado"
+    )
+    TRANSLATION_TIMEOUT = "Tempo de tradução esgotado; bloco original preservado"
     TEXT_READY = "Texto pronto"
     CHAPTER_FAILURE = "Falha ao processar capítulo"
     CACHE_HIT = "Texto remoto já está no cache"
