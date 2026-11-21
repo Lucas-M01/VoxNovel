@@ -143,8 +143,8 @@ yarn workspace @voxnovel/mobile build
 
 Gera bundles em `apps/mobile/dist`, sem produzir APK/IPA. Build nativo Android
 teve limitação de acesso ao Maven no spike; iOS nativo requer Apple/Xcode.
-Workflows de qualidade estão em `.github/workflows`; nenhum run remoto foi
-executado como evidência desta reconstrução.
+Workflows de qualidade estão em `.github/workflows`. Resultados da publicação
+estão no [GitHub Actions](https://github.com/Lucas-M01/VoxNovel/actions).
 
 ## Estrutura
 
@@ -181,3 +181,12 @@ atribuições; detalhes do modelo em [TRADUCAO.md](docs/TRADUCAO.md).
 propostas maiores que a versão entregue. Para entender o que foi implementado,
 use este README, [o escopo](docs/ANALISE.md), [as decisões](docs/DECISIONS.md) e
 [o estado da WBS](docs/WBS_STATUS.md).
+
+
+## Histórico desta publicação
+
+Esta linha pública começa com a versão Android aprovada, publicada como um
+snapshot com histórico inicial limpo por decisão do dono. Os identificadores
+de commits de reconstrução citados nos documentos pertencem ao histórico local
+preservado e não estão nesta linha pública. A tag fase-4 identifica o snapshot
+publicado. Configurações privadas, modelos e screenshots pessoais ficaram fora.

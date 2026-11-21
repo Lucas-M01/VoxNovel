@@ -226,3 +226,18 @@ entrega Android descrita, sem transformar teste ausente em teste executado.
 Capturas reais foram solicitadas para apresentação posterior e ficam fora do
 Git quando contêm biblioteca/progresso pessoal. A autorização ADB/captura é uma
 atividade de apresentação separada e não reabre o aceite funcional.
+
+
+## Evidência após a publicação GitHub — 2026-11-21
+
+Por escolha do dono, a linha pública inicia com snapshot limpo 26da4a1, sob MIT,
+sem publicar o histórico local. Após a correção de sincronização no teste do
+seletor de idioma, a main pública d4a6c47 passou nos workflows:
+[Backend quality](https://github.com/Lucas-M01/VoxNovel/actions/runs/44961538462)
+e [Mobile quality](https://github.com/Lucas-M01/VoxNovel/actions/runs/44961538426).
+
+Mobile local na cópia publicada: 233 testes, lint/tipos e bundles Android/iOS
+aprovados. O CI não executa as 12 integrações reais do Supabase; elas continuam
+sustentadas pelo teste local descartável anterior. As afirmações de ausência de
+CI remoto nas etapas históricas acima descrevem o estado anterior à publicação.
+Não houve deploy nem execução física adicional. O histórico local foi preservado.

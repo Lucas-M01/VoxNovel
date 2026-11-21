@@ -57,8 +57,8 @@ com endpoints validados antes de qualquer escrita. Nenhum projeto remoto alterad
   informou pt-br-x-ptd-local (Enhanced) com controles, avanço e troca/bloqueio;
   iOS, interrupções, duração e vozes ausentes permanecem sem certificação específica.
 - Sem APK/IPA novo validado; spike Android encontrou limitação Maven. Bundles
-  Hermes/Jest não substituem esse build. Nenhum CI remoto usado como evidência.
-- Sem auth novo, jobs duráveis, voz paga, publicação/deploy ou importação pessoal.
+  Hermes/Jest não substituem esse build. CI da publicação concluído; resultados abaixo.
+- Sem auth novo, jobs duráveis, voz paga, deploy do app ou importação pessoal.
   Documentação final: README, VALIDACAO.md, MELHORIAS.md e TRADUCAO.md.
 - package.json/yarn.lock modificados e package-lock.json externo foram preservados
   fora dos commits da entrega. Não declarar o working tree inteiro limpo ou o
@@ -94,6 +94,43 @@ do dispositivo ficam privados. Não publicar capturas pessoais automaticamente.
   copiar .env, modelos, screenshots pessoais, _legacy ou alterações locais de
   package.json/yarn.lock/package-lock.json. Referências a commits antigos nos
   documentos são do histórico de reconstrução preservado localmente.
-- Envio em andamento. Verificar branch main, licença MIT e checks no GitHub.
+- Publicado: https://github.com/Lucas-M01/VoxNovel, repositório público, licença
+  MIT reconhecida, branch main e tag fase-4. Commit público inicial 26da4a1,
+  sem pais; histórico original não foi enviado. Checks remotos concluídos.
   Nunca ligar a branch original diretamente à nova main pública: seus históricos
   são diferentes e o push do original exporia o caminho histórico.
+
+
+### Continuidade após a publicação
+
+- Último commit local antes deste registro: 390efd1 (MIT). Commit público
+  inicial: 26da4a1, independente do histórico local; fase-4 local continua em
+  571f398, e fase-4 pública aponta para o novo snapshot aprovado.
+- A cópia publicada está em .private/github-publication/source, com origin e
+  main acompanhando Lucas-M01/VoxNovel. O repositório original permanece sem
+  origin para evitar envio acidental do histórico com caminho pessoal.
+- Para novos trabalhos públicos, usar um clone da main pública ou a cópia de
+  publicação e transportar somente alterações revisadas, nunca refs antigas.
+- .env, modelos, _legacy, capturas e alterações locais de dependências ficaram
+  fora do envio. Não houve deploy/hospedagem do backend ou mobile.
+
+
+### Publicação concluída e CI aprovado
+
+- URL: https://github.com/Lucas-M01/VoxNovel — PUBLIC, MIT reconhecida pelo GitHub.
+- Main pública: d4a6c47; commit inicial 26da4a1 sem pais, tag fase-4 pública em
+  26da4a1. A fase-4 local e todo o histórico original foram preservados.
+- Primeiro CI: backend passou; mobile encontrou corrida de teste ao fechar
+  Personalização durante o carregamento da troca de idioma. Corrigido somente
+  o teste para aguardar Fechar, com todas as asserções de texto/voz mantidas.
+- Gate da correção na cópia pública: lint/20 casos, tipos, 233 testes e bundles
+  Hermes Android/iOS passaram. Nenhuma alteração funcional do app.
+- GitHub Actions no commit d4a6c47: Backend quality 44961538462 SUCCESS;
+  Mobile quality 44961538426 SUCCESS. O CI backend não usa Supabase remoto;
+  12 integrações reais continuam sendo evidência da stack local descartável.
+- O registro deste resultado e a mesma correção do teste ficam também no
+  histórico local, sem enviar suas refs ao GitHub. Root original continua sem
+  remote; publicações futuras devem usar a cópia isolada ou um clone público.
+- Pendências: nenhuma para este envio. Deploy/hospedagem e novas melhorias não
+  foram executados nem iniciados automaticamente. Capturas pessoais continuam
+  privadas. Alterações locais de dependências foram preservadas fora do envio.

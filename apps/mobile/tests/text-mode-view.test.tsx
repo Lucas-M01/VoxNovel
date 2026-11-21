@@ -21,7 +21,7 @@ test('reader chooses the original and carries that choice when opening voice', a
     expect(screen.queryByRole('button', { name: 'Texto original' })).toBeNull();
     await fireEvent.press(screen.getByRole('button', { name: 'Personalização' }));
     await fireEvent.press(screen.getByRole('button', { name: 'Texto original' }));
-    await fireEvent.press(screen.getByRole('button', { name: 'Fechar' }));
+    await fireEvent.press(await screen.findByRole('button', { name: 'Fechar' }));
     expect(await screen.findByText('Original English paragraph.')).toBeOnTheScreen();
     expect(screen.queryByText('Texto em português.')).toBeNull();
     await fireEvent.press(screen.getByRole('button', { name: 'Ouvir capítulo' }));
