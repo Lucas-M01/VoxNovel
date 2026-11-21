@@ -1,5 +1,6 @@
 import type { QueryClient } from '@tanstack/react-query';
 import { chapterSchema, speedSchema, type Novel } from '@core/api/schemas';
+import { limitSpeechRate } from '@core/device-preferences';
 import { initialSpeechChapter } from '@core/initial-speech-chapter';
 import { activeSource, sourceChapterUrl } from '@core/chapter-source';
 import { chapterAvailable } from '@core/connectivity';
@@ -68,7 +69,7 @@ export function createPlaybackController(novel: Novel, dependencies: PlaybackDep
           if (!available(chapter + 1)) { update({ status: 'idle', log: 'Próximo capítulo não disponível.' }); return; }
           void start(chapter + 1);
         },
-      }, { rate: snapshot.rate ?? defaults.rate, ...((snapshot.voiceId ?? defaults.voiceId) ? { voice: snapshot.voiceId ?? defaults.voiceId ?? undefined } : {}) });
+      }, { rate: limitSpeechRate(snapshot.rate ?? defaults.rate), ...((snapshot.voiceId ?? defaults.voiceId) ? { voice: snapshot.voiceId ?? defaults.voiceId ?? undefined } : {}) });
       if (!next) return;
       if (!active()) { await next.destroy(); return; }
       player = next;
@@ -104,7 +105,7 @@ export function createPlaybackController(novel: Novel, dependencies: PlaybackDep
       try { await previous?.destroy(); } catch (error) { failure(error); }
     },
     async setRate(rate: number) {
-      try { const parsed = speedSchema.parse({ speed: rate }); update({ rate: parsed.speed }); await player?.applyConfig({ rate: parsed.speed }); }
+      try { const parsed = speedSchema.parse({ speed: rate }); const speed = limitSpeechRate(parsed.speed); update({ rate: speed }); await player?.applyConfig({ rate: speed }); }
       catch (error) { failure(error); }
     },
     async setVoice(voiceId: string) {

@@ -46,7 +46,7 @@ test('detail validates edited progress and source switching restores that source
     await fireEvent.press(screen.getByRole('button', { name: 'Salvar capítulo' }));
     await screen.findByRole('button', { name: 'Editar capítulo' });
     await fireEvent.press(screen.getByRole('button', { name: 'Usar Second' }));
-    await waitFor(() => expect(screen.getByText('Second · Ativa')).toBeOnTheScreen());
+    await waitFor(() => expect(screen.getByLabelText('Second · Ativa')).toBeOnTheScreen());
     expect(screen.getByText('Capítulo 3 de 5')).toBeOnTheScreen();
     await fireEvent.press(screen.getByRole('button', { name: 'Continuar leitura' }));
     expect(navigate).toHaveBeenCalledWith('reading', expect.objectContaining({ current_chapter: 3 }));

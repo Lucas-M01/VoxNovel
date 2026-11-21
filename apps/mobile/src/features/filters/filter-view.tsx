@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ActivityIndicator, FlatList, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { FilterKind } from '@core/api/schemas';
 import { httpResource, type HttpResource } from '@core/http-resource';
@@ -8,6 +8,7 @@ import { filterInputSchema } from '@features/filters/filter-input';
 import { Button } from '@ui/button';
 import { Dialog } from '@ui/dialog';
 import { ErrorMessage } from '@ui/error-message';
+import { colors, presentation } from '@ui/presentation';
 
 const types: { kind: FilterKind; label: string; placeholder: string }[] = [
   { kind: 'words', label: 'Palavra', placeholder: 'Adicionar palavra...' },
@@ -36,24 +37,38 @@ export function FilterView({ request = httpResource }: { request?: HttpResource 
     setValidation('');
     add.mutate(parsed.data, { onSuccess: () => setValue('') });
   }
-  return <View style={{ flex: 1, backgroundColor: '#0F0F1A', padding: 24, gap: 12 }}>
-    <Text accessibilityRole="header" style={{ color: '#FFFFFF', fontSize: 18 }}>Filtros</Text>
-    <Text style={{ color: '#CCCCCC' }}>Filtros globais de palavra, frase e regex.</Text>
-    <View style={{ flexDirection: 'row', gap: 8 }}>{types.map(type => <Button key={type.kind} title={type.label} selected={kind === type.kind} disabled={pending} onPress={() => { setKind(type.kind); setValidation(''); add.reset(); }} />)}</View>
-    <TextInput accessibilityLabel="Novo filtro" placeholder={type?.placeholder} placeholderTextColor="#888888" value={value} editable={!pending} autoCapitalize="none" autoCorrect={kind !== 'regex'} onChangeText={value => { setValue(value); setValidation(''); add.reset(); }} onSubmitEditing={submit} style={{ color: '#FFFFFF', padding: 12, borderWidth: 1, borderColor: '#888888' }} />
-    <Button title="Adicionar filtro" busy={add.isPending} disabled={pending && !add.isPending} onPress={submit} />
+  return <View style={[presentation.page, styles.content]}>
+    <Text accessibilityRole="header" style={presentation.title}>🚫 Filtros</Text>
+    <Text style={presentation.subtitle}>Linhas que correspondem aos filtros serão ignoradas na leitura.</Text>
+    <View style={styles.tabs}>{types.map(type => <Button key={type.kind} title={type.label} style={styles.flex} selected={kind === type.kind} disabled={pending} onPress={() => { setKind(type.kind); setValidation(''); add.reset(); }} />)}</View>
+    <View style={styles.addRow}>
+      <TextInput accessibilityLabel="Novo filtro" placeholder={type?.placeholder} placeholderTextColor={colors.muted} value={value} editable={!pending} autoCapitalize="none" autoCorrect={kind !== 'regex'} onChangeText={value => { setValue(value); setValidation(''); add.reset(); }} onSubmitEditing={submit} style={[presentation.input, styles.flex]} />
+      <Button title="Adicionar filtro" caption="+" variant="primary" labelStyle={styles.addLabel} busy={add.isPending} disabled={pending && !add.isPending} onPress={submit} />
+    </View>
     {validation ? <ErrorMessage message={validation} /> : null}
     {operationError ? <ErrorMessage message={operationError.message} /> : null}
     {query.isPending ? <ActivityIndicator accessibilityLabel="Carregando filtros" /> : null}
     {query.isError ? <ErrorMessage message={query.error.message} onRetry={() => { void query.refetch(); }} /> : null}
-    <FlatList data={rows} keyExtractor={row => `${row.kind}:${row.value}`} renderItem={({ item }) => <View style={{ gap: 8, paddingVertical: 8 }}>
-      <Text style={{ color: '#CCCCCC' }}>{item.label}: {item.value}</Text>
-      <Button title={`Remover ${item.label.toLowerCase()}: ${item.value}`} disabled={pending} onPress={() => remove.mutate({ kind: item.kind, value: item.value })} />
-    </View>} ListEmptyComponent={!query.isPending && !query.isError ? <Text style={{ color: '#CCCCCC' }}>Nenhum filtro configurado.</Text> : undefined} />
-    <Button title="Limpar todos" disabled={pending || query.isPending} onPress={() => { clear.reset(); setConfirmation(true); }} />
-    <Dialog title="Limpar filtros" closeTitle="Cancelar" visible={confirmation} onClose={() => setConfirmation(false)}>
+    <FlatList data={rows} keyboardShouldPersistTaps="handled" keyExtractor={row => `${row.kind}:${row.value}`} renderItem={({ item }) => <View style={styles.item}>
+      <View style={styles.flex}><Text style={styles.kind}>{item.label}</Text><Text style={presentation.text}>{item.value}</Text></View>
+      <Button title={`Remover ${item.label.toLowerCase()}: ${item.value}`} caption="×" variant="quiet" labelStyle={styles.removeLabel} disabled={pending} onPress={() => remove.mutate({ kind: item.kind, value: item.value })} />
+    </View>} ListEmptyComponent={!query.isPending && !query.isError ? <Text style={styles.empty}>Nenhum filtro configurado.</Text> : undefined} />
+    <Button title="Limpar todos" variant="danger" disabled={pending || query.isPending} onPress={() => { clear.reset(); setConfirmation(true); }} />
+    <Dialog title="Limpar filtros" closeTitle="Cancelar" visible={confirmation} onClose={() => setConfirmation(false)}
+      confirm={{ title: 'Limpar', variant: 'danger', busy: clear.isPending, onPress: () => clear.mutate(undefined, { onSuccess: () => setConfirmation(false) }) }}>
       <Text style={{ color: '#CCCCCC' }}>Deseja remover todos os filtros?</Text>
-      <Button title="Limpar" busy={clear.isPending} onPress={() => clear.mutate(undefined, { onSuccess: () => setConfirmation(false) })} />
     </Dialog>
   </View>;
 }
+
+const styles = StyleSheet.create({
+  content: { padding: 20, gap: 12 },
+  tabs: { flexDirection: 'row', gap: 8, marginTop: 8 },
+  addRow: { flexDirection: 'row', gap: 10 },
+  flex: { flex: 1 },
+  addLabel: { fontSize: 24, lineHeight: 26, minWidth: 26 },
+  item: { backgroundColor: colors.surface, borderRadius: 10, paddingLeft: 14, paddingVertical: 4, marginBottom: 8, flexDirection: 'row', alignItems: 'center' },
+  kind: { color: '#A9A3FF', fontSize: 11, textTransform: 'uppercase' },
+  removeLabel: { color: '#FF7777', fontSize: 20 },
+  empty: { color: colors.muted, marginTop: 40, textAlign: 'center' },
+});

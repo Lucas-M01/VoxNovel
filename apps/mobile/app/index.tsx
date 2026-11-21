@@ -1,3 +1,5 @@
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { presentation } from '@ui/presentation';
 import { useCallback } from 'react';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useQueryClient } from '@tanstack/react-query';
@@ -8,7 +10,7 @@ export default function HomeRoute() {
   const router = useRouter(); const client = useQueryClient();
   useFocusEffect(useCallback(() => {
     void client.invalidateQueries({ queryKey: keys.library() });
-    void client.invalidateQueries({ queryKey: ['library-offline'] });
+    void client.invalidateQueries({ queryKey: keys.localChapterLists() });
   }, [client]));
-  return <LibraryScreen onOpen={novel => { client.setQueryData(keys.novel(novel.id), novel); router.push({ pathname: '/detail', params: { id: novel.id } }); }} onSearch={() => router.push('/search')} onFilters={() => router.push('/filters')} />;
+  return <SafeAreaView edges={['top']} style={presentation.page}><LibraryScreen onOpen={novel => { client.setQueryData(keys.novel(novel.id), novel); router.push({ pathname: '/detail', params: { id: novel.id } }); }} onSearch={() => router.push('/search')} onFilters={() => router.push('/filters')} /></SafeAreaView>;
 }

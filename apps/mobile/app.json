@@ -3,6 +3,7 @@
     "name": "VoxNovel",
     "slug": "voxnovel",
     "version": "0.1.0",
+    "orientation": "default",
     "scheme": "voxnovel",
     "plugins": [
       "expo-router"

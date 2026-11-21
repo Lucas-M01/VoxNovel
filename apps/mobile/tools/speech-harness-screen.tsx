@@ -27,6 +27,7 @@ function HarnessScreen() {
   const [rate, setRate] = useState(1);
   const [voiceId, setVoiceId] = useState<string | null>(null);
   const [long, setLong] = useState(false);
+  const [settings, setSettings] = useState(false);
   const [picker, setPicker] = useState(false);
   const [events, setEvents] = useState<string[]>([]);
   const alive = useRef(true);
@@ -124,7 +125,10 @@ function HarnessScreen() {
         revision.current += 1;
         void run(async () => { revision.current += 1; await speechSession.stop(); player.current = null; setStatus('stopped'); log('Player descartado. Não deve haver fala posterior.'); });
       }} />
-      <ReadingControls preferences={preferences} onChange={update} />
+      <Button title="Personalização" onPress={() => setSettings(true)} />
+      <Button title={preferences.controlsVisible ? 'Ocultar controles' : 'Mostrar controles'} onPress={() => update({ controlsVisible: !preferences.controlsVisible })} />
+      <Button title={preferences.autoScroll ? 'Parar rolagem automática' : 'Iniciar rolagem automática'} onPress={() => update({ autoScroll: !preferences.autoScroll })} />
+      <ReadingControls visible={settings} onClose={() => setSettings(false)} preferences={preferences} onChange={update} />
       <Text style={{ fontSize: fontSizes[preferences.sizeIndex] ?? 18, fontFamily: fonts[preferences.fontIndex]?.family,
         color: themes[preferences.themeIndex]?.text, backgroundColor: themes[preferences.themeIndex]?.background }}>
         Prévia sintética das preferências de leitura. Rolagem e imersão serão compostas no leitor em F5.

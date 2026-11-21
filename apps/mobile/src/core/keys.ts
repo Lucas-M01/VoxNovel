@@ -10,6 +10,7 @@ export const keys = {
   chapter: (scope: ChapterScope, url: string, chapter: number, mode: TextMode = 'translated') => ['chapters', scope.novelId, scope.sourceId, url, chapter, ...(mode === 'original' ? [mode] : [])],
   downloads: (id: string) => ['downloads', id],
   downloadedText: (id: string, chapter: number) => ['downloads', id, chapter],
+  localChapterLists: () => ['local-chapters'],
   localChapters: (scope: ChapterScope) => ['local-chapters', scope.novelId, scope.sourceId],
   filters: () => ['filters'],
   settings: () => ['settings'],

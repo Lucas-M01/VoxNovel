@@ -26,10 +26,11 @@ export const readingPreferencesSchema = z.object({
   autoScroll: z.boolean().default(false), controlsVisible: z.boolean().default(true), immersive: z.boolean().default(true),
 });
 export type ReadingPreferences = z.infer<typeof readingPreferencesSchema>;
-export function useReadingPreferences() {
-  const [preferences, setPreferences] = useState(() => readingPreferencesSchema.parse({}));
+export function useReadingPreferences(defaults?: Partial<ReadingPreferences>) {
+  const [changes, setChanges] = useState<Partial<ReadingPreferences>>({});
+  const preferences = readingPreferencesSchema.parse({ ...defaults, ...changes });
   function update(patch: Partial<ReadingPreferences>) {
-    setPreferences(previous => readingPreferencesSchema.parse({ ...previous, ...patch }));
+    setChanges(previous => ({ ...previous, ...patch }));
   }
   return { preferences, update };
 }

@@ -191,7 +191,7 @@ export async function defaultVoice(driver: SpeechDriver): Promise<Voice | null> 
     voices.find(voice => voice.language.toLowerCase().startsWith('pt')) ?? voices[0] ?? null;
 }
 
-type VoiceGroup = { code: string; name: string; voices: Voice[] };
+export type VoiceGroup = { code: string; name: string; voices: Voice[] };
 const languageNames: Record<string, string> = {
   'pt-br': 'Português (Brasil)', 'pt-pt': 'Português (Portugal)', pt: 'Português',
   'en-us': 'Inglês (Estados Unidos)', 'en-gb': 'Inglês (Reino Unido)', 'en-au': 'Inglês (Austrália)', 'en-in': 'Inglês (Índia)', en: 'Inglês',

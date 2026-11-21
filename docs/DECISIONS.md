@@ -135,3 +135,56 @@ As escolhas de implementação, divisão de commits e tags constam de PLANO_COMM
 - C48/C49: API c8fcd3f e mobile 3d0e10f implementam P36. Downloads preservados, cache de memória por modo e troca de voz interrompendo sessão antiga. Aceite físico do seletor/modelo pendente; Fase 4 continua aberta.
 
 - Perfil local ajustado após teste de carga: duas vagas/espera 60 s retornaram ocupado sob cinco pedidos. Perfil de exemplo e .env privado agora usam cinco vagas, espera 60 s e bloco 90 s, mantendo um modelo serializado, limites de servidor e total de capítulo. Reteste com cinco traduções concluiu em 50,59 s totais, todas PT e zero fallbacks. Sem alterar grupos de cinco no app nem remover budgets.
+
+## ADR-015 — Preferências locais e leitura após revisão no Android
+
+- Data: 2026-11-21.
+- Decisão do dono: retirar 2,25×, aproximar Personalização do original, melhorar a distribuição dos controles de leitura, mover o seletor de idioma, adicionar preferências de leitura e voz na biblioteca, revisar cartões de fontes e trocar o ícone de Continuar leitura.
+- Implementação: Personalização no leitor reúne idioma, tipografia, espaçamento, largura, tema e rolagem. A biblioteca salva padrões de tipografia, rolagem, velocidade de voz e voz no aparelho mediante Salvar preferências. Ajustes da sessão do leitor/player permanecem possíveis. Valores anteriores acima de 2× ficam limitados a 2× ao usar o player.
+- Downloads: biblioteca e tela de downloads consultam a mesma lista da fonte ativa. O detalhe mostra o total offline por fonte. Arquivos continuam vinculados às fontes conhecidas e a revisão não migra arquivos do formato sem identificação de fonte.
+
+## ADR-016 — Estabilizar carregamento e revisar cartões e confirmações
+
+- Data: 2026-11-21.
+- Decisão do dono: evitar deslocamento dos controles enquanto o capítulo carrega, usar o mesmo estado de carregamento na biblioteca, dar destaque às confirmações de remoção e recuperar a aparência original dos cartões de fontes.
+- Aplicação: carregamento inicial centralizado na biblioteca e no leitor; pré-carregamento ou atualização com dados em cache mantém o conteúdo disponível. Os modais de remoção usam rótulo e contorno vermelhos e apresentam Cancelar ao lado. Os cartões usam borda arredondada, faixa na cor da fonte e indicação visual separada da fonte ativa, preservando a contagem offline por fonte.
+
+## ADR-017 — Ajustar leitura offline e indicar sites confirmados no cadastro
+
+- Data: 2026-11-21.
+- Decisão do dono: centralizar títulos da leitura e aviso offline, ocultar o aviso com os controles, retirar a mensagem sobre falha ao salvar progresso e indicar na tela Por URL os sites que permitem extração de capítulos.
+- Aplicação: o leitor usa os títulos do texto quando identificados, com fallback para o nome cadastrado da obra e o número do capítulo. A gravação de progresso continua em segundo plano. A tela Por URL lista FreeWebNovel, a fonte com extração de capítulo real comprovada no projeto. As evidências dos demais provedores continuam em VALIDACAO.md e não foram elevadas a confirmação de extração.
+
+## ADR-018 — CentralNovel, idiomas de voz e orientação horizontal
+
+- Data: 2026-11-21.
+- Decisão do dono: incluir CentralNovel após confirmar que a extração funcionou no aparelho, organizar a seleção de vozes em grupos expansíveis e adaptar o app ao modo horizontal.
+- Aplicação: o player oferece Português e Inglês (Estados Unidos) primeiro, quando instalados. Outros idiomas instalados podem ser habilitados individualmente em Preferências → Ouvir. A seleção de voz padrão continua no mesmo menu. A ordem não altera a voz salva nem a troca de idioma do texto.
+- Orientação: app sem trava de rotação e margens laterais de segurança. No modo horizontal, o leitor reserva mais altura para o texto, o player usa duas colunas quando há largura e os diálogos mantêm as ações fora da área rolável.
+
+## ADR-019 — Simplificar o player e a biblioteca na horizontal
+
+- Data: 2026-11-21.
+- Decisão do dono: tirar a seção Detalhes da tela Ouvir e mostrar as obras em uma coluna quando o celular estiver deitado.
+- Aplicação: na horizontal, a capa fica à esquerda e título, fonte e capítulo atual/total ficam ao lado. A orientação vertical continua com a grade de duas colunas. As mensagens de erro e o estado de reprodução continuam visíveis no player.
+
+## ADR-020 — Usar português do Brasil no seletor padrão
+
+- Data: 2026-11-21.
+- Decisão do dono: o grupo de português do seletor do player deve mostrar apenas vozes brasileiras.
+- Aplicação: Português (Brasil) e Inglês (Estados Unidos) são os grupos padrão. Outras variantes de português seguem o fluxo de idiomas extras em Preferências → Ouvir.
+
+
+## Registro de aceite Android — 2026-11-21
+
+- Após o roteiro final de tradução local, original/PT na leitura/voz, download novo/offline e visual, o dono respondeu: “Terminei e tá tudo certo agora”. Aceite funcional geral recebido; não inventar subresultados, versão do sistema ou voz atual.
+- A pendência física de ADR-013/014 deixa de impedir o aceite funcional. Os limites de cenários não enumerados, idiomas e provedores permanecem documentados. Não solicitar novamente o teste geral aprovado.
+- Revisões visuais ADR-015–020 permanecem sem commit; o fechamento formal/tag fase-4 aguarda consolidar a versão visual testada, preservando os arquivos externos de configuração/dependências. Este registro não publica, não faz deploy e não concede licença pública.
+
+
+## Consolidação visual aprovada — 2026-11-21
+
+- O dono informou: “Acredito que tá bom já a parte visual, pode prosseguir”. Autoriza consolidar as revisões ADR-015–020 no Git e concluir a Fase 4, mantendo o aceite funcional Android já recebido.
+- Preferências locais de leitura/voz e idiomas extras entram como extensão P37 do contrato, rastreando as aprovações expressas já registradas em ADR-015/018/020. Limite de velocidade de 2× e retirada de Detalhes do player seguem as decisões do dono; não tratar esses desvios como comportamento do legado.
+- O dono pediu capturas das telas funcionais para uso posterior. Capturas reais ficam inicialmente em diretório privado; não publicar biblioteca/progresso pessoal ou conteúdo de capítulos no Git. A disponibilidade do aparelho para ADB é uma condição da captura, sem alterar a aprovação funcional.
+- docs/spec será preservada como referência histórica, com aviso e índice apontando para o escopo/estado reais. A pasta contém propostas além da entrega, sem transformá-las em tarefas novas. Nenhum push/deploy foi solicitado ou executado.

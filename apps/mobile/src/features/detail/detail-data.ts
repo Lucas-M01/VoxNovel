@@ -30,5 +30,5 @@ export async function rememberNovel(client: QueryClient, novel: Novel, services:
     client.setQueryData(keys.library(), { novels, offline: library?.offline ?? false });
     await saveLibrarySnapshot(services, novels);
   }
-  await client.invalidateQueries({ queryKey: ['library-offline', novel.id] });
+  await client.invalidateQueries({ queryKey: keys.localChapterLists() });
 }

@@ -29,37 +29,52 @@ test('downloaded text renders offline without requesting content and a progress 
   try {
     await render(<QueryClientProvider client={client}><ReadingScreen novel={readerNovel} initialChapter={2} services={data} /></QueryClientProvider>);
     expect(await screen.findByText('Texto offline.')).toBeOnTheScreen();
-    expect(await screen.findByText('Não foi possível salvar o progresso.')).toBeOnTheScreen();
-    expect(screen.getByRole('header', { name: 'Capítulo 2: Local' })).toBeOnTheScreen();
+    expect(screen.queryByText('Não foi possível salvar o progresso.')).toBeNull();
+    expect(screen.getByRole('header', { name: 'Capítulo 2: Local' })).toHaveStyle({ textAlign: 'center' });
+    expect(screen.getByText('Livro sintético')).toHaveStyle({ textAlign: 'center' });
+    const warning = 'Sem internet — só capítulos baixados';
+    expect(await screen.findByText(warning)).toHaveStyle({ textAlign: 'center' });
+    await fireEvent.press(screen.getByTestId('reading-body-touch'));
+    expect(screen.queryByText(warning)).toBeNull();
+    await fireEvent.press(screen.getByTestId('reading-body-touch'));
+    expect(screen.getByText(warning)).toBeOnTheScreen();
     expect(screen.getByText('— Diálogo offline.')).toHaveStyle({ marginLeft: 18 });
-    expect(transport).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(transport).toHaveBeenCalledTimes(1));
     await screen.unmount();
   } finally { client.clear(); }
 });
 
 test('online text is readable while progress is still pending, and is not saved as a download', async () => {
+  let finishChapter = () => {};
+  const loading = new Promise<void>(resolve => { finishChapter = resolve; });
   let finishProgress = () => {};
   const pending = new Promise<void>(resolve => { finishProgress = resolve; });
   const transport: HttpTransport = async (_url, init) => {
     if (init.method === 'PATCH') { await pending; return jsonResponse(readerNovel); }
+    await loading;
     return jsonResponse({ url: 'https://example.org/chapter-1', chapter: 1, text: 'Texto online sintético.' });
   };
   const data = services(transport); const client = readerQueryClient();
   try {
     await render(<QueryClientProvider client={client}><ReadingScreen novel={readerNovel} services={data} /></QueryClientProvider>);
+    expect(screen.getByText('Carregando capítulo…')).toBeOnTheScreen();
+    expect(screen.queryByRole('button', { name: 'Próximo capítulo' })).toBeNull();
+    await act(async () => { finishChapter(); });
     expect(await screen.findByText('Texto online sintético.')).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: 'Próximo capítulo' })).toBeOnTheScreen();
     await expect(data.storage.readChapter(readerScope, 1)).resolves.toBeNull();
     await act(async () => { finishProgress(); });
     await screen.unmount();
-  } finally { finishProgress(); client.clear(); }
+  } finally { finishChapter(); finishProgress(); client.clear(); }
 });
 
 test('reading preferences restyle the rendered text without refetching content', async () => {
   const transport = jest.fn(async (_url: string, init: RequestInit) => init.method === 'PATCH' ? jsonResponse(readerNovel) : jsonResponse({ url: 'https://example.org/chapter-1', chapter: 1, text: 'Parágrafo sintético.' }));
   const data = services(transport); const client = readerQueryClient();
+  await data.storage.savePreferences({ reading: { sizeIndex: 1, fontIndex: 0, themeIndex: 0, spacingIndex: 2, widthIndex: 2, scrollSpeedIndex: 0 } });
   try {
     await render(<QueryClientProvider client={client}><ReadingScreen novel={readerNovel} services={data} /></QueryClientProvider>);
-    await screen.findByText('Parágrafo sintético.');
+    await waitFor(() => expect(screen.getByText('Parágrafo sintético.')).toHaveStyle({ fontSize: 16 }));
     await waitFor(() => expect(transport).toHaveBeenCalledTimes(5));
     await fireEvent.press(screen.getByRole('button', { name: 'Personalização' }));
     await fireEvent.press(screen.getByRole('button', { name: '23' }));

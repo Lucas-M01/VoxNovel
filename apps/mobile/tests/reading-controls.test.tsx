@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import { Text, View } from 'react-native';
 import { readingPreferencesSchema, useReadingPreferences } from '@core/reading-preferences';
@@ -8,20 +9,23 @@ import { ProgressBar } from '@ui/progress-bar';
 
 function PreferencesHarness() {
   const { preferences, update } = useReadingPreferences();
-  return <View><Text testID="preferences">{JSON.stringify(preferences)}</Text><ReadingControls preferences={preferences} onChange={update} /></View>;
+  const [visible, setVisible] = useState(false);
+  return <View>
+    <Text testID="preferences">{JSON.stringify(preferences)}</Text>
+    <Button title="Personalização" onPress={() => setVisible(true)} />
+    <ReadingControls visible={visible} onClose={() => setVisible(false)} preferences={preferences} onChange={update} />
+  </View>;
 }
 
 test('reading controls select existing preferences and keep them only for this mounted session', async () => {
   await render(<PreferencesHarness />);
   expect(JSON.parse(screen.getByTestId('preferences').props.children)).toEqual(readingPreferencesSchema.parse({}));
   await fireEvent.press(screen.getByRole('button', { name: 'Personalização' }));
-  for (const name of ['23', 'Serif', 'Claro', '2', '85%', 'Rápida']) await fireEvent.press(screen.getByRole('button', { name }));
+  for (const name of ['23', 'Serif', 'Claro', 'Amplo', 'Focada', 'Rápida']) await fireEvent.press(screen.getByRole('button', { name }));
   expect(screen.getByRole('button', { name: 'Claro' }).props.accessibilityState.selected).toBe(true);
   await fireEvent.press(screen.getByRole('button', { name: 'Fechar' }));
   expect(screen.queryByRole('button', { name: 'Claro' })).toBeNull();
-  await fireEvent.press(screen.getByRole('button', { name: 'Ocultar controles' }));
-  await fireEvent.press(screen.getByRole('button', { name: 'Iniciar rolagem automática' }));
-  expect(JSON.parse(screen.getByTestId('preferences').props.children)).toMatchObject({ sizeIndex: 4, fontIndex: 1, themeIndex: 3, spacingIndex: 3, widthIndex: 3, scrollSpeedIndex: 2, autoScroll: true, controlsVisible: false });
+  expect(JSON.parse(screen.getByTestId('preferences').props.children)).toMatchObject({ sizeIndex: 4, fontIndex: 1, themeIndex: 3, spacingIndex: 3, widthIndex: 3, scrollSpeedIndex: 2 });
   await screen.unmount();
   await render(<PreferencesHarness />);
   expect(JSON.parse(screen.getByTestId('preferences').props.children)).toEqual(readingPreferencesSchema.parse({}));

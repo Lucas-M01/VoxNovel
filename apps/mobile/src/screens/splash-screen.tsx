@@ -1,9 +1,13 @@
-import { Text, View } from 'react-native';
-import { colors, presentation as styles } from '@ui/presentation';
+import { Image, StyleSheet, View } from 'react-native';
+import splashArt from '@screens/splash-art.png';
+
 export default function SplashScreen() {
-  return <View style={[styles.page, { alignItems: 'center', justifyContent: 'center', gap: 20 }]}>
-    <View style={{ backgroundColor: colors.accent, borderRadius: 24, width: 88, height: 88, alignItems: 'center', justifyContent: 'center' }}><Text style={{ color: colors.background, fontSize: 48, fontWeight: '700' }}>V</Text></View>
-    <Text accessibilityRole="header" style={styles.title}>VoxNovel</Text>
-    <Text style={styles.subtitle}>Suas histórias, no seu ritmo.</Text>
+  return <View accessible accessibilityRole="header" accessibilityLabel="VoxNovel" style={styles.page}>
+    <Image source={splashArt} resizeMode="cover" style={styles.image} />
   </View>;
 }
+
+const styles = StyleSheet.create({
+  page: { flex: 1, backgroundColor: '#0F172A' },
+  image: { width: '100%', height: '100%' },
+});

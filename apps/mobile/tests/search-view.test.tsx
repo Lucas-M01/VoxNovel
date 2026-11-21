@@ -41,7 +41,10 @@ test('URL validation and duplicate dialog allow opening the existing novel witho
   const request = createHttpResource({ baseUrl: () => 'https://api.example', transport });
   try {
     await render(<QueryClientProvider client={client}><SearchScreen request={request} onOpen={open} /></QueryClientProvider>);
+    expect(screen.queryByText('Sites com extração de texto confirmada')).toBeNull();
     await fireEvent.press(screen.getByRole('button', { name: 'Por URL' }));
+    expect(screen.getByText('FreeWebNovel · freewebnovel.com')).toBeOnTheScreen();
+    expect(screen.getByText('CentralNovel · centralnovel.com')).toBeOnTheScreen();
     await fireEvent.changeText(screen.getByLabelText('URL da obra'), 'invalid');
     await fireEvent.press(screen.getByRole('button', { name: 'Buscar' }));
     expect(await screen.findByRole('alert')).toHaveTextContent('Confira a URL informada.');

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Image, ScrollView, Text, TextInput, View } from 'react-native';
+import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { z } from 'zod';
 import { novelResources } from '@core/api/novels';
@@ -51,27 +51,45 @@ export function SearchView({ onOpen, request = httpResource, existing }: Props) 
   }, onError: failure => setError(failure.message) });
   const busy = search.isPending || inspect.isPending || save.isPending;
   return <ScrollView style={styles.page} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-    <Text accessibilityRole="header" style={styles.title}>{existing ? 'Adicionar fonte' : 'Nova obra'}</Text>
-    <Text style={styles.subtitle}>Encontre sua próxima leitura pelo nome ou pelo endereço da obra.</Text>
+    <Text accessibilityRole="header" style={styles.title}>{draft ? '📖 Detalhes' : existing ? 'Adicionar fonte' : '🆕 Nova Obra'}</Text>
     {!draft ? <>
-      <View style={styles.row}><Button title="Por nome" selected={mode === 'name'} disabled={busy} onPress={() => { setMode('name'); setResults(null); setSelected([]); setError(''); }} /><Button title="Por URL" selected={mode === 'url'} disabled={busy} onPress={() => { setMode('url'); setResults(null); setSelected([]); setError(''); }} /></View>
+      <View style={{ flexDirection: 'row', gap: 6, padding: 4, backgroundColor: colors.surface, borderRadius: 10 }}><Button style={{ flex: 1 }} title="Por nome" selected={mode === 'name'} disabled={busy} onPress={() => { setMode('name'); setResults(null); setSelected([]); setError(''); }} /><Button style={{ flex: 1 }} title="Por URL" selected={mode === 'url'} disabled={busy} onPress={() => { setMode('url'); setResults(null); setSelected([]); setError(''); }} /></View>
+      <Text style={styles.subtitle}>{mode === 'name' ? 'Nome da obra' : 'URL da novel ou do capítulo'}</Text>
       <TextInput accessibilityLabel={mode === 'name' ? 'Nome da obra' : 'URL da obra'} placeholder={mode === 'name' ? 'Nome da obra' : 'https://…'} placeholderTextColor={colors.muted} style={styles.input} value={input} onChangeText={setInput} autoCapitalize="none" editable={!busy} keyboardType={mode === 'url' ? 'url' : 'default'} onSubmitEditing={() => { if (!busy) { setError(''); search.mutate(); } }} />
-      <Button title="Buscar" busy={search.isPending} disabled={busy} onPress={() => { setResults(null); setSelected([]); setError(''); search.mutate(); }} />
+      {mode === 'url' ? <View style={styles.card}>
+        <Text accessibilityRole="header" style={styles.heading}>Sites com extração de texto confirmada</Text>
+        <Text style={styles.text}>FreeWebNovel · freewebnovel.com</Text>
+        <Text style={styles.text}>CentralNovel · centralnovel.com</Text>
+        <Text style={styles.subtitle}>Cole o endereço de uma obra ou de um capítulo.</Text>
+      </View> : null}
+      <Button variant="primary" title="Buscar" caption={mode === 'url' ? '🔍 Continuar' : '🔍 Buscar'} busy={search.isPending} disabled={busy} onPress={() => { setResults(null); setSelected([]); setError(''); search.mutate(); }} />
       {results?.length === 0 ? <Text style={styles.subtitle}>Nenhuma fonte encontrada.</Text> : null}
-      {results?.map(meta => <View key={`${meta.provider}:${meta.url_base}`} style={styles.card}>
-        <View style={styles.row}>{meta.image_url ? <Image source={{ uri: meta.image_url }} style={styles.cover} accessibilityLabel={`Capa de ${meta.title}`} /> : null}<View style={{ flex: 1 }}><Text style={styles.heading}>{meta.title}</Text><Text style={styles.subtitle}>{meta.provider} · {meta.total_chapters ?? '--'} capítulos</Text></View></View>
-        {meta.authors.length ? <Text style={styles.subtitle}>{meta.authors.join(', ')}</Text> : null}
-        {meta.rating ? <Text style={styles.subtitle}>Avaliação: {meta.rating}</Text> : null}
-        {meta.genres.length ? <Text style={styles.subtitle}>{meta.genres.join(' · ')}</Text> : null}
-        <Button title={`Selecionar ${meta.provider}`} selected={selected.includes(meta)} disabled={busy} onPress={() => setSelected(previous => previous.includes(meta) ? previous.filter(item => item !== meta) : [...previous, meta])} />
-      </View>)}
-      {results?.length ? <Button title="Continuar" busy={inspect.isPending} disabled={!selected.length || busy} onPress={() => { setError(''); inspect.mutate(); }} /> : null}
+      {results?.map(meta => {
+        const checked = selected.includes(meta);
+        return <Pressable key={`${meta.provider}:${meta.url_base}`} accessibilityRole="button" accessibilityLabel={`Selecionar ${meta.provider}`}
+          accessibilityState={{ selected: checked, disabled: busy }} disabled={busy}
+          style={[styles.card, searchStyles.result, checked && searchStyles.selected]}
+          onPress={() => setSelected(previous => previous.includes(meta) ? previous.filter(item => item !== meta) : [...previous, meta])}>
+          {meta.image_url
+            ? <Image source={{ uri: meta.image_url }} style={searchStyles.thumbnail} />
+            : <View style={[searchStyles.thumbnail, searchStyles.placeholder]}><Text>📚</Text></View>}
+          <View style={searchStyles.resultBody}>
+            <Text style={searchStyles.resultTitle} numberOfLines={2}>{meta.title}</Text>
+            <Text style={styles.subtitle}>{meta.provider} · {meta.total_chapters ?? '--'} capítulos</Text>
+            {meta.authors.length ? <Text style={styles.subtitle}>{meta.authors.join(', ')}</Text> : null}
+            {meta.rating ? <Text style={styles.subtitle}>Avaliação: {meta.rating}</Text> : null}
+            {meta.genres.length ? <Text style={styles.subtitle}>{meta.genres.join(' · ')}</Text> : null}
+          </View>
+          <Text style={[searchStyles.check, checked && searchStyles.checked]}>{checked ? '✓' : '○'}</Text>
+        </Pressable>;
+      })}
+      {results?.length ? <Button variant="primary" title="Continuar" busy={inspect.isPending} disabled={!selected.length || busy} onPress={() => { setError(''); inspect.mutate(); }} /> : null}
     </> : <View style={styles.card}>
       <Text style={styles.heading}>{draft.selected[0]?.title}</Text>
       <Text style={styles.subtitle}>{draft.selected.map(meta => meta.provider).join(' · ')}</Text>
       <Text style={styles.text}>Capítulo inicial</Text>
       <TextInput accessibilityLabel="Capítulo inicial" value={chapter} onChangeText={setChapter} keyboardType="number-pad" style={styles.input} editable={!busy && !save.isSuccess} />
-      {!save.isSuccess ? <><Button title="Iniciar leitura" busy={save.isPending} disabled={busy} onPress={() => { setError(''); save.mutate(); }} /><Button title="Voltar à busca" disabled={busy} onPress={() => { setDraft(null); setError(''); save.reset(); }} /></> : null}
+      {!save.isSuccess ? <><Button variant="primary" title="Iniciar leitura" busy={save.isPending} disabled={busy} onPress={() => { setError(''); save.mutate(); }} /><Button title="Voltar à busca" disabled={busy} onPress={() => { setDraft(null); setError(''); save.reset(); }} /></> : null}
     </View>}
     {save.data?.failedProviders.length ? <View style={styles.card}><ErrorMessage message={`Obra salva. Não foi possível adicionar: ${save.data.failedProviders.join(', ')}.`} /><Button title="Abrir obra salva" onPress={() => { if (save.data) onOpen(save.data.novel); }} /></View> : null}
     {error ? <ErrorMessage message={error} /> : null}
@@ -82,3 +100,14 @@ export function SearchView({ onOpen, request = httpResource, existing }: Props) 
     </Dialog>
   </ScrollView>;
 }
+
+const searchStyles = StyleSheet.create({
+  result: { flexDirection: 'row', alignItems: 'center', padding: 10 },
+  selected: { borderColor: '#81C784' },
+  thumbnail: { width: 44, height: 64, backgroundColor: colors.border, borderRadius: 6 },
+  placeholder: { alignItems: 'center', justifyContent: 'center' },
+  resultBody: { flex: 1, gap: 2 },
+  resultTitle: { color: colors.text, fontSize: 15, fontWeight: 'bold' },
+  check: { color: colors.muted, fontSize: 22, width: 24, textAlign: 'center' },
+  checked: { color: '#81C784' },
+});

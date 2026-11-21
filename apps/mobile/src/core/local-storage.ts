@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { chapterSchema, chapterTextSchema, novelSchema, type Novel } from '@core/api/schemas';
+import { devicePreferencesSchema, type DevicePreferences } from '@core/device-preferences';
 import { deviceFiles, type LocalFiles } from '@core/local-files';
 
 const segment = z.string().min(1).max(128).regex(/^[A-Za-z0-9_-]+$/);
@@ -14,6 +15,7 @@ export class LocalStorageError extends Error {
 
 export function createLocalStorage(files: LocalFiles = deviceFiles, now: () => number = Date.now) {
   const root = () => files.documentDirectory().replace(/\/+$/, '');
+  const preferencesPath = () => `${root()}/preferences.json`;
   const libraryPath = () => `${root()}/cache_obras.json`;
   const sourceRoot = (novelId: string) => `${root()}/downloads/${segment.parse(novelId)}/sources`;
   const directory = (scope: ChapterScope) => `${sourceRoot(scope.novelId)}/${segment.parse(scope.sourceId)}`;
@@ -40,6 +42,17 @@ export function createLocalStorage(files: LocalFiles = deviceFiles, now: () => n
     } catch { return []; }
   }
   return {
+    async readPreferences(): Promise<DevicePreferences> {
+      try {
+        const target = preferencesPath();
+        if (!await files.exists(target)) return {};
+        const data = devicePreferencesSchema.safeParse(JSON.parse(await files.read(target)));
+        return data.success ? data.data : {};
+      } catch { return {}; }
+    },
+    async savePreferences(preferences: DevicePreferences): Promise<void> {
+      await files.write(preferencesPath(), JSON.stringify(devicePreferencesSchema.parse(preferences)));
+    },
     async saveLibrary(novels: Novel[]): Promise<boolean> {
       const data = storedLibrary.parse({ obras: novels, salvoEm: now() });
       try { await files.write(libraryPath(), JSON.stringify(data)); return true; }

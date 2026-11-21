@@ -27,6 +27,9 @@ test('navigation and chapter selection respect bounds and do not advance at 95% 
   try {
     await render(<QueryClientProvider client={data.client}><ReadingScreen novel={readerNovel} services={data} /></QueryClientProvider>);
     await screen.findByText('Texto sintético do capítulo 1.');
+    await fireEvent.press(screen.getByRole('button', { name: 'Iniciar rolagem automática' }));
+    await fireEvent.press(screen.getByRole('button', { name: 'Parar rolagem automática' }));
+    expect(screen.getByRole('button', { name: 'Iniciar rolagem automática' })).toBeOnTheScreen();
     expect(screen.getByRole('button', { name: 'Capítulo anterior' })).toBeDisabled();
     await fireEvent.press(screen.getByRole('button', { name: 'Próximo capítulo' }));
     await screen.findByText('Texto sintético do capítulo 2.');

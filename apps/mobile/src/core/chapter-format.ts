@@ -16,9 +16,11 @@ export function formatReadingText(text: string): ReadingContent {
     if (seen.has(normalized) || ['toque no meio da tela', 'se você encontrar algum erro', 'relatório'].some(term => normalized.includes(term)) || /^-{1,3}$/.test(line)) continue;
     seen.add(normalized); kept.push(line);
   }
-  const heading = /^(.*?)\s*-\s*((?:cap[ií]tulo|chapter)\s+\d+.*?)$/i.exec(kept[0] ?? '');
+  const firstLine = kept[0] ?? '';
+  const heading = /^(.*?)\s*-\s*((?:cap[ií]tulo|chapter)\s+\d+.*?)$/i.exec(firstLine);
+  const standalone = /^(?:cap[ií]tulo|chapter)\s+\d+(?:\s*[:.–—-]\s*\S.*)?$/i.test(firstLine) ? firstLine : '';
   const novelTitle = heading?.[1]?.trim() ?? '';
-  const chapterTitle = heading?.[2]?.trim() ?? '';
-  const body = heading ? kept.slice(1) : kept;
+  const chapterTitle = heading?.[2]?.trim() ?? standalone;
+  const body = chapterTitle ? kept.slice(1) : kept;
   return { novelTitle, chapterTitle, paragraphs: body.map(line => ({ text: line, dialogue: /^["'—]/.test(line) })) };
 }

@@ -1,5 +1,6 @@
+import { Dimensions } from 'react-native';
 import { QueryClientProvider } from '@tanstack/react-query';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import { createHttpResource } from '@core/http-resource';
 import { createLocalStorage } from '@core/local-storage';
 import { keys } from '@core/keys';
@@ -10,6 +11,11 @@ import { readerNovel, readerQueryClient, jsonResponse } from './reader-fixture';
 import { flushSpeech } from './speech-driver';
 
 jest.mock('@react-native-community/netinfo', () => jest.requireActual('@react-native-community/netinfo/jest/netinfo-mock.js'));
+
+jest.mock('@core/native-speech', () => {
+  const { speechDriver, voice } = jest.requireActual<typeof import('./speech-driver')>('./speech-driver');
+  return { nativeSpeech: speechDriver([voice('Voz Reino Unido', 'en-GB')]).driver };
+});
 
 function setup(fail = false) {
   const memory = memoryFiles(); const storage = createLocalStorage(memory.files); const client = readerQueryClient();
@@ -25,7 +31,7 @@ test('library shows saved offline entries and prevents deletion without an onlin
   try {
     await render(<QueryClientProvider client={data.client}><LibraryScreen services={data} onOpen={open} onSearch={() => {}} onFilters={() => {}} /></QueryClientProvider>);
     expect(await screen.findByText('Offline · exibindo a biblioteca salva no aparelho.')).toBeOnTheScreen();
-    expect(await screen.findByText('1 capítulo offline')).toBeOnTheScreen();
+    expect(await screen.findByLabelText('1 capítulo offline')).toBeOnTheScreen();
     expect(screen.getByRole('button', { name: `Remover ${readerNovel.title}` })).toBeDisabled();
     await fireEvent.press(screen.getByRole('button', { name: `Abrir ${readerNovel.title}` }));
     expect(open).toHaveBeenCalledWith(readerNovel);
@@ -46,7 +52,9 @@ test('library refresh orders descending progress and deletion requires confirmat
     await fireEvent.press(screen.getByRole('button', { name: 'Cancelar' }));
     expect(data.transport.mock.calls.some(([, init]) => init.method === 'DELETE')).toBe(false);
     await fireEvent.press(screen.getByRole('button', { name: `Remover ${readerNovel.title}` }));
-    await fireEvent.press(screen.getByRole('button', { name: 'Confirmar remoção' }));
+    const confirm = screen.getByRole('button', { name: 'Confirmar remoção' });
+    expect(confirm).toHaveStyle({ borderColor: '#FF5555' });
+    await fireEvent.press(confirm);
     await waitFor(() => expect(screen.queryByRole('button', { name: `Abrir ${readerNovel.title}` })).toBeNull());
     expect(await data.storage.readLibrary()).toEqual([later]);
     await screen.unmount();
@@ -93,4 +101,82 @@ test('empty saved library remains a usable offline result while missing cache re
     await data.storage.saveLibrary([]);
     await expect(data.client.fetchQuery(libraryOptions(data))).resolves.toEqual({ novels: [], offline: true });
   } finally { data.client.clear(); }
+});
+
+test('the library counts only offline chapters from the active source', async () => {
+  const data = setup();
+  const first = readerNovel.sources[0];
+  if (!first) throw new Error('Missing source fixture');
+  const other = { ...first, id: '33333333-3333-4333-8333-333333333333', provider: 'Outra fonte' };
+  const novel = { ...readerNovel, sources: [first, other] };
+  const otherScope = { novelId: novel.id, sourceId: other.id };
+  const activeScope = { novelId: novel.id, sourceId: first.id };
+  await data.storage.saveChapter(otherScope, 1, 'Texto de outra fonte.');
+  data.transport.mockResolvedValue(jsonResponse([novel]));
+  try {
+    await render(<QueryClientProvider client={data.client}><LibraryScreen services={data} onOpen={() => {}} onSearch={() => {}} onFilters={() => {}} /></QueryClientProvider>);
+    await waitFor(() => expect(data.client.getQueryData(keys.localChapters(activeScope))).toEqual([]));
+    expect(screen.queryByLabelText('1 capítulo offline')).toBeNull();
+    expect(await data.storage.listChapters(otherScope)).toEqual([1]);
+    await screen.unmount();
+  } finally { data.client.clear(); }
+}, 20000);
+
+test('library preferences save reading and speech defaults together', async () => {
+  const data = setup();
+  try {
+    await render(<QueryClientProvider client={data.client}><LibraryScreen services={data} onOpen={() => {}} onSearch={() => {}} onFilters={() => {}} /></QueryClientProvider>);
+    await fireEvent.press(await screen.findByRole('button', { name: 'Preferências' }));
+    await fireEvent.press(await screen.findByRole('button', { name: 'Sépia' }));
+    await fireEvent.press(screen.getByRole('button', { name: 'Ouvir' }));
+    expect(screen.queryByRole('button', { name: '2.25x' })).toBeNull();
+    await fireEvent.press(screen.getByRole('button', { name: '2x' }));
+    await fireEvent.press(screen.getByRole('button', { name: 'Outros idiomas no player' }));
+    await fireEvent.press(await screen.findByRole('button', { name: 'Inglês (Reino Unido)' }));
+    await fireEvent.press(screen.getByRole('button', { name: 'Salvar preferências' }));
+    await waitFor(() => expect(screen.queryByRole('button', { name: 'Salvar preferências' })).toBeNull());
+    expect(await data.storage.readPreferences()).toMatchObject({ reading: { themeIndex: 2 }, speechRate: 2, extraVoiceLocales: ['en-gb'] });
+    await screen.unmount();
+  } finally { data.client.clear(); }
+}, 20000);
+
+test('the initial library loader hides empty and action states until the request settles', async () => {
+  const data = setup();
+  let release = () => {};
+  const loading = new Promise<void>(resolve => { release = resolve; });
+  data.transport.mockImplementation(async () => { await loading; return jsonResponse([]); });
+  try {
+    await render(<QueryClientProvider client={data.client}><LibraryScreen services={data} onOpen={() => {}} onSearch={() => {}} onFilters={() => {}} /></QueryClientProvider>);
+    expect(screen.getByText('Carregando obras…')).toBeOnTheScreen();
+    expect(screen.queryByRole('button', { name: 'Adicionar obra' })).toBeNull();
+    expect(screen.queryByText('Nenhuma obra ainda')).toBeNull();
+    await act(async () => { release(); });
+    expect(await screen.findByText('Nenhuma obra ainda')).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: 'Adicionar obra' })).toBeOnTheScreen();
+    await screen.unmount();
+  } finally { release(); data.client.clear(); }
+}, 20000);
+
+test('rotating the library shows each cover beside the source and chapter information', async () => {
+  const data = setup();
+  const window = Dimensions.get('window'); const screenSize = Dimensions.get('screen');
+  const title = `Abrir ${readerNovel.title}`;
+  const props = { services: data, onOpen: jest.fn(), onSearch: () => {}, onFilters: () => {} };
+  try {
+    Dimensions.set({ window: { ...window, width: 390, height: 820 }, screen: screenSize });
+    await render(<QueryClientProvider client={data.client}><LibraryScreen {...props} /></QueryClientProvider>);
+    expect(await screen.findByRole('button', { name: title })).not.toHaveStyle({ flexDirection: 'row' });
+    await act(async () => { Dimensions.set({ window: { ...window, width: 820, height: 390 }, screen: screenSize }); });
+    expect(await screen.findByRole('button', { name: title })).toHaveStyle({ flexDirection: 'row' });
+    expect(screen.getByText('Synthetic')).toBeOnTheScreen();
+    expect(screen.getByText('Cap. 1/5')).toBeOnTheScreen();
+    await fireEvent.press(screen.getByRole('button', { name: title }));
+    expect(props.onOpen).toHaveBeenCalledWith(readerNovel);
+    await act(async () => { Dimensions.set({ window: { ...window, width: 390, height: 820 }, screen: screenSize }); });
+    expect(await screen.findByRole('button', { name: title })).not.toHaveStyle({ flexDirection: 'row' });
+    await screen.unmount();
+  } finally {
+    Dimensions.set({ window, screen: screenSize });
+    data.client.clear();
+  }
 });
