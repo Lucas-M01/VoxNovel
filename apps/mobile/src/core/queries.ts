@@ -10,6 +10,7 @@ import type { Filters, FilterKind, NovelInput, SourceInput } from '@core/api/sch
 import { httpResource, type HttpResource } from '@core/http-resource';
 import { keys } from '@core/keys';
 import { localStorage, type ChapterScope, type LocalStorage } from '@core/local-storage';
+import type { TextMode } from '@core/text-mode';
 
 export function createQueryClient() {
   return new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false, networkMode: 'always' } } });
@@ -42,12 +43,12 @@ export function apiQueries(request: HttpResource = httpResource, storage: LocalS
     novel: (id: string) => queryOptions({ queryKey: keys.novel(id), queryFn: ({ signal }) => novels.get(id, signal) }),
     search: (name: string) => queryOptions({ queryKey: keys.sourceSearch(name), queryFn: ({ signal }) => sources.search(name, signal) }),
     identify: (url: string) => queryOptions({ queryKey: keys.sourceMetadata(url), queryFn: ({ signal }) => sources.identify(url, signal) }),
-    chapter: (scope: ChapterScope, url: string, chapter: number) => queryOptions({
-      queryKey: keys.chapter(scope, url, chapter), networkMode: 'always',
+    chapter: (scope: ChapterScope, url: string, chapter: number, mode: TextMode = 'translated') => queryOptions({
+      queryKey: keys.chapter(scope, url, chapter, mode), networkMode: 'always',
       queryFn: async ({ signal }) => {
-        const cached = await storage.readChapter(scope, chapter);
+        const cached = mode === 'translated' ? await storage.readChapter(scope, chapter) : null;
         if (signal.aborted) throw new Error('Solicitação cancelada.');
-        return cached ? { ...cached, url } : chapters.text(url, chapter, signal);
+        return cached ? { ...cached, url } : chapters.text(url, chapter, signal, mode);
       },
     }),
     downloads: (id: string) => queryOptions({ queryKey: keys.downloads(id), queryFn: ({ signal }) => downloads.list(id, signal) }),

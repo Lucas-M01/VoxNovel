@@ -2,6 +2,7 @@ import { useState, useSyncExternalStore } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { Novel } from '@core/api/schemas';
+import type { TextMode } from '@core/text-mode';
 import { activeSource } from '@core/chapter-source';
 import { getConnectivity, useConnectivity } from '@core/connectivity';
 import { localChaptersOptions } from '@core/local-queries';
@@ -14,6 +15,7 @@ import { speechVoicesOptions } from '@features/speech/speech-queries';
 import { VoicePicker } from '@features/speech/voice-picker';
 import { usePlaybackLifecycle } from '@features/speech/use-playback-lifecycle';
 import { ChapterNavigation } from '@features/reader/chapter-navigation';
+import { TextModeChoice } from '@features/reader/text-mode-choice';
 import { OfflineNotice } from '@pattern/offline-notice';
 import { Button } from '@ui/button';
 import { Dialog } from '@ui/dialog';
@@ -22,8 +24,8 @@ import { ProgressBar } from '@ui/progress-bar';
 
 export type PlaybackServices = ReaderServices & { driver: SpeechDriver; session: ReturnType<typeof createSpeechSession> };
 const defaults: PlaybackServices = { ...readerServices, driver: nativeSpeech, session: speechSession };
-type Props = { novel: Novel; services?: PlaybackServices | undefined; initialChapter?: number | undefined };
-export function PlaybackView({ novel, services = defaults, initialChapter }: Props) {
+type Props = { novel: Novel; services?: PlaybackServices | undefined; initialChapter?: number | undefined; initialMode?: TextMode | undefined };
+export function PlaybackView({ novel, services = defaults, initialChapter, initialMode }: Props) {
   const client = useQueryClient();
   useConnectivity();
   const source = activeSource(novel);
@@ -38,7 +40,7 @@ export function PlaybackView({ novel, services = defaults, initialChapter }: Pro
     ...services, client,
     defaults: () => ({ rate: client.getQueryData(settingsOptions.queryKey)?.speed ?? 1, voiceId: client.getQueryData(voicesOptions.queryKey)?.selected?.identifier ?? null }),
     offline: () => getConnectivity() === 'offline', downloaded: () => client.getQueryData(localOptions.queryKey) ?? [],
-  }, initialChapter));
+  }, initialChapter, initialMode));
   usePlaybackLifecycle(controller);
   const state = useSyncExternalStore(controller.subscribe, controller.getSnapshot, controller.getSnapshot);
   const [voicePicker, setVoicePicker] = useState(false);
@@ -51,6 +53,8 @@ export function PlaybackView({ novel, services = defaults, initialChapter }: Pro
     <Text accessibilityRole="header" style={{ color: '#FFFFFF', fontSize: 18 }}>{novel.title}</Text>
     <Text style={{ color: '#CCCCCC' }}>Capítulo {state.chapter} · {labels[state.status]}</Text>
     <OfflineNotice mode="speech" />
+    <TextModeChoice mode={state.mode} originalAvailable={controller.available(state.chapter, 'original')} onChange={selected => { void controller.setMode(selected); }} />
+    {state.mode === 'original' ? <Text style={{ color: '#888888' }}>Escolha uma voz do idioma original em “Voz”.</Text> : null}
     {state.error ? <ErrorMessage message={state.error} onRetry={() => { void controller.start(); }} /> : null}
     <ChapterNavigation chapter={state.chapter} total={controller.maximum} available={chapter => state.status !== 'loading' && controller.available(chapter)} onSelect={chapter => { void controller.start(chapter); }} />
     <ProgressBar label="Progresso da fala" current={state.total ? state.index + 1 : 0} total={state.total} />

@@ -3,11 +3,14 @@ import { chapterSchema, speedSchema, type Novel } from '@core/api/schemas';
 import { initialSpeechChapter } from '@core/initial-speech-chapter';
 import { activeSource, sourceChapterUrl } from '@core/chapter-source';
 import { chapterAvailable } from '@core/connectivity';
+import { keys } from '@core/keys';
+import { textModeSchema, type TextMode } from '@core/text-mode';
 import { apiQueries, apiMutations } from '@core/queries';
 import { createSpeechSession, type SpeechDriver, type SpeechPlayer } from '@core/tts-service';
 import type { ReaderServices } from '@features/reader/reader-data';
 
 export type PlaybackSnapshot = {
+  mode: TextMode;
   chapter: number; status: 'idle' | 'loading' | 'playing' | 'paused' | 'error';
   index: number; total: number; rate: number | null; voiceId: string | null;
   log: string; error: string | null; finished: boolean;
@@ -17,10 +20,10 @@ export type PlaybackDependencies = ReaderServices & {
   defaults: () => { rate: number; voiceId: string | null };
   offline: () => boolean; downloaded: () => readonly number[];
 };
-export function createPlaybackController(novel: Novel, dependencies: PlaybackDependencies, explicitChapter?: number) {
+export function createPlaybackController(novel: Novel, dependencies: PlaybackDependencies, explicitChapter?: number, initialMode: TextMode = 'translated') {
   const source = activeSource(novel);
   const maximum = novel.total_chapters ?? source?.total_chapters ?? (source?.chapter_ids?.length || null);
-  let snapshot: PlaybackSnapshot = { chapter: chapterSchema.parse(initialSpeechChapter(novel, explicitChapter)), status: 'idle', index: 0, total: 0, rate: null, voiceId: null, log: '', error: null, finished: false };
+  let snapshot: PlaybackSnapshot = { mode: textModeSchema.parse(initialMode), chapter: chapterSchema.parse(initialSpeechChapter(novel, explicitChapter)), status: 'idle', index: 0, total: 0, rate: null, voiceId: null, log: '', error: null, finished: false };
   const listeners = new Set<() => void>();
   let player: SpeechPlayer | null = null;
   let generation = 0;
@@ -29,8 +32,13 @@ export function createPlaybackController(novel: Novel, dependencies: PlaybackDep
     if (closed) return;
     snapshot = { ...snapshot, ...patch }; for (const listener of listeners) listener();
   }
-  function available(chapter: number) {
-    return source !== null && (maximum === null || chapter <= maximum) && chapterAvailable(dependencies.offline(), new Set(dependencies.downloaded()), chapter);
+  function available(chapter: number, mode: TextMode = snapshot.mode) {
+    if (chapter < 1 || !Number.isInteger(chapter)) return false;
+    const url = source ? sourceChapterUrl(source, chapter) : null;
+    const chapters = mode === 'original'
+      ? new Set(url && source && dependencies.client.getQueryData(keys.chapter({ novelId: novel.id, sourceId: source.id }, url, chapter, mode)) !== undefined ? [chapter] : [])
+      : new Set(dependencies.downloaded());
+    return source !== null && (maximum === null || chapter <= maximum) && chapterAvailable(dependencies.offline(), chapters, chapter);
   }
   function failure(error: unknown) {
     update({ status: 'error', error: error instanceof Error ? error.message : 'Não foi possível reproduzir o capítulo.', log: 'Falha na reprodução.' });
@@ -38,6 +46,7 @@ export function createPlaybackController(novel: Novel, dependencies: PlaybackDep
   async function start(chapter = snapshot.chapter) {
     if (closed) return;
     if (!available(chapter)) { failure(new Error(`Capítulo ${chapter} não disponível.`)); return; }
+    const mode = snapshot.mode;
     const ticket = ++generation;
     const active = () => !closed && ticket === generation;
     update({ chapter, status: 'loading', index: 0, total: 0, error: null, finished: false, log: `Carregando texto do capítulo ${chapter}...` });
@@ -46,7 +55,7 @@ export function createPlaybackController(novel: Novel, dependencies: PlaybackDep
       if (!active() || !source) return;
       const url = sourceChapterUrl(source, chapter);
       if (!url) throw new Error(`Capítulo ${chapter} não disponível nesta fonte.`);
-      const data = await dependencies.client.fetchQuery({ ...apiQueries(dependencies.request, dependencies.storage).chapter({ novelId: novel.id, sourceId: source.id }, url, chapter), staleTime: Infinity });
+      const data = await dependencies.client.fetchQuery({ ...apiQueries(dependencies.request, dependencies.storage).chapter({ novelId: novel.id, sourceId: source.id }, url, chapter, mode), staleTime: Infinity });
       if (!active()) return;
       const defaults = dependencies.defaults();
       const next = await dependencies.session.replace(data.text, {
@@ -85,6 +94,14 @@ export function createPlaybackController(novel: Novel, dependencies: PlaybackDep
         else if (snapshot.status === 'paused') { await player?.resume(); update({ log: 'Retomando.' }); }
         else if (snapshot.status !== 'loading') await start();
       } catch (error) { failure(error); }
+    },
+    async setMode(mode: TextMode) {
+      if (closed || mode === snapshot.mode) return;
+      const selected = textModeSchema.parse(mode);
+      generation += 1;
+      const previous = player; player = null;
+      update({ mode: selected, status: 'idle', index: 0, total: 0, error: null, finished: false, log: selected === 'original' ? 'Texto original selecionado.' : 'Tradução para português selecionada.' });
+      try { await previous?.destroy(); } catch (error) { failure(error); }
     },
     async setRate(rate: number) {
       try { const parsed = speedSchema.parse({ speed: rate }); update({ rate: parsed.speed }); await player?.applyConfig({ rate: parsed.speed }); }

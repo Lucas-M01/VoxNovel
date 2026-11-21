@@ -2,7 +2,10 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, Text, View, type NativeScrollEvent, type NativeSyntheticEvent, type ScrollViewInstance } from 'react-native';
 import { useMutationState, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { Novel } from '@core/api/schemas';
-import { activeSource } from '@core/chapter-source';
+import type { TextMode } from '@core/text-mode';
+import { activeSource, sourceChapterUrl } from '@core/chapter-source';
+import { keys } from '@core/keys';
+import { TextModeChoice } from '@features/reader/text-mode-choice';
 import { formatReadingText } from '@core/chapter-format';
 import { themes, widths, scrollSpeeds, useReadingPreferences } from '@core/reading-preferences';
 import { readerServices, readingChapterOptions, readingKeys, type ReaderServices } from '@features/reader/reader-data';
@@ -18,14 +21,15 @@ import { OfflineNotice } from '@pattern/offline-notice';
 import { Button } from '@ui/button';
 import { ErrorMessage } from '@ui/error-message';
 
-type Props = { novel: Novel; initialChapter?: number | undefined; services?: ReaderServices | undefined; onListen?: ((chapter: number) => void) | undefined };
-export function ReadingView({ novel, initialChapter, services = readerServices, onListen }: Props) {
+type Props = { novel: Novel; initialChapter?: number | undefined; initialMode?: TextMode | undefined; services?: ReaderServices | undefined; onListen?: ((chapter: number, mode?: TextMode) => void) | undefined };
+export function ReadingView({ novel, initialChapter, initialMode = 'translated', services = readerServices, onListen }: Props) {
   const [chapter, setChapter] = useState(initialChapter ?? novel.current_chapter);
+  const [mode, setMode] = useState<TextMode>(initialMode);
   const { preferences, update } = useReadingPreferences();
   const client = useQueryClient();
   const source = activeSource(novel);
-  const prefetch = useChapterPrefetch(client, novel, services);
-  const query = useQuery(readingChapterOptions(client, novel, chapter, services, number => { void prefetch.activate(number); }));
+  const prefetch = useChapterPrefetch(client, novel, services, mode);
+  const query = useQuery(readingChapterOptions(client, novel, chapter, services, number => { void prefetch.activate(number); }, mode));
   const progress = useMutationState({ filters: { mutationKey: readingKeys.progress(novel.id, source?.id ?? '', chapter) }, select: mutation => mutation.state.status });
   const content = query.data ? formatReadingText(query.data.text) : null;
   const theme = themes[preferences.themeIndex];
@@ -42,7 +46,10 @@ export function ReadingView({ novel, initialChapter, services = readerServices, 
   useAutoScroll(preferences.autoScroll && content !== null && !query.isPending, scrollSpeeds[preferences.scrollSpeedIndex]?.value ?? 0.5, scroll, offset);
   useEffect(() => () => { if (releaseDrag.current !== undefined) clearTimeout(releaseDrag.current); }, []);
   function available(number: number) {
-    return source !== null && (total === null || number <= total) && chapterAvailable(connectivity === 'offline', downloaded, number);
+    if (number < 1 || !Number.isInteger(number)) return false;
+    const url = source ? sourceChapterUrl(source, number) : null;
+    const cached = mode === 'original' ? new Set(url && client.getQueryData(keys.chapter(scope, url, number, mode)) !== undefined ? [number] : []) : downloaded;
+    return source !== null && (total === null || number <= total) && chapterAvailable(connectivity === 'offline', cached, number);
   }
   function navigate(number: number) {
     if (!available(number)) return;
@@ -66,6 +73,7 @@ export function ReadingView({ novel, initialChapter, services = readerServices, 
       <ProgressBar label="Progresso da leitura" current={fraction} total={1} />
     </View> : null}
     <OfflineNotice mode="reading" />
+    {preferences.controlsVisible ? <TextModeChoice mode={mode} originalAvailable={source !== null && (connectivity !== 'offline' || client.getQueryData(keys.chapter(scope, sourceChapterUrl(source, chapter) ?? '', chapter, 'original')) !== undefined)} onChange={selected => { offset.current = 0; setFraction(0); scroll.current?.scrollTo({ y: 0, animated: false }); setMode(selected); }} /> : null}
     {query.isPending ? <ActivityIndicator accessibilityLabel="Carregando capítulo" /> : null}
     {query.isError ? <ErrorMessage message={query.error instanceof Error ? query.error.message : 'Não foi possível carregar o capítulo.'} onRetry={() => { void query.refetch(); }} /> : null}
     {progress.at(-1) === 'error' ? <Text style={{ color: theme?.text }}>Não foi possível salvar o progresso.</Text> : null}
@@ -77,7 +85,7 @@ export function ReadingView({ novel, initialChapter, services = readerServices, 
         <ChapterBody content={content} preferences={preferences} />
       </Pressable>
     </ScrollView> : null}
-    {preferences.controlsVisible && onListen ? <Button title="Ouvir capítulo" onPress={() => onListen(chapter)} /> : null}
+    {preferences.controlsVisible && onListen ? <Button title="Ouvir capítulo" onPress={() => mode === 'original' ? onListen(chapter, mode) : onListen(chapter)} /> : null}
     {preferences.controlsVisible ? <ReadingControls preferences={preferences} onChange={update} /> : null}
   </View>;
 }

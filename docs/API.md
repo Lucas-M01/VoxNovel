@@ -84,3 +84,5 @@ A API padrão usa bind local, CORS explícito, processamento concorrente limitad
 F3 foi verificado com banco/Storage locais reais e corpus sintético para fontes/tradução. Isso não certifica layouts atuais de sites nem sucesso em qualquer desafio Cloudflare. A validação final de paridade e testes físicos de voz permanecem nas fases posteriores. Não há APK novo validado neste bloco.
 
 A stack local pode permanecer ativa para teste manual. Para encerrá-la, consulte `npx --yes supabase@3 stop --help` e use `--workdir "$STACK_DIR"` com o project-id daquela stack. Preserve os volumes e evite --all/--no-backup para não afetar outras instâncias ou apagar dados.
+
+P36: leitura e voz oferecem original/português. Os downloads continuam no fluxo traduzido existente, sem migração de arquivos. Original fica somente no cache de memória e não usa o arquivo PT quando offline.
