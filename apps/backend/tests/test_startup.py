@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import httpx
 import pytest
 from pydantic import ValidationError
@@ -60,8 +62,9 @@ async def test_cors_only_allows_configured_origins() -> None:
     assert "access-control-allow-origin" not in denied.headers
 
 
-def test_empty_optional_persistence_configuration_is_ignored() -> None:
+def test_empty_optional_persistence_configuration_is_ignored(tmp_path: Path) -> None:
     with pytest.MonkeyPatch.context() as patch:
+        patch.chdir(tmp_path)
         patch.setenv("VOXNOVEL_SUPABASE_URL", "")
         patch.setenv("VOXNOVEL_SUPABASE_SERVICE_KEY", "")
         settings = get_settings()
