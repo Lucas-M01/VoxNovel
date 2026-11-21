@@ -1,0 +1,22 @@
+{
+  "expo": {
+    "name": "VoxNovel",
+    "slug": "voxnovel",
+    "version": "0.1.0",
+    "orientation": "default",
+    "scheme": "voxnovel",
+    "plugins": [
+      "expo-router"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "android": {
+      "package": "app.voxnovel.reader"
+    },
+    "ios": {
+      "bundleIdentifier": "app.voxnovel.reader"
+    },
+    "userInterfaceStyle": "dark"
+  }
+}

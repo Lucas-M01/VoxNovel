@@ -1,0 +1,18 @@
+{
+  "name": "voxnovel",
+  "private": true,
+  "license": "MIT",
+  "packageManager": "yarn@1.22.22",
+  "engines": {
+    "node": ">=24.15.0 <25"
+  },
+  "workspaces": [
+    "apps/mobile"
+  ],
+  "scripts": {
+    "check": "python3 scripts/check.py",
+    "check:backend": "python3 scripts/check.py --scope backend",
+    "check:mobile": "python3 scripts/check.py --scope mobile",
+    "check:staged": "python3 scripts/check.py --staged"
+  }
+}

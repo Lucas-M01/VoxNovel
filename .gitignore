@@ -1,0 +1,38 @@
+# Original reference and private input data
+/_legacy/
+/.private/
+/data/
+**/.env
+**/.env.*
+!**/.env.example
+*.pem
+*.key
+*.p12
+*.keystore
+
+# Python
+**/.venv/
+**/__pycache__/
+*.py[cod]
+**/.pytest_cache/
+**/.mypy_cache/
+**/.ruff_cache/
+**/.coverage*
+**/htmlcov/
+**/*.egg-info/
+
+# JavaScript / Expo / generated native projects
+**/node_modules/
+**/.expo/
+**/dist/
+**/build/
+**/coverage/
+/apps/mobile/android/
+/apps/mobile/ios/
+/.yarn/cache/
+/.yarn/install-state.gz
+
+# Local tooling
+.DS_Store
+*.log
+/.artifacts/
