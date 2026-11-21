@@ -15,7 +15,7 @@ da comprovação em VALIDACAO.md; este documento não certifica testes ausentes.
 | Capítulo escolhido | Leitura/voz pelos downloads e player respeitam o capítulo explícito antes do progresso salvo. | C36/C44 e testes de jornada. |
 | Cache | Arquivos e memória identificam obra e fonte; dados antigos sem origem comprovada ficam preservados. | C28 e source-cache.test.ts. |
 | Fala | Mesmo recurso nativo expo-speech do original, com stop serializado e descarte de callbacks de sessões antigas. | Testes de corridas e relato S1 parcial; sem troca de motor. |
-| Interface | Biblioteca, busca, detalhes e navegação integrados com apresentação simples compartilhada, sem novas dependências visuais. | C40–C44; rotas reais nos testes. Primeiro teste Android revelou crash na biblioteca, corrigido e aguardando reteste. |
+| Interface | Biblioteca, busca, detalhes e navegação integrados com apresentação simples compartilhada, sem novas dependências visuais. | C40–C44; rotas reais nos testes. Reteste do dono em 2026-11-21 confirmou biblioteca, busca/cadastro, leitura, voz e downloads/offline; tradução falhou. |
 | Concorrência | Respostas antigas descartadas; cache escrito em sequência; prefetch e lotes limitados, sem jobs duráveis novos. | Biblioteca/prefetch/faixas e isolamento por fonte. |
 | Persistência | Escritas relacionadas atômicas, propriedade da fonte ativa, RLS e backend como cliente privilegiado. | Integrações reais locais de banco/Storage; sem auth de usuário novo. |
 | Migração | Importador explícito, dry-run, conflitos sem sobrescrita e backups privados. | C45, 12 integrações locais totais e testes de orquestração; nenhuma migração pessoal. |
@@ -33,11 +33,16 @@ da comprovação em VALIDACAO.md; este documento não certifica testes ausentes.
 
 - P01/P02: abertura da biblioteca corrigida após TypeError relatado no Android.
   Cópia + sort substitui toSorted indisponível; regressão executa sem esse método
-  e confere ordem e cache intacto. Reteste físico pendente.
+  e confere ordem e cache intacto. Abertura confirmada pelo dono no reteste de 2026-11-21.
 
 - API local: validador corrigido para aceitar IP/localhost via HTTP/HTTPS,
   como exige a execução em aparelho físico. Credenciais, query e fragmento
   continuam rejeitados. Testes LAN/loopback/IPv6 e loader real Expo validados.
+
+- Tradução: motivo do fallback agora aparece no terminal e no buffer existente
+  com mensagem fixa. HTTP 429 é distinguido sem registrar exceção bruta, URLs ou
+  conteúdo. Mantidos motor, limites e fallback independente; a indisponibilidade
+  do Google continua aberta, sem anunciar tradução restaurada.
 
 ## Limites mantidos
 
@@ -51,4 +56,4 @@ Pelo ADR-011, a versão inicial pode focar FreeWebNovel e os provedores que se
 mostrarem operacionais. Isso não transforma outros adaptadores em certificados,
 nem garante disponibilidade futura. A extração/metadados FreeWebNovel passaram
 no caso autorizado após a correção do cliente; a tradução permanece pendente. A validação
-final permanece aberta para o app Android integrado e para fonte/tradução.
+final permanece aberta principalmente pela tradução; busca também encontrou algumas obras CentralNovel, sem certificar seus capítulos.

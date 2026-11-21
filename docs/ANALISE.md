@@ -156,6 +156,12 @@ Cada item deve receber evidência automatizada e/ou roteiro em dispositivo na va
 | [ ] P34 | API expõe últimas 500 mensagens sem persistência durável | routers/logs, logger_buffer | extensão API logs; sem item WBS específico |
 | [ ] P35 | API gera/lista/lê/remove cache remoto de texto por capítulo e por obra | routers/downloads | 3.7.5 adaptado, sem jobs remotos novos |
 
+### 3.1 Extensão expressa do dono após a análise
+
+| Estado/ID | Critério verificável | Origem | Destino |
+|---|---|---|---|
+| [ ] P36 | Escolher texto original ou tradução PT na leitura e na voz, levar modo ao abrir escuta, separar caches e descartar fala/requisições antigas; downloads continuam na versão PT existente | Solicitação explícita de 2026-11-21, ADR-014; não existia no protótipo | API chapters, reader, playback e navegação |
+
 ## 4. Matriz protótipo × WBS
 
 | Categoria | Cobertura/destino |

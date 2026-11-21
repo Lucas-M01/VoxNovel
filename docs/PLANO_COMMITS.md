@@ -198,3 +198,16 @@ Tags são criadas somente depois de existir commit correspondente; nenhuma tag s
 Em todo portão de execução: rodar suite completa, atualizar PROGRESS/WBS_STATUS, conferir segredos, commitar a mudança lógica final, criar tag sem mover tags anteriores, mostrar `git log --oneline <inicio>..<fim>` (no primeiro bloco incluir desde o root), e **parar para aprovação**. Não fazer push, deploy, publicação ou execução de importação pessoal automaticamente.
 
 Próximo passo após aprovação: C01–C09 apenas. Aparelhos de Q5 e escolha de licença seguem pendentes; não impedem redigir/aprovar o plano, mas seus limites devem aparecer nos respectivos marcos. Context7 está autorizado para consultar documentação quando ajudar; não implica instalar bibliotecas adicionais.
+
+## Extensão autorizada durante a Fase 4 — 2026-11-21
+
+Solicitações explícitas ADR-013/ADR-014; não é nova fase nem execução da WBS fora do contrato.
+
+| Ordem | Commit lógico | Rastreio | Evidência necessária |
+|---|---|---|---|
+| C47 | Diagnóstico seguro de fallback | Improvement: quality; P15/P34 | Razões fixas, sem payload/chave/URL; bloqueio Google reproduzido sem lote |
+| C48 | Selecionar original/PT na API e isolar modos | Parity: P36 (extensão expressa) | Original não chama tradutor, padrão PT compatível, cache não cruza modos |
+| C49 | Selecionar original/PT na leitura e na fala | Parity: P36 | Navegação, cancelamento/races, original não usa arquivo PT, downloads preservados |
+| C50 | Traduzir localmente no backend, se spike viável | Parity: P15; ADR-013 | Modelo/versão/licença, tempo/RAM medidos, CPU, budgets, instalação reproduzível e texto real sem fallback |
+
+Não publicar nem escolher plano pago. Não sobrescrever mudanças de interface em andamento no working tree; integrar os controles necessários preservando o visual existente.

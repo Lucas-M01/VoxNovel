@@ -89,3 +89,42 @@ As escolhas de implementação, divisão de commits e tags constam de PLANO_COMM
 - Estado: aprovado explicitamente pelo dono: o original funcionava apenas com FreeWebNovel; os outros apresentavam erros possivelmente associados a Cloudflare. Autorizou manter apenas FreeWebNovel ou os provedores que funcionarem, se os demais não puderem ser recuperados.
 - Decisão: priorizar o caso FreeWebNovel na validação real; outros provedores indisponíveis não impedem uma versão inicial limitada e não serão anunciados como validados. Manter evidência separada por provedor; não remover adaptadores funcionais apenas por ausência de teste atual.
 - Limites: a hipótese Cloudflare não é causa comprovada para todos os sites. A autorização não elimina a pendência de acesso ao próprio FreeWebNovel, não autoriza troca de tradutor nem contorno de desafios. Redução visível de suporte será registrada caso efetivamente necessária.
+
+## ADR-012 — Manter tradução gratuita e avaliar substituição
+
+- Data: 2026-11-21.
+- Estado: custo zero obrigatório; Azure F0 aprovado anteriormente e depois descartado por exigir cartão no cadastro. Alternativa local ainda não adotada.
+- Resposta explícita do dono: “Manter gratuito; investigar outra alternativa”. Não autoriza Google Cloud pago, habilitar billing ou contratar serviços.
+- Evidência: controle sintético com o GoogleTranslator/configuração atual retornou redirect para página de limitação e HTTP 429. O fallback por bloco mantém o original. Diagnóstico corrigido com razões fixas no terminal/buffer, sem texto, URL, chave ou traceback. Isso não restaura tradução externa.
+- Pesquisa: [MyMemory](https://mymemory.translated.net/doc/usagelimits.php) limita uso anônimo a 5.000 caracteres/dia, insuficiente para o capítulo de referência. O antigo [DeepL API Free](https://support.deepl.com/hc/en-us/articles/360021200939-DeepL-API-plans) não está mais disponível para novas adesões; o plano Developer descrito é uma franquia total, sem renovação mensal.
+- Proposta simples: trocar somente o adaptador de tradução por Azure Translator no plano F0, mantendo auto→PT, blocos de 4.500, budgets e fallback. Chave privada exclusivamente no backend; sem UI, banco ou biblioteca nova planejada. Requer conta/subscrição Azure e recurso F0 do dono, ainda não criado nem acessado. Segundo [preços oficiais](https://azure.microsoft.com/en-us/pricing/details/translator/), F0 inclui 2 milhões de caracteres/mês; a [FAQ oficial](https://www.microsoft.com/en-us/translator/business/faq/) informa que o serviço para ao atingir a franquia. Não migrar para S1/planos pagos.
+- Alternativa local: [LibreTranslate/Argos](https://docs.libretranslate.com/) evita serviço de tradução cobrado, mas exige modelos e processamento locais; dependências, consumo e qualidade EN→PT ainda não medidos. Não instalado e sem Docker de produto autorizado. Não presumir paridade de qualidade/detecção sem teste.
+- Aprovação concreta: dono respondeu “Aprovar Azure Translator F0 (recomendado)”. Implementar somente o adaptador Azure F0 em commit separado do diagnóstico; manter blocos/budgets/fallback. Não implementar alternativa local, fallback entre provedores ou provisionamento automaticamente. Configuração prevista: VOXNOVEL_AZURE_TRANSLATION_KEY e região opcional no .env backend; chave solicitada apenas no arquivo privado, nunca no chat. Sem chave de teste, nenhum resultado Azure real foi comprovado; a Fase 4 permanece aberta para P15.
+
+## ADR-013 — Usar a interface do protótipo como referência do mobile
+
+- Data: 2026-11-21.
+- Decisão do dono: o front-end deve ficar fiel ao original. Melhorias são bem-vindas, com visibilidade para o dono.
+- Aplicação nesta rodada: recuperar a composição das telas e a arte original de abertura, mantendo os fluxos do checklist. O atalho para Filtros continua acessível na biblioteca, como na reconstrução. Alguns ícones foram representados por símbolos nativos com rótulos de acessibilidade.
+- Para propostas futuras que mudem a aparência fora da referência ou alterem a jornada, apresentar a diferença e o motivo ao dono antes de aplicar, conforme AGENTS.md.
+
+- Atualização do dono: Azure exige cartão e ele não possui; solicitou alternativa e perguntou o impacto no deploy. A integração Azure em preparação foi retirada antes de qualquer commit/chamada remota. Somente os arquivos deste trabalho foram restaurados a partir do index; .env e mudanças do dono preservados. Protótipo descartado ficou temporário fora do produto, sem dependências novas.
+- Proposta local revisada: Argos como biblioteca Python no backend pode dispensar serviço HTTP/Docker adicional e cartão, mas requer modelo, CPU/RAM e avaliação de qualidade/idiomas. Deploy precisa acomodar esses recursos; não prometer hospedagem gratuita nem instalar modelos antes de medir/decidir. A implementação de produto continua GoogleTranslator; diagnóstico seguro permanece preparado.
+
+## ADR-013 — Prosseguir com avaliação local sem cartão
+
+- Data: 2026-11-21.
+- Estado: autorizado pelo dono ao discutir deploy: “Qual dessas poderia me garantir um deploy, caso não tenha como pode prosseguir”. Mantidas as restrições explícitas de custo zero e ausência de cartão; não prometer hospedagem gratuita permanente.
+- Decisão: medir tradução local inglês→português brasileiro em CPU com modelo oficial Argos en→pb, em ambiente isolado. Priorizar runtime CTranslate2/SentencePiece sem GPU ou servidor extra, evitando a cadeia PyTorch/Stanza do pacote Argos estável. Medir qualidade, tempo e RAM antes de integrar; registrar limites de idiomas e recursos. Não criar conta, publicar ou contratar hospedagem.
+- Evidência de pesquisa: pacote Argos 1.11.0 requer Stanza 1.10.1; modelo en_pb 1.9 oficial tem 66.179.201 bytes compactados. HEAD retornou 403, GET Range padrão retornou 206/ZIP. Controle de API web Google sem chave também retornou 429; não repetir tentativas em lote.
+- Deploy: backend persistente com modelo é tecnicamente publicável, sujeito aos recursos medidos e às regras do host. A documentação atual de Spaces informa que criar Gradio/Docker exige plano pago, apesar da CPU Basic sem preço por hora; não anunciar essa opção como gratuita para nova conta. Nenhum Docker de produto foi introduzido.
+
+## ADR-014 — Escolher idioma original ou português em leitura e voz
+
+- Data: 2026-11-21.
+- Estado: ampliação de escopo solicitada explicitamente pelo dono: “Vou querer também a opção de ver pela a linguagem original ou traduzir”. Ao delimitar o alcance, escolheu “Leitura e voz (recomendado)”.
+- Decisão: implementar seletor original/português na leitura e na fala, com modo levado de uma tela à outra, cache de memória isolado e cancelamento/descarte da sessão antiga ao mudar. Original mantém limpeza/filtros, mas não chama tradutor. O padrão continua traduzido para compatibilidade.
+- Limites: downloads permanecem como hoje em português, sem apagar/regravar arquivos existentes ou introduzir downloads em dois idiomas. Original não deve consumir um arquivo traduzido; disponibilidade offline respeita a versão que existe. Sem novas contas, sincronização, estatísticas, interface de configuração ou redesign.
+- Contrato: adicionar P36 como exceção explícita autorizada fora da paridade histórica P01–P35, e ampliar o plano com commits próprios. Não marcar legado como se já oferecesse o seletor.
+
+- Resultado inicial do spike ADR-013: modelo oficial OPUS/Argos en_pb 1.9, CC-BY 4.0; 9.678 caracteres sintéticos em 27,70 s (beam 1/lote 8/uma thread), pico 322,72 MiB. Isso torna o deploy tecnicamente plausível com recursos adequados, sem garantir host gratuito ou velocidade em outro hardware. Ainda não houve tradução de capítulo real nem integração de produto.

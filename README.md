@@ -4,12 +4,12 @@ Leitor de webnovels para celular com leitura em texto, voz do próprio aparelho,
 progresso por fonte e capítulos salvos para uso offline. Reconstrução organizada
 do protótipo pessoal **Leitor Web em Voz Alta**.
 
-**Estado:** implementação integrada; validação final em andamento. A jornada tem
-testes automatizados; o primeiro teste do dono no Android revelou um crash na
-biblioteca, já corrigido e aguardando reteste. A extração e os metadados
-FreeWebNovel passaram no caso fornecido pelo dono;
-a tradução continua com impedimento externo registrado em
-[VALIDACAO.md](docs/VALIDACAO.md). Não é uma release certificada para todos os sites/dispositivos.
+**Estado:** implementação integrada; validação final em andamento. Em 2026-11-21,
+o dono confirmou no Android biblioteca, busca/cadastro, leitura, voz e downloads
+inclusive sem internet. A busca também encontrou algumas obras no CentralNovel,
+além do FreeWebNovel. A tradução ainda não funcionou no teste e permanece aberta
+em [VALIDACAO.md](docs/VALIDACAO.md). O relato não certifica todos os sites,
+capítulos ou cenários de dispositivo.
 
 ## Funcionalidades implementadas
 
@@ -98,7 +98,9 @@ receber somente dados de teste.
 6. Adicione/remova um filtro e confira a confirmação ao limpar.
 
 A tradução depende do serviço externo. Uma falha de tradução preserva o bloco
-original; isso pode resultar em texto parcialmente traduzido. Respostas de
+original; isso pode resultar em texto parcialmente traduzido. O terminal do
+backend e os logs existentes registram uma razão fixa para esse fallback,
+inclusive limite do Google (HTTP 429), sem conteúdo do capítulo. Respostas de
 proteção do site podem impedir a extração. O caso relatado pelo dono continua
 aberto; não se presume sucesso com qualquer URL.
 
