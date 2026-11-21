@@ -56,3 +56,7 @@ Referências de API conferidas: [upsert](https://supabase.com/docs/reference/pyt
 Gate final: 62 testes backend, sendo 55 unitários e sete integrações reais, além de lint/tipos/Jest mobile, exportações Hermes Android/iOS, arquitetura e varredura de segredos. WBS_STATUS registra somente as partes adaptadas. Nenhum dado pessoal foi importado e nenhum projeto remoto foi alterado.
 
 A stack temporária é encerrada após o gate, preservando seus volumes locais. Para repetir, iniciar a mesma stack privada com a CLI e aplicar as duas migrations (primeiro biblioteca, depois preferências) com transação/ON_ERROR_STOP. A integração cria seu próprio bucket privado; não é preciso provisionar o bucket de produto para rodá-la. O diretório da stack e suas credenciais não são versionados. O app ainda não oferece um fluxo funcional de leitura; a API de produto será composta em F3 e a interface nos blocos mobile.
+
+## Importação privada (C45)
+
+Ferramenta opcional em scripts/import_legacy.py, com dry-run padrão, validação e backups privados. Formatos, checagem do destino, aplicação explícita e recuperação em IMPORTACAO.md. Nenhum dado pessoal foi importado. O runner de integração configura apenas o container PostgreSQL da stack descartável e testa o importador em schema isolado, além de um bucket privado sintético; não aponta o importador a projetos remotos.

@@ -1,61 +1,51 @@
 # Progresso
 
 - Atualizado: 2026-11-20.
-- Fase atual: Fase 3 — bloco F5 concluído; F6 autorizado em ADR-009. Executar C40–C45 com visual simples e consistente, sem funcionalidades extras. C40–C44 concluídos; próximo C45, sem nova aprovação necessária.
-- Último commit: C44, commit que contém este registro; predecessor 587f4eb (C43). Fechamento marcado por `fase-3-f5`. Base F4: 44313b1, tag `fase-3-f4`. Histórico aprovado preservado, sem push.
-- Próximo item: C45, importador privado com dry-run, já autorizado; nenhuma importação pessoal automática. F6 tem seis commits C40–C45, seguidos pelo portão da Fase 4 — validação final C46.
-- Autorização: análise/plano em ADR-003, F3 em ADR-006, F4 em ADR-007 e fechamento F4/avanço F5 em ADR-008. Docker local descartável somente para testes aprovado em ADR-005. F6 aprovado em ADR-009; sem aprovação para push, deploy ou importação pessoal. Licença pública ainda não escolhida.
+- Fase atual: Fase 3 — F6 (C40–C45) concluído. Parar no portão para aprovação da Fase 4; não iniciar C46 sem aprovação explícita.
+- Último commit: C45, commit que contém este registro; predecessor eb8ecf8 (C44). Fechamento marcado por `fase-3-f6` e `fase-3`. F5 preservado em c0b81aa (`fase-3-f5`), F4 em 44313b1 (`fase-3-f4`). Sem push ou reescrita de histórico.
+- Próximo item: Fase 4 — validação final P01–P35, correções próprias se necessárias e C46 (MELHORIAS/README/documentação final). Depende da aprovação do dono.
+- Autorização: plano ADR-003; F3 ADR-006; F4 ADR-007; fechamento F4/avanço F5 ADR-008; F6 e visual simples/coerente ADR-009. Docker local descartável apenas para testes ADR-005. Sem aprovação para publicar, deploy ou importação pessoal. Licença pública ainda aberta.
 
-## Entregas F5
+## Entregas F6
 
 | Item | Commit | Entrega |
 |---|---|---|
-| C32 | 05a4714 | Texto formatado, preferências e leitura local-first; falha no progresso não esconde conteúdo. |
-| C33 | aacd7e8 | Navegação de capítulos, limites/offline, ocultação de controles e autoscroll independente da voz. |
-| C34 | 2a14a39 | Prefetch sequencial N+1..N+3 em memória, sem progresso/download ou avanço automático. |
-| C35 | 4a7db96 | Player nativo composto com vozes, velocidades, navegação, fim e status local. |
-| C36 | 832bf15 | Capítulo inicial explícito prevalece sobre progresso da fonte e da obra; melhoria separada. |
-| C37 | d643857 | Filtros globais por tipo e limpar com confirmação. |
-| C38 | 0332263 | Downloads individuais por fonte, abertura do capítulo escolhido e remoção confirmada; limpeza remota não bloqueante. |
-| C39 | c0b81aa | Intervalo até 50 em grupos de cinco, pular existentes, progresso por tentativas e falhas individuais; somente fila em memória. |
+| C40 | ac55251 | Busca por nome/URL, metadados, seleção de fontes, capítulo inicial, duplicatas e erro parcial. |
+| C41 | e97d91f | Preservar chapter_ids RoyalRoad e resolver ID da URL para índice; correção separada. |
+| C42 | 0246a4d | Biblioteca com capas/progresso, ordenação, refresh, cache offline identificado e exclusão confirmada online. |
+| C43 | 587f4eb | Detalhes, edição de capítulo, adicionar/trocar/remover fontes e progresso próprio de cada fonte. |
+| C44 | eb8ecf8 | Splash e sete destinos reais; jornada completa e guardas de IDs/capítulos, com apresentação simples compartilhada. |
+| C45 | HEAD deste registro | Importador privado opcional, dry-run padrão, formatos conhecidos, conflitos, backups, idempotência e recuperação; nenhuma importação pessoal. |
+
+- F5 entregou leitor, preferências, navegação/autoscroll, prefetch em memória, player nativo, prioridade do capítulo escolhido, filtros e downloads individuais/intervalo. Serviços F4 e namespace de cache por obra/fonte permanecem preservados.
+- O dono reforçou o objetivo de uso e portfólio com o necessário, deixando melhorias extras para depois. Não ampliar funcionalidades além da paridade.
 
 ## Verificação de fechamento
 
-- Gate C39 aprovado: Ruff/format/mypy/arquitetura/compileall, 170 testes backend (dez integrações reais na stack descartável), ESLint/20 casos das regras/TypeScript strict e 203 testes mobile. Bundles Hermes Android/iOS do produto e do harness privado aprovados. Gitleaks de candidatos/histórico aprovado; conteúdo staged conferido antes do commit. Sem nova certificação física ou de fontes/tradução externas.
-- Regras React revisadas: dados por queries/mutations e eventos, sem efeitos para fetch/estado derivado; imports diretos e mensagens/controles acessíveis. Nenhuma dependência adicionada em F5.
-- F5 tem cobertura automatizada de leitura/voz/filtros/downloads e isolamento por fonte. Isso não certifica toda a jornada do produto ou paridade física final. A tela principal já abre a biblioteca integrada em C44; fluxo real de fontes/tradução e hardware ainda depende da validação final.
+- Gate final F6 aprovado: Ruff/format/mypy/arquitetura/compileall; 187 testes backend (175 unitários + 12 integrações reais locais), ESLint/20 casos das regras/TypeScript strict e 220 testes mobile. Bundles Hermes Android/iOS do aplicativo principal integrado e Gitleaks de candidatos/histórico aprovados. Conteúdo staged conferido antes do commit.
+- Jornada automatizada monta rotas reais: biblioteca→detalhe→leitura→voz→downloads→capítulo escolhido; duplicata→player; filtros e links inválidos. Transporte, fala e arquivos são sintéticos nos testes; não certificar backend/fontes reais no Android por essa evidência.
+- Importador: testes de validação, privacidade, backup/compensação com I/O injetado; SQL real em schema local isolado confirma idempotência, conflitos/rollback, filtros vazios, velocidade e progresso por fonte. Bucket privado local comprova criação sem sobrescrita. Schema/bucket sintéticos removidos. Launcher exercitado com dry-run privado e caminhos relativos. Nenhuma aplicação pessoal ou em projeto remoto.
+- Nenhuma dependência foi adicionada em F6. Regras React revisadas: queries/mutations e eventos, lifecycle para recursos, imports diretos, rotas guardadas e controles acessíveis. Ajustes em fixtures/tipagem foram verificados, sem remover cenários ou desativar regras.
 
 ## Teste disponível ao dono
 
-Na raiz, executar `yarn workspace @voxnovel/mobile reader:harness` e abrir o QR no Android/Expo Go compatível com SDK 58, na mesma rede. Tocar em **Preparar e abrir leitor**. Testar texto/preferências/navegação/rolagem e abrir o player no capítulo escolhido; filtros e downloads sintéticos estão nos botões do harness. Em downloads, remover os dois capítulos com confirmação e baixar intervalo 1–2, depois abrir capítulo 2 em texto/voz. Roteiro completo em MOBILE.md.
+O aplicativo principal está integrado. Iniciar API conforme API.md; para Android na mesma rede, definir VOXNOVEL_HOST=0.0.0.0 antes do comando do backend. Copiar/configurar apps/mobile/.env a partir do exemplo com EXPO_PUBLIC_API_URL apontando ao endereço LAN da API, sem /api/v1. Nenhuma chave Supabase entra no mobile.
 
-- Projeto privado em .private/voxnovel-reader-harness, distinto do harness de fala. Texto/transporte/progresso/filtros sintéticos; motor de fala e arquivos do aparelho reais. Sem API, tradução externa ou dados pessoais. Não representa a navegação final do app.
-- Harness original de fala: `yarn workspace @voxnovel/mobile speech:harness`; matriz e detalhes em S1.md. Nenhum servidor Expo foi deixado aberto pelo agente.
+Na raiz: `yarn workspace @voxnovel/mobile start`; abrir QR no Expo Go compatível com SDK 58, na mesma rede. Testar adicionar obra, biblioteca/detalhes, leitura/voz, capítulo selecionado em downloads e filtros. Guia em MOBILE.md. A stack descartável é compartilhada pela suíte: somente dados de teste; uso pessoal duradouro exige destino separado. Nenhum servidor Expo/API foi iniciado ou deixado aberto pelo agente neste bloco.
+
+O dono foi avisado de que o app principal já é testável. Ainda não relatou teste desta integração; o relato anterior foi do harness S1. Harnesses opcionais preservados: speech:harness e reader:harness, com dados sintéticos e identidade privada própria.
 
 ## Limites e decisões pendentes
 
-- S1: dono testou POCO X5 com voz pt-br-x-ptd-local (Enhanced), relatando sucesso em capítulo 2, pausa/retomada, voz/velocidade, troca de app e bloqueio. Android/motor/Expo versus build/duração não informados; interrupções, voz sem rede/sem PT, saída e iOS não certificados. ADR-008 dispensa esses cenários como impedimento ao avanço F4→F5, sem marcá-los como aprovados. Não repetir a mesma solicitação de dispensa.
-- Tradução: no diagnóstico autorizado, o adaptador protegido recebeu HTTP 403 com desafio e o GoogleTranslator recebeu HTTP 429 para frase sintética curta. Nenhum capítulo completo foi traduzido com sucesso nesse teste; P13/P15 reais continuam pendentes. Não afirmar que o problema do original foi resolvido, nem atribuir causa definitiva. URL/relatórios somente privados em .private/translation-repro e arquivo associado, ignorados pelo git; sem conteúdo pessoal nas fixtures. Não fazer bypass ou repetir chamadas ao Google sem motivo novo.
-- Providers externos têm testes determinísticos, sem certificação dos layouts/desafios atuais. Avaliar esses limites antes da validação final.
-- S2: prebuild Android concluído em F1; assembleDebug executou 63 tarefas antes de falhar no acesso a Maven por resolução de rede (ADR-004). Sem APK novo validado; iOS nativo requer ambiente Apple. Hermes/testes simulados não substituem compilação nativa e execução física.
-- Importação pessoal não executada. Arquivos antigos sem fonte comprovada ficam preservados, sem atribuição automática; C45 oferecerá dry-run com dados sintéticos antes de qualquer operação pessoal autorizada.
-- Licença pública ainda aberta. Próximo portão: aprovação da Fase 4 após fechar F6.
+- Tradução: no diagnóstico autorizado, o adaptador protegido recebeu HTTP 403 com desafio e o GoogleTranslator HTTP 429 para frase sintética curta. Nenhum capítulo completo foi traduzido com sucesso nesse teste; P13/P15 reais continuam pendentes. Não afirmar que o problema original foi resolvido ou atribuir causa definitiva. URL/relatórios apenas privados em .private/translation-repro e arquivo associado, ignorados pelo git. Sem bypass, troca de motor ou repetição de chamadas sem evidência nova.
+- Providers têm testes determinísticos, sem certificação de layouts/desafios externos atuais. Verificar fontes/tradução e corrigir impedimentos antes de declarar a versão validada para uso/apresentação.
+- S1: POCO X5, voz pt-br-x-ptd-local (Enhanced), com sucesso relatado em capítulo 2, pausa/retomada, voz/velocidade, troca de app e bloqueio. Android/motor/Expo versus build/duração não informados. Interrupções, voz sem rede/sem PT, saída e iOS não certificados. ADR-008 dispensou esses cenários como impedimento F4→F5, sem aprová-los como testes. Não repetir a mesma solicitação de dispensa.
+- S2: prebuild Android concluído em F1; assembleDebug executou 63 tarefas e falhou no acesso a Maven por resolução de rede (ADR-004). Sem APK novo validado; iOS nativo requer ambiente Apple. Hermes e Jest não substituem execução física/build nativo.
+- Importação pessoal não executada. Formatos conhecidos/dry-run/aplicação explícita e recuperação em IMPORTACAO.md. Arquivos antigos sem fonte comprovada ficam preservados, sem atribuição automática; nenhum acesso ao sandbox antigo do Android.
+- Licença pública ainda aberta. Fase 4/README de apresentação aguardam aprovação. Sem publicação, push, deploy, conta/auth, áudio remoto, jobs duráveis, Redis/ARQ, MMKV, WatermelonDB ou novos recursos fora da paridade.
 
-## Continuidade e ambiente
+## Continuidade
 
-- Ler AGENTS.md e este registro antes de qualquer ação em sessão nova. Consultar PLANO_COMMITS.md, ANALISE.md (P01–P35), DECISIONS.md, WBS_STATUS.md, MOBILE.md, S1.md, API.md e PERSISTENCIA.md.
-- F4 entregou cliente API EN por env/Zod, TanStack Query sem retry, arquivos persistentes por obra/fonte, cache local/em memória, fala serializada e NetInfo. Sem auth, áudio remoto, MMKV, WatermelonDB, EventBus ou funcionalidades fora da paridade.
-- Arquivos de capítulos novos: downloads/{novelId}/sources/{sourceId}/cap_{n}.json com envelope `{ cap, texto }`; biblioteca `{ obras, salvoEm }`. Arquivos antigos preservados; nenhuma alteração em _legacy, que permanece somente leitura e ignorado.
-- Stack Supabase local descartável de testes em .private/voxnovel-f3-supabase; somente banco/Storage locais, nenhum projeto remoto alterado e nenhuma chave exposta no mobile. RLS/ACL/advisors auditados em F3 sem achados. Backend executável conforme API.md; nenhum dado pessoal importado.
-- Checklist P01–P35 ainda não certificado na Fase 4. F6 autorizado em ADR-009; executar C40–C45, suíte completa, documentos/tag/log e parar para aprovação da validação final.
+Ler AGENTS.md e este registro antes de qualquer ação em nova sessão. Consultar PLANO_COMMITS.md, ANALISE.md (contrato P01–P35), DECISIONS.md, WBS_STATUS.md, MOBILE.md, S1.md, API.md, PERSISTENCIA.md e IMPORTACAO.md.
 
-- Gate C40: 170 testes backend com dez integrações reais, 208 mobile, 20 casos de lint, ESLint/tsc/Ruff/mypy/arquitetura/compileall, Hermes Android/iOS e Gitleaks aprovados. Teste de interface repetido após timeout durante espera de disco; limite do fluxo ajustado para 60s, sem remover cenários. Busca/cadastro ainda serão ligados à navegação principal em C44.
-
-- Gate C41: backend 170 testes com integrações e Ruff/mypy/arquitetura passou; após corrigir campo excedente na fixture, checks mobile completos passaram com 210 testes, ESLint/20 casos/tsc, Hermes Android/iOS e Gitleaks. IDs são preservados e a URL RoyalRoad resolve o índice escolhido. Próximo C42.
-
-- Gate C42: 170 testes backend com integrações, 214 mobile, lint/20 casos/tsc/Ruff/mypy/arquitetura/compileall, Hermes Android/iOS e Gitleaks aprovados. Biblioteca offline identificada, respostas antigas descartadas e exclusão confirmada somente online; arquivos de capítulos preservados como no protótipo. C42 ainda depende da entrada principal C44 para uso no produto.
-
-- Gate C43: 170 testes backend com integrações, 216 mobile, lint/20 casos/tsc/Ruff/mypy/arquitetura/compileall, Hermes Android/iOS e Gitleaks aprovados. Detalhes, edição de capítulo, troca/remoção de fontes e atalhos implementados; próxima etapa é conectar a jornada em C44.
-
-- Gate C44: 170 testes backend com integrações passaram; mobile repetido após ajustes nas fixtures da jornada, com 220 testes, ESLint/20 casos/tsc, Hermes Android/iOS do produto integrado e Gitleaks aprovados. Splash e sete destinos reais conectados, IDs/capítulos guardados e capítulo explícito preservado.
-- Avisado ao dono: app principal testável por `yarn workspace @voxnovel/mobile start`, após API e EXPO_PUBLIC_API_URL configurados conforme MOBILE.md. Não confundir transporte sintético dos testes com validação externa; stack descartável somente para dados de teste. Nenhum servidor Expo/API foi iniciado ou deixado aberto pelo agente neste bloco.
+Stack local descartável de integração em .private/voxnovel-f3-supabase; somente banco/Storage locais, sem projeto remoto alterado e sem chave no mobile. RLS/ACL/advisors auditados em F3 sem achados. Testes de importação usam schema/bucket isolados nessa stack. _legacy permanece somente leitura e ignorado. Checklist P01–P35 ainda não certificado na Fase 4.

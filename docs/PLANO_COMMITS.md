@@ -140,6 +140,8 @@ Importador suporta apenas formatos verificados. Inspeção de dados pessoais dev
 
 Portão F6: jornada completa disponível e importador validado com dados sintéticos, sem declarar dados pessoais importados. Suite completa, log C40–C45 e parada para aprovação da Fase 4.
 
+Registro de execução em 2026-11-20: C40–C45 concluídos. Gate final com 187 testes backend (12 integrações locais reais), 220 mobile, lint/tipos/arquitetura, Hermes Android/iOS do app integrado e Gitleaks aprovados. Nenhuma migração pessoal, push ou deploy. Fontes/tradução reais e limites físicos registrados continuam para validação; Fase 4 aguarda aprovação.
+
 ## 9. Fase 4 — validação final (depois dos blocos aprovados)
 
 | Commit | Título em inglês | WBS | Paridade / classe | Entrega e aceite específico |

@@ -1,6 +1,6 @@
 # Status individual dos pacotes WBS
 
-Data: 2026-11-20. Fundação, persistência, API F3 e serviços mobile F4 implementados; F4 fechado com relato Android e dispensa expressa dos limites restantes (ADR-008); F5 concluído com gate C39 aprovado (170 testes backend, 203 mobile e bundles Android/iOS); F6 autorizado em ADR-009, C40–C44 concluídos e C45 pendente; produto sem paridade final validada. Análise e plano aprovados. Estados dos blocos atualizados; pacotes compostos não contam como integralmente entregues.
+Data: 2026-11-20. Fundação, persistência, API F3 e serviços mobile F4 implementados; F4 fechado com relato Android e dispensa expressa dos limites restantes (ADR-008); F5 concluído com gate C39 aprovado (170 testes backend, 203 mobile e bundles Android/iOS); F6 autorizado em ADR-009, C40–C45 concluídos com gate final (187 testes backend, 220 mobile e bundles Android/iOS); Fase 4 aguarda aprovação; produto sem paridade final validada. Análise e plano aprovados. Estados dos blocos atualizados; pacotes compostos não contam como integralmente entregues.
 
 “Não iniciado — adaptar” cobre apenas a parte de paridade descrita em ANALISE.md; não autoriza executar o pacote inteiro. “Fora de escopo” não significa funcionalidade implementada nem infra aprovada. Misturas de áudio/texto devem seguir a seção 6 da análise.
 
@@ -12,7 +12,7 @@ Data: 2026-11-20. Fundação, persistência, API F3 e serviços mobile F4 implem
 | 1.1.2 | Criar `apps/mobile/` e `apps/backend/` como workspaces | Feito — fundação adaptada | C01–C08; evidências em FUNDACAO.md. Somente base e camadas usadas, sem funções extras da WBS. |
 | 1.1.3 | Configurar `.gitignore` global | Feito — fundação adaptada | C01–C08; evidências em FUNDACAO.md. Somente base e camadas usadas, sem funções extras da WBS. |
 | 1.2.1 | Inicializar Poetry no backend (`pyproject.toml`) | Feito — fundação adaptada | C01–C08; evidências em FUNDACAO.md. Somente base e camadas usadas, sem funções extras da WBS. |
-| 1.2.2 | Instalar dependências core: FastAPI, SQLModel, HTTPX, ARQ, python-jose, Pydantic Settings | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
+| 1.2.2 | Instalar dependências core: FastAPI, SQLModel, HTTPX, ARQ, python-jose, Pydantic Settings | Feito — dependências necessárias | Somente bibliotecas usadas na paridade, com manifests/locks. Sem SQLModel, ARQ ou python-jose sem necessidade. |
 | 1.2.3 | Criar estrutura de pastas `src/` | Feito — fundação adaptada | C01–C08; evidências em FUNDACAO.md. Somente base e camadas usadas, sem funções extras da WBS. |
 | 1.2.4 | Configurar `src/main.py` com FastAPI + CORS | Feito — fundação adaptada | C01–C08; evidências em FUNDACAO.md. Somente base e camadas usadas, sem funções extras da WBS. |
 | 1.2.5 | Criar `src/core/config.py` com variáveis de ambiente (Pydantic BaseSettings) | Feito — fundação adaptada | C01–C08; evidências em FUNDACAO.md. Somente base e camadas usadas, sem funções extras da WBS. |
@@ -91,7 +91,7 @@ Data: 2026-11-20. Fundação, persistência, API F3 e serviços mobile F4 implem
 | 3.6.2 | `scrape_task.py` (scrape → pipeline → salva com content_hash e chapter_status) | Feito — paridade adaptada | C16/C22: responsabilidade de scraping/limpeza entregue em serviço síncrono fora do event loop; sem task ARQ, hashes ou ChapterStatus. |
 | 3.6.3 | `translate_task.py` (traduz N + prefetch N+1..N+K + atualiza translated_hash) | Feito — paridade adaptada | C20/C22: tradução de texto existente; sem worker, hashes ou prefetch remoto novo. |
 | 3.6.4 | `tts_task.py` | Eliminado (v2.2) | Somente áudio remoto; sem objeto no fluxo de texto + fala local. |
-| 3.6.5 | `download_batch_task.py` (itera DownloadChapters; pause/resume) | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
+| 3.6.5 | `download_batch_task.py` (itera DownloadChapters; pause/resume) | Feito — faixa em memória C39 | Até 50 capítulos em grupos de cinco; sem worker, DownloadJob durável ou pause/resume novos. |
 | 3.6.6 | `health_update_task.py` (cron diário — recalcula SourceHealthScore) | Fora de escopo | Capacidade nova ou motor diferente; não consta da paridade. |
 | 3.7.1 | Endpoints novels: GET/POST/DELETE obras, GET capítulos, GET capítulo?lang= | Feito — paridade adaptada | C21/C22/C24: biblioteca/progresso e texto JSON em API EN; sem áudio nem lang novo. |
 | 3.7.2 | Endpoints sources: POST, PUT activate, POST identify (com templates) | Feito — paridade adaptada | C21/C24: adicionar/trocar/remover fontes e identificação; sem templates. |
@@ -117,9 +117,9 @@ Data: 2026-11-20. Fundação, persistência, API F3 e serviços mobile F4 implem
 | 4.5.1 | `storage-manager.ts`: enforceAudioLimit (LRU), calculateUsage | Eliminado (v2.2) | Somente áudio remoto; sem objeto no fluxo de texto + fala local. |
 | 4.5.2 | Task CLEANUP_STORAGE enfileirada após download | Eliminado (v2.2) | Somente áudio remoto; sem objeto no fluxo de texto + fala local. |
 | 4.6.1 | `event-bus.ts` tipado (CHAPTER_TRANSLATED, AUDIO_READY, DOWNLOAD_FINISHED, SOURCE_UPDATED, PLAYER_PROGRESS) | Fora de escopo por padrão | EventBus não é exigido: serviços/hooks compartilham apenas estado necessário; não criar barramento vazio. |
-| 4.6.2 | `auth-provider.tsx` + bootstrap em `screens/_layout.tsx` | Não iniciado — adaptar | Somente bootstrap necessário; Supabase Auth/onAuthStateChange não entram. |
+| 4.6.2 | `auth-provider.tsx` + bootstrap em `screens/_layout.tsx` | Feito — bootstrap C26/C44 | Provider de queries, conectividade e navegação real; sem Supabase Auth/onAuthStateChange. |
 | 4.6.3 | `i18n.ts` com pt-BR.json e en.json | Fora de escopo | i18n e opção de UI EN não existem. Referências offline da análise foram corrigidas para FileSystem/queries. |
-| 4.6.4 | MSW: `mocks/browser.ts` + handlers todos os domínios | Não iniciado — adaptar | Somente responsabilidades com evidência em P01–P35; retirar novidades do pacote composto. |
+| 4.6.4 | MSW: `mocks/browser.ts` + handlers todos os domínios | Feito — mocks injetados | Testes usam transporte, arquivos e fala sintéticos; C44 monta rotas reais. Sem MSW obrigatório; este pacote não é navegação. |
 | 4.7.1 | Design system: button, text, input, badge, card, loading, skeleton, toast, progress-bar | Feito — controles necessários | C31: button com ocupado/desabilitado/selecionado, erro com retry e progress-bar acessível usados no harness. Não criar card/badge/skeleton/toast sem consumidores de paridade. |
 | 4.7.2 | Componentes extras: sheet, slider, icon, storage-indicator, chapter-status-badge | Feito — modal necessário | C31: Dialog e controles de preferências usados no harness; sem storage-indicator, chapter-status-badge, slider ou ícones sem uso. |
 | 5.1.1 | `features/reader/hooks.ts` (useChapter, useReaderSettings, useFilterPipeline) | Feito — paridade adaptada | C32: leitura local-first, query de leitura ativa, progresso em mutation independente e preferências temporárias. Falha de progresso não esconde conteúdo; integração de navegação em F6. |
@@ -195,10 +195,10 @@ Data: 2026-11-20. Fundação, persistência, API F3 e serviços mobile F4 implem
 | 8.2.1 | Testes unitários backend: repositórios, pipeline, scrapers (fixtures), templates, MarianEngine | Feito — paridade adaptada | C10–C25: testes dos repositories/serviços/providers/engine usados; sem templates ou MarianEngine fora do escopo. |
 | 8.2.2 | Testes workers: scrape_task, translate_task, download_batch, health_update (fakeredis) | Fora de escopo como pacote de workers | Nenhum ARQ/fakeredis a adicionar. Concorrência dos serviços existentes terá testes em C25/C39. |
 | 8.2.3 | Testes integração backend: endpoints com httpx.AsyncClient + banco memória | Feito — paridade adaptada | C11–C25: HTTP com FastAPI/TestClient e banco/Storage reais descartáveis, além de cenários sintéticos; sem depender só de mocks. |
-| 8.2.4 | Cobertura 80% em `src/services/` e `src/api/` | Não iniciado — melhoria quality | Antecipar controles/testes necessários aos módulos existentes; não criar workers ou libs só para testar a spec. |
-| 8.2.5 | Testes unitários mobile: core/ (task-queue, storage-manager, event-bus, stores) | Não iniciado — melhoria quality | Antecipar controles/testes necessários aos módulos existentes; não criar workers ou libs só para testar a spec. |
-| 8.2.6 | Testes componentes: ui/ com Testing Library RN | Não iniciado — melhoria quality | Antecipar controles/testes necessários aos módulos existentes; não criar workers ou libs só para testar a spec. |
-| 8.2.7 | Testes integração mobile: busca, leitura, player, downloads (MSW) | Não iniciado — melhoria quality | Antecipar controles/testes necessários aos módulos existentes; não criar workers ou libs só para testar a spec. |
+| 8.2.4 | Cobertura 80% em `src/services/` e `src/api/` | Parcial — percentual não medido | 175 testes unitários backend e 12 integrações locais no gate F6. Meta percentual de 80% não medida; não declarar cobertura não aferida. |
+| 8.2.5 | Testes unitários mobile: core/ (task-queue, storage-manager, event-bus, stores) | Feito — testes da paridade | 220 testes mobile incluem serviços/arquivos/cache/fala/prefetch/faixas. Sem criar EventBus ou stores adicionais para atender a spec. |
+| 8.2.6 | Testes componentes: ui/ com Testing Library RN | Feito — componentes da paridade | Controles acessíveis e telas testados com Testing Library RN, incluindo estados de falha e confirmação. |
+| 8.2.7 | Testes integração mobile: busca, leitura, player, downloads (MSW) | Feito — jornadas C44 | Expo Router real com transporte injetado: busca/duplicata, biblioteca/detalhe, leitura/voz/downloads e filtros; execução física ainda pendente. |
 | 8.3.1 | `.github/workflows/backend.yml`: ruff + mypy + pytest em cada push | Feito — CI mínimo definido | C09: workflow e comandos validados localmente; execução remota ainda não realizada. Sem deploy. |
 | 8.3.2 | `.github/workflows/mobile.yml`: ESLint + tsc + Jest em cada push | Feito — CI mínimo definido | C09: workflow e comandos validados localmente; execução remota ainda não realizada. Sem deploy. |
 | 8.3.3 | Workflow build Docker + push registry em merge main | Fora de escopo | Beta/Launch novo; tratamento interno de falhas já existentes pode entrar como melhoria separada. |
@@ -315,3 +315,7 @@ Plano aprovado em PLANO_COMMITS.md. IDs abaixo cobrem apenas a parte adaptada de
 | 6.2.4 | C43 |
 | 8.3.1 | C09 |
 | 8.3.2 | C09 |
+
+## Migração privada sem pacote WBS próprio
+
+C45 concluído: scripts/import_legacy.py com formatos conhecidos, dry-run padrão, exportação/backup/mapa privados, conflitos sem sobrescrita, transação/idempotência e compensação de objetos novos. Testes somente sintéticos em schema/bucket locais isolados. Nenhum dado pessoal importado; limites e recuperação em IMPORTACAO.md.

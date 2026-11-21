@@ -1,5 +1,9 @@
+import os
+
 from pydantic import Field, HttpUrl, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+from src.core.import_errors import LegacyImportError
 
 DEFAULT_REGEX_TIMEOUT = 0.1
 DEFAULT_PROCESSING_MAX_CHARS = 1_000_000
@@ -10,6 +14,16 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_prefix="VOXNOVEL_", env_file=".env", extra="ignore", env_ignore_empty=True
     )
+
+    legacy_import_database_url: SecretStr | None = None
+    legacy_psql_command: list[str] = Field(
+        default_factory=lambda: ["psql"], min_length=1
+    )
+    legacy_pg_dump_command: list[str] = Field(
+        default_factory=lambda: ["pg_dump"], min_length=1
+    )
+    legacy_import_timeout: int = Field(default=300, ge=1, le=3600)
+    legacy_import_max_bytes: int = Field(default=64_000_000, ge=1024)
 
     supabase_url: HttpUrl | None = None
     supabase_service_key: SecretStr | None = None
@@ -104,3 +118,12 @@ class Settings(BaseSettings):
 
 def get_settings() -> Settings:
     return Settings()
+
+
+def legacy_import_environment(settings: Settings) -> dict[str, str]:
+    if settings.legacy_import_database_url is None:
+        raise LegacyImportError("Configure the import database connection.")
+    return {
+        **os.environ,
+        "PGDATABASE": settings.legacy_import_database_url.get_secret_value(),
+    }

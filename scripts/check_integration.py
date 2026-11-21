@@ -3,8 +3,10 @@
 import argparse
 import json
 import os
+import re
 import subprocess
 import sys
+import tomllib
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -40,6 +42,28 @@ def main() -> None:
     env = os.environ.copy()
     env["VOXNOVEL_SUPABASE_URL"] = url
     env["VOXNOVEL_SUPABASE_SERVICE_KEY"] = data["SERVICE_ROLE_KEY"]
+    project = tomllib.loads((args.workdir / "supabase/config.toml").read_text())[
+        "project_id"
+    ]
+    if not re.fullmatch(r"[A-Za-z0-9_-]+", project):
+        parser.error("Invalid disposable project identifier.")
+    database_url = data["DB_URL"]
+    if urlparse(database_url).hostname not in {"127.0.0.1", "localhost", "::1"}:
+        parser.error("Importer integration must use a disposable local database.")
+    env["VOXNOVEL_LEGACY_IMPORT_DATABASE_URL"] = database_url
+    env["VOXNOVEL_LEGACY_PSQL_COMMAND"] = json.dumps(
+        [
+            "docker",
+            "exec",
+            "-i",
+            f"supabase_db_{project}",
+            "psql",
+            "-U",
+            "postgres",
+            "-d",
+            "postgres",
+        ]
+    )
     command = (
         [sys.executable, "scripts/check.py"]
         if args.all_checks
