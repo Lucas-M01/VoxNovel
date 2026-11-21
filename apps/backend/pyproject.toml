@@ -2,6 +2,7 @@
 name = "voxnovel-backend"
 version = "0.1.0"
 description = "VoxNovel API"
+license = "MIT"
 package-mode = false
 
 [tool.poetry.dependencies]

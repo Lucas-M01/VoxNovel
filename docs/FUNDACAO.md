@@ -59,7 +59,7 @@ Mobile: ESLint boundaries define dependências unidirecionais; aliases ao atrave
 - Não há aparelho Android conectado. S1 de voz/background continua pendente para o bloco F4, sem dispensa presumida. Nenhum motor foi trocado.
 - CI remoto ainda não executado: workflows foram preparados e as mesmas ferramentas são verificadas localmente. Auditoria de vulnerabilidades de dependências deve distinguir dependência depreciada de vulnerabilidade confirmada; avisos transitivos serão registrados sem afirmar que houve auditoria completa.
 
-Supabase e migração pessoal pertencem aos blocos seguintes. Não usar o projeto do protótipo como banco de testes. A licença pública não foi escolhida: LICENSE registra ausência de concessão, sem atribuir licença automaticamente.
+Supabase e migração pessoal pertencem aos blocos seguintes. Não usar o projeto do protótipo como banco de testes. Na fundação, a licença pública ainda não havia sido escolhida. Posteriormente, o dono escolheu MIT expressamente para a publicação no GitHub; LICENSE contém o texto vigente.
 
 Referências técnicas consultadas: [Expo Router](https://docs.expo.dev/router/installation/), [TypeScript no Expo](https://docs.expo.dev/guides/typescript/), [Jest no Expo](https://docs.expo.dev/develop/unit-testing/), [JS Boundaries](https://www.jsboundaries.dev/docs/quick-start/). As versões efetivamente usadas são as dos lockfiles, não exemplos antigos das specs.
 

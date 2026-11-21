@@ -188,3 +188,11 @@ As escolhas de implementação, divisão de commits e tags constam de PLANO_COMM
 - Preferências locais de leitura/voz e idiomas extras entram como extensão P37 do contrato, rastreando as aprovações expressas já registradas em ADR-015/018/020. Limite de velocidade de 2× e retirada de Detalhes do player seguem as decisões do dono; não tratar esses desvios como comportamento do legado.
 - O dono pediu capturas das telas funcionais para uso posterior. Capturas reais ficam inicialmente em diretório privado; não publicar biblioteca/progresso pessoal ou conteúdo de capítulos no Git. A disponibilidade do aparelho para ADB é uma condição da captura, sem alterar a aprovação funcional.
 - docs/spec será preservada como referência histórica, com aviso e índice apontando para o escopo/estado reais. A pasta contém propostas além da entrega, sem transformá-las em tarefas novas. Nenhum push/deploy foi solicitado ou executado.
+
+
+## Publicação com histórico inicial limpo e licença MIT — 2026-11-21
+
+- O dono autorizou publicar a versão atual com um commit inicial limpo, preservando o histórico local. O histórico antigo do yarn.lock contém um caminho de máquina e não será enviado ao GitHub.
+- Pedido expresso posterior: “Lembra de colocar a licença do MIT”. LICENSE passa a conter MIT, copyright 2026 Lucas Montenegro; metadados do código usam MIT. As licenças/atribuições dos ícones e do modelo permanecem próprias.
+- Destino público: Lucas-M01/VoxNovel. Publicação feita por uma cópia isolada da árvore versionada, sem .env, modelos, capturas pessoais, _legacy ou alterações locais de dependências. O repositório original e suas tags permanecem preservados.
+- Referências a commits antigos nos documentos descrevem o histórico local de reconstrução e não fazem parte da linha pública que começa nesta publicação. Não reescrever nem enviar o histórico original por engano.

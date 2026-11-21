@@ -170,8 +170,9 @@ Foram aprovados 215 testes backend, incluindo 12 integrações reais locais, e
 233 testes mobile; bundles Hermes Android/iOS passaram. Build nativo e cenários
 físicos não executados continuam identificados em VALIDACAO.md.
 
-A licença pública ainda não foi escolhida pelo dono. [LICENSE](LICENSE) registra
-a ausência de concessão; dependências mantêm suas próprias licenças.
+Código distribuído sob a [licença MIT](LICENSE), por escolha expressa do dono.
+Dependências, ícones e modelo de tradução mantêm suas próprias licenças e
+atribuições; detalhes do modelo em [TRADUCAO.md](docs/TRADUCAO.md).
 
 
 ## Documentação de referência

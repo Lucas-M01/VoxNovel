@@ -11,7 +11,8 @@
   O commit documental de fechamento contém este registro e recebe a tag fase-4.
 - Capturas solicitadas: seis screenshots reais foram feitas pelo dono e copiadas
   do telefone por USB/MTP. Entregues com nomes e ZIP em diretório privado, fora do Git.
-  GitHub/deploy não foram publicados; licença pública ainda não foi escolhida.
+  Publicação GitHub autorizada com histórico inicial limpo; licença MIT escolhida
+  expressamente. Deploy do app não foi solicitado.
 
 ## Entrega e evidência
 
@@ -79,3 +80,20 @@ capturar manualmente e copiar por USB. O MTP inicialmente veio vazio, depois o
 armazenamento ficou disponível. Copiados somente screenshots de hoje do Expo;
 fotos/capturas de outros aplicativos não foram copiadas. Diagnósticos com dados
 do dispositivo ficam privados. Não publicar capturas pessoais automaticamente.
+
+
+## Publicação GitHub autorizada — 2026-11-21
+
+- O dono escolheu publicar a versão atual com commit inicial limpo e preservar
+  o histórico local. Depois escolheu MIT expressamente; LICENSE e metadados
+  passam a refletir essa decisão, sem mudar licenças de terceiros.
+- Destino público: Lucas-M01/VoxNovel. A versão atual passou na conferência dos
+  arquivos versionados e Gitleaks; o histórico antigo contém caminho pessoal
+  no yarn.lock e não será enviado.
+- A publicação usa cópia isolada em .private/github-publication/source. Não
+  copiar .env, modelos, screenshots pessoais, _legacy ou alterações locais de
+  package.json/yarn.lock/package-lock.json. Referências a commits antigos nos
+  documentos são do histórico de reconstrução preservado localmente.
+- Envio em andamento. Verificar branch main, licença MIT e checks no GitHub.
+  Nunca ligar a branch original diretamente à nova main pública: seus históricos
+  são diferentes e o push do original exporia o caminho histórico.

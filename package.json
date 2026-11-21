@@ -1,7 +1,7 @@
 {
   "name": "voxnovel",
   "private": true,
-  "license": "UNLICENSED",
+  "license": "MIT",
   "packageManager": "yarn@1.22.22",
   "engines": {
     "node": ">=24.15.0 <25"
