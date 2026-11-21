@@ -27,8 +27,11 @@ A não significa que a jornada no aparelho foi executada. O contrato continua em
 [ANALISE.md](ANALISE.md); os critérios não foram reduzidos para caber nos testes.
 
 Gate atual: **192 testes backend** (180 unitários + 12 integrações locais),
-**221 testes mobile**, 20 casos das regras de lint, Ruff/format/mypy/arquitetura,
-ESLint/tsc, bundles Hermes Android/iOS e varredura de segredos aprovados.
+**222 testes mobile**, 20 casos das regras de lint, Ruff/format/mypy/arquitetura,
+ESLint/tsc, bundles Hermes Android/iOS e Gitleaks aprovados. Nesta rodada, o
+wrapper global falhou na regra adicional de caminhos pessoais em yarn.lock
+já modificado localmente; arquivo preservado fora da correção. Scanner staged
+dos arquivos desta correção e diff check passaram.
 
 ## Checklist com evidências
 
@@ -79,6 +82,12 @@ ESLint/tsc, bundles Hermes Android/iOS e varredura de segredos aprovados.
 3. Perfil Curl anunciava Brotli, embora o adaptador só decodificasse gzip/deflate:
    Accept-Encoding passou a ser explícito. O caso real retornou 200/gzip e
    conteúdo extraído. FreeWebNovel usa esse transporte guardado no backend.
+
+4. Configuração da API: z.httpUrl rejeitava IP/localhost, embora o guia orientasse
+   uso LAN. Agora z.url restringe protocolo HTTP/HTTPS sem exigir domínio público.
+   Mantidos bloqueios de credenciais, query e fragmento; testes cobrem LAN,
+   localhost, loopback IPv4/IPv6 e protocolos inválidos. O loader real do Expo
+   carregou o .env local e passou na validação corrigida; reinício físico pendente.
 
 ## Resultado externo e escopo inicial
 

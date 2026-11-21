@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const apiUrlSchema = z.httpUrl().refine(value => {
+const apiUrlSchema = z.url({ protocol: /^https?$/ }).refine(value => {
   try {
     const url = new URL(value);
     return !url.username && !url.password && !url.search && !url.hash;

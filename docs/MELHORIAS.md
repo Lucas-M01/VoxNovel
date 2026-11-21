@@ -35,6 +35,10 @@ da comprovação em VALIDACAO.md; este documento não certifica testes ausentes.
   Cópia + sort substitui toSorted indisponível; regressão executa sem esse método
   e confere ordem e cache intacto. Reteste físico pendente.
 
+- API local: validador corrigido para aceitar IP/localhost via HTTP/HTTPS,
+  como exige a execução em aparelho físico. Credenciais, query e fragmento
+  continuam rejeitados. Testes LAN/loopback/IPv6 e loader real Expo validados.
+
 ## Limites mantidos
 
 A tradução conserva blocos de 4.500 caracteres e fallback independente. Falha

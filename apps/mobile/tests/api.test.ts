@@ -98,8 +98,14 @@ test('encodes source URLs and request bodies without losing query parameters', a
 
 test('validates configuration, accepting only HTTP URLs without credentials or query', () => {
   expect(apiBaseUrl('https://api.example///')).toBe('https://api.example');
-  for (const value of ['', 'file:///tmp/test', 'https://user:pass@api.example', 'https://api.example?token=private', 'https://api.example#token']) {
+  for (const value of ['', 'file:///tmp/test', 'ftp://api.example', 'https://user:pass@api.example', 'https://api.example?token=private', 'https://api.example#token']) {
     expect(() => apiBaseUrl(value)).toThrow('EXPO_PUBLIC_API_URL');
+  }
+});
+
+test('accepts local API addresses used by physical devices and emulators', () => {
+  for (const value of ['http://localhost:8000', 'http://192.0.2.1:8000', 'http://127.0.0.1:8000', 'http://[::1]:8000']) {
+    expect(apiBaseUrl(value)).toBe(value);
   }
 });
 
