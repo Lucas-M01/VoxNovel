@@ -196,7 +196,7 @@ Data: 2026-11-20. Fundação, persistência, API F3 e serviços mobile F4 implem
 | 8.2.2 | Testes workers: scrape_task, translate_task, download_batch, health_update (fakeredis) | Fora de escopo como pacote de workers | Nenhum ARQ/fakeredis a adicionar. Concorrência dos serviços existentes terá testes em C25/C39. |
 | 8.2.3 | Testes integração backend: endpoints com httpx.AsyncClient + banco memória | Feito — paridade adaptada | C11–C25: HTTP com FastAPI/TestClient e banco/Storage reais descartáveis, além de cenários sintéticos; sem depender só de mocks. |
 | 8.2.4 | Cobertura 80% em `src/services/` e `src/api/` | Parcial — percentual não medido | 186 testes unitários backend e 12 integrações locais no gate da Fase 4. Meta percentual de 80% não medida; não declarar cobertura não aferida. |
-| 8.2.5 | Testes unitários mobile: core/ (task-queue, storage-manager, event-bus, stores) | Feito — testes da paridade | 228 testes mobile incluem serviços/arquivos/cache/fala/prefetch/faixas. Sem criar EventBus ou stores adicionais para atender a spec. |
+| 8.2.5 | Testes unitários mobile: core/ (task-queue, storage-manager, event-bus, stores) | Feito — testes da paridade | 233 testes mobile incluem serviços/arquivos/cache/fala/prefetch/faixas. Sem criar EventBus ou stores adicionais para atender a spec. |
 | 8.2.6 | Testes componentes: ui/ com Testing Library RN | Feito — componentes da paridade | Controles acessíveis e telas testados com Testing Library RN, incluindo estados de falha e confirmação. |
 | 8.2.7 | Testes integração mobile: busca, leitura, player, downloads (MSW) | Feito — jornadas C44 | Expo Router real com transporte injetado: busca/duplicata, biblioteca/detalhe, leitura/voz/downloads e filtros; execução física ainda pendente. |
 | 8.3.1 | `.github/workflows/backend.yml`: ruff + mypy + pytest em cada push | Feito — CI mínimo definido | C09: workflow e comandos validados localmente; execução remota ainda não realizada. Sem deploy. |
@@ -320,4 +320,6 @@ Plano aprovado em PLANO_COMMITS.md. IDs abaixo cobrem apenas a parte adaptada de
 
 C45 concluído: scripts/import_legacy.py com formatos conhecidos, dry-run padrão, exportação/backup/mapa privados, conflitos sem sobrescrita, transação/idempotência e compensação de objetos novos. Testes somente sintéticos em schema/bucket locais isolados. Nenhum dado pessoal importado; limites e recuperação em IMPORTACAO.md.
 
-C48–C50: extensão P36 em leitura/voz implementada e testada; tradução local com 215 testes backend totais. Reteste físico pendente. Detalhes e limites em VALIDACAO.md e TRADUCAO.md.
+C48–C50: extensão P36 em leitura/voz implementada e testada; tradução local com 215 testes backend totais. Reteste Android aprovado pelo dono; limites em VALIDACAO.md e TRADUCAO.md.
+
+Consolidação visual final d63c677: revisões ADR-015–020, preferências locais P37 e aceite Android/visual registrados. Gate final: 215 backend/233 mobile; Fase 4 concluída para a entrega descrita, sem certificar cenários ausentes. docs/spec permanece como referência histórica.

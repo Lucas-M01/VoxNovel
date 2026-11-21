@@ -1,77 +1,72 @@
 # Progresso
 
 - Atualizado: 2026-11-21.
-- Fase atual: **Fase 4 em andamento**, autorizada em ADR-010. Auditoria P01–P35 e documentação C46 entregues, com quatro correções. Relato Android integrado recebido: biblioteca, busca/cadastro, leitura, voz e downloads/offline funcionaram; tradução falhou. Fechamento pendente da tradução/decisão explícita sobre sua indisponibilidade e dos limites de cenário ainda registrados. Não criar tag fase-4 nem declarar release validada antes desse aceite.
-- Último commit: integração local/documentação, commit que contém este registro; predecessores 3d0e10f (seletor P36), c8fcd3f (API original) e c9b5adf (escopo). Diagnóstico 5db4e3b e orçamento de testes 12bc30c. Sem push, deploy ou reescrita de histórico.
-- Próximo passo: reteste Android de P36 e tradução local. Modelo oficial já instalado em diretório privado e .env configurado, sem credenciais alteradas. Reiniciar backend e recarregar app; original não chama modelo, PT usa inglês→PT-BR, downloads existentes não são regravados. Teste de cinco traduções passou após ajuste limitado de admissão/timeout: 50,59 s totais, cinco PT, zero fallbacks. Sem publicação ou promessa de hospedagem gratuita.
-- Estado de verificação: código backend do diagnóstico passou 198 testes; mobile passou 27 suítes/222 testes após ajuste de orçamento, lint/20 casos e tipos também passaram. Bundles Android/iOS passaram. Mobile está sendo validado contra mudanças de design feitas em paralelo no working tree; matcher de contagem offline foi alterado externamente para acessibilidade. Falhas de timeout na primeira renderização de telas foram reproduzidas; marcadores temporários foram removidos. Orçamento limitado de testes ajustado para 60 s no config/primeiro teste de downloads, mantendo asserções. Resultado aprovado em .private/quality/translation-mobile-bounded.log. Não atribuir falhas anteriores somente à carga: houve também mudança de markup/matcher feita em paralelo.
-- Autorizações: plano ADR-003; Docker local descartável de testes ADR-005; F3 ADR-006; F4 ADR-007; F5 e limites físicos ADR-008; F6/visual simples ADR-009; Fase 4 ADR-010. ADR-011 permite priorizar FreeWebNovel e somente provedores operacionais na versão inicial. Sem autorização para importar dados pessoais/publicar/deploy. ADR-012 exige custo zero; Azure F0 foi aprovado e depois descartado pela exigência de cartão. ADR-013 autoriza avaliar o modelo local; ADR-014 autoriza P36 em leitura e voz. Licença pública ainda não escolhida.
+- Estado: **Fase 4 concluída para a entrega Android aprovada pelo dono**. Após o
+  reteste, informou “Terminei e tá tudo certo agora”; depois aprovou o visual e
+  autorizou prosseguir. Nenhum novo teste geral do dono é exigido.
+- Último commit de produto: **d63c677**, revisão visual/preferências ADR-015–020.
+  Anteriores: d369bae (tradução local), 3d0e10f (P36 mobile), c8fcd3f (API original).
+  O commit documental de fechamento contém este registro e recebe a tag fase-4.
+- Próximo trabalho solicitado: capturar telas reais do Android para uso posterior.
+  Capturas com biblioteca/progresso pessoal ficam inicialmente fora do Git.
+  GitHub/deploy não foram publicados; licença pública ainda não foi escolhida.
 
-## Entregue nesta fase
+## Entrega e evidência
 
-| Item | Evidência |
+| Área | Estado |
 |---|---|
-| P14 — normalização de и/і | 70a4caa; regressão e comparação somente leitura com o legado: 1.296 caracteres sintéticos passaram de duas diferenças a zero; quatro casos de limpeza iguais. |
-| P05/P13 — acesso FreeWebNovel | e068531; CONNECT_TO incompatível removido, DNS fixado por RESOLVE e Accept-Encoding explícito gzip/deflate. O caso autorizado retornou HTTP 200/gzip e 11.327 caracteres extraídos; metadados reais também passaram. Sem desativar TLS, SSRF, limites ou redirects controlados. |
-| API local — configuração | z.httpUrl rejeitava IP/localhost apesar do guia de execução. Validador aceita HTTP/HTTPS local sem credenciais/query/hash; teste cobre LAN/loopback/IPv6. .env mobile criado localmente, ignorado; backend precisa reiniciar para escutar na LAN. |
-| P01/P02 — abertura da biblioteca | Após relato Android, substituído toSorted por cópia + sort; teste simula método indisponível e verifica cache intacto. Abertura confirmada pelo dono em 2026-11-21; detalhes finos não enumerados. |
-| Documentação C46 | README de instalação/config/dev/build/estrutura, VALIDACAO com 35 itens/evidências/pendências e MELHORIAS com mudanças e motivos. Documentos históricos distinguem estado anterior do aplicativo integrado. |
+| Fases 1/2 | Análise e plano aprovados; contrato em ANALISE.md e decisões em DECISIONS.md. |
+| Fase 3 | Blocos F1–F6 concluídos e aprovados; app integrado, sem importação pessoal. |
+| Fase 4 | Auditoria/correções, documentação, reteste funcional e visual Android aprovados. |
+| Backend | Ruff/format/mypy/arquitetura/compileall e 215 testes, incluindo 12 integrações reais locais. |
+| Mobile | ESLint boundaries/20 casos, TypeScript, 29 suítes/233 testes e Hermes Android/iOS. |
+| Segredos | Scanner staged e diff check aprovados antes dos commits; histórico conferido no fechamento. |
 
-- Gate atual: Ruff/format/mypy/arquitetura/compileall; **198 testes backend** (186 unitários + 12 integrações reais locais), ESLint/20 casos das regras/TypeScript strict e **222 testes mobile** no gate anterior. Bundles Hermes Android/iOS do app integrado e Gitleaks de candidatos/histórico aprovados; staged conferido antes de cada commit.
-- Verificação atual: backend 198 passou; mobile teve falhas de espera sob carga (contagem offline e timeout de 5 s no player). Biblioteca isolada passou 5/5. A execução com 30 s ainda excedeu o limite explícito de 20 s do caso de downloads. Após orçamento de 60 s, nova execução completa passou 222/222, sem mudar asserções. Marcadores temporários removidos. Bundles Android/iOS e lint/tsc passaram nesta investigação; wrappers longos também sofreram interrupção.
-- Limite do check global anterior: Gitleaks candidatos/histórico sem vazamentos, mas a regra adicional de caminhos pessoais apontou yarn.lock já modificado na configuração local. Esse arquivo e package.json/package-lock.json/tsconfig/.gitignore do dono foram preservados fora dos commits. Scanner staged dos arquivos corrigidos e diff check aprovados; lint/tipos/198 backend/222 mobile/bundles passaram. Não declarar o wrapper global integralmente aprovado nesta rodada.
-- Teste de configuração vazia isolado em diretório temporário: o .env preenchido pelo dono não pode mudar o resultado de um teste unitário que espera ausência de persistência. Nenhuma alteração de runtime/backend ou de credenciais.
-- O teste Curl novo aplica opções ao libcurl real sem I/O, cobrindo incompatibilidade que os mocks não detectavam. Testes de redes privadas/redirects/limites continuam passando.
-- Comparações executadas usam somente helpers puros do legado, sem importar seus serviços de banco, carregar dados pessoais ou modificar _legacy. Relatórios/URL de reprodução ficam somente em .private/phase4 e .private/translation-repro, ignorados. Nenhum texto do capítulo entrou no git.
-- Diagnóstico P15 em 2026-11-21: mesma configuração/engine confirmou redirecionamento para página de limite Google seguido de 429. Relatório privado current-google-report.json sem texto/chave/URL pessoal. Houve uma falha ao salvar o primeiro relatório privado; o caminho foi corrigido e o controle repetido uma vez, sem tradução de capítulo nem tentativas em lote.
-- TextTranslator agora registra razões fixas no terminal e no buffer existente via dependência da API: HTTP 429, falha, resposta ausente/inválida e orçamento esgotado. Sem payload/URLs/traceback; fallback por bloco e motor mantidos. Seis regressões cobrem redação segura e independência do próximo bloco.
-- Fonte real positiva não comprova tradução. Controle isolado com o mesmo GoogleTranslator e cliente Curl guardado retornou 302→429; o produto mantém o mesmo tradutor e fallback por bloco. Não foi feita tradução completa bem sucedida nem sequência de tentativas contra o limite.
+Logs privados do gate final: .private/quality/phase4-backend-final.log e
+phase4-mobile-final.log. Integrações usam somente a stack local descartável,
+com endpoints validados antes de qualquer escrita. Nenhum projeto remoto alterado.
 
-## Uso e teste disponíveis
+## Decisões que definem a versão
 
-O app principal já abre biblioteca, busca, detalhe, leitura, voz, filtros e downloads. Fluxos foram testados com Expo Router real e transporte/arquivos/fala sintéticos; os bundles não certificam execução física. F6 e seu importador opcional foram concluídos em 86c60b8; nenhuma importação pessoal foi executada.
+- Priorizar FreeWebNovel e fontes operacionais (ADR-011). O dono também confirmou
+  CentralNovel conforme ADR-018; não certificar todos os sites/capítulos.
+- Tradução gratuita, sem cartão: Azure descartado; Google anterior recebeu HTTP
+  429. Runtime local CTranslate2/SentencePiece/langdetect com Argos en_pb 1.9,
+  instalador explícito pinado por SHA-256 e atribuição preservada (ADR-012/013).
+  Inglês→PT-BR; português passa intacto; idiomas não suportados/falhas preservam
+  original com evento fixo. Sem GPU/PyTorch/serviço adicional.
+- P36: original/PT em leitura e voz, navegação e cache de memória separados;
+  downloads existentes ficam no fluxo PT, sem regravação/migração (ADR-014).
+- P37: preferências locais de leitura/voz e idiomas extras aprovados; player até
+  2×, Personalização e horizontal conforme ADR-015–020. A retirada de Detalhes do
+  player foi expressa; estado/frases/progresso continuam visíveis.
+- API real do capítulo autorizado: original 200/11.327 caracteres em 1,44 s sem
+  carregar modelo; PT 200/11.695 em 11,06 s, zero fallback; pico 322,72 MiB.
+  Cinco traduções concorrentes passaram em 50,59 s totais no perfil documentado.
+  Métricas são desse ambiente, sem garantir qualidade literária ou host gratuito.
+- docs/spec preservada como planejamento histórico, identificada por avisos e
+  índice. Não é lista de funcionalidades entregues nem de tarefas novas.
 
-Iniciar backend conforme README/API.md. Em Android físico, configurar VOXNOVEL_HOST=0.0.0.0 e EXPO_PUBLIC_API_URL com o endereço LAN da API, sem /api/v1, somente no .env ignorado do mobile; chaves ficam no backend. Na raiz: `yarn workspace @voxnovel/mobile start`; abrir QR no Expo Go compatível com SDK 58, mesma rede. A stack descartável é compartilhada pela suíte: usar somente dados de teste; destino pessoal deve ser separado.
+## Limites mantidos
 
-O dono iniciou o teste do app principal e relatou TypeError na abertura da biblioteca: toSorted ausente no runtime. Corrigido para ordenar uma cópia via sort, com regressão que remove toSorted e verifica a ordem e a imutabilidade do cache. Em 2026-11-21, o dono confirmou biblioteca, busca/cadastro, leitura, voz e downloads/offline funcionando no app integrado. A tradução continua falhando; a jornada completa não está aprovada. Não repetir o pedido de dispensa S1 anterior; preservar os limites não enumerados no novo relato. Harnesses speech:harness/reader:harness permanecem opcionais. Nenhum servidor Expo/API foi iniciado ou deixado aberto pelo agente nesta fase.
-
-- Ajuste local posterior ao commit dd15710: dono relatou mensagem de endereço da API ausente. O .env do backend existia, mas faltava apps/mobile/.env. Criado arquivo ignorado com EXPO_PUBLIC_API_URL da API na rede local e habilitada escuta LAN do backend. O primeiro controle com o loader real @expo/env revelou também que z.httpUrl rejeitava localhost/IP. Corrigido para z.url restrito a HTTP/HTTPS, mantendo bloqueio de credenciais/query/hash, com regressão LAN/localhost/IPv4/IPv6. Loader real e validação corrigida passaram; nenhum segredo/endereço pessoal registrado no git. Reteste funcional recebido em 2026-11-21, sem repetição dos erros iniciais de abertura/configuração. Configurações privadas não entram no commit; correção do validador e regressão entram. Nenhuma dependência nova.
-
-## Pendências e limites
-
-- **Android integrado, relato 2026-11-21:** biblioteca, busca/cadastro, leitura de capítulo, voz e downloads inclusive sem internet funcionaram. Hardware disponível informado anteriormente: POCO X5. Relato geral não enumera todos os subcenários (filtros, exclusão, comparação de progresso entre fontes, duração/background/interrupções); manter esses limites sem declarar falha nem aprovação individual.
-- **Tradução:** dono confirmou que ainda não funciona. Controle sintético atual também retornou HTTP 429 no mesmo motor/configuração, compatível com fallback do produto. Dono não forneceu log da execução específica no celular; os novos logs permitirão diferenciá-la sem expor conteúdo. Sem troca automática de tradutor ou aceite de versão sem tradução.
-- **Provedores:** busca encontrou obras no FreeWebNovel e, conforme a obra, também no CentralNovel. CentralNovel tem evidência de descoberta na busca, sem comprovação específica de leitura/tradução de seus capítulos. Demais provedores sem certificação atual; manter prioridade ADR-011.
-- **S1 parcial anterior:** POCO X5, voz pt-br-x-ptd-local (Enhanced), sucesso relatado em avanço ao capítulo 2, pausa/retomada, voz/velocidade, troca de app e bloqueio. Android/motor/Expo versus build/duração não informados; interrupções, voz sem rede/sem PT, saída e iOS pendentes. ADR-008 dispensou esses limites como impedimento F4→F5, sem transformá-los em testes aprovados.
-- **S2/build nativo:** prebuild Android feito em F1; assembleDebug parou após 63 tarefas por resolução de Maven (ADR-004). Sem APK novo validado; iOS requer Apple/Xcode. Hermes/Jest não substituem build e aparelho.
-- **Dados/licença/publicação:** sem importação pessoal, push/deploy ou concessão automática de licença. Arquivos antigos sem fonte comprovada ficam preservados; IMPORTACAO.md cobre apenas formatos conhecidos e aplicação explícita. Nenhum projeto remoto alterado.
-
-## Front-end — revisão visual do protótipo
-
-- Responsabilidade pelo front-end assumida em 2026-11-21, com fidelidade visual ao original e comunicação ao dono sobre melhorias (ADR-013). Revisão no diretório de trabalho, sem commit. HEAD do início e desta rodada: e7e6fd4. O diagnóstico de tradução já estava staged, e a migração Azure F0 segue como próximo item da outra frente.
-- Arte de abertura reaproveitada do protótipo. Biblioteca em grade de duas capas, cartão para continuar, progresso sobre as capas e botão Nova Obra no rodapé. Busca com resultados selecionáveis, detalhe com capa de fundo, comandos compactos na leitura, player circular, grade de downloads e filtros por tipo.
-- Diferenças visuais conhecidas: atalho Filtros permanece na biblioteca, alguns ícones usam símbolos nativos e os ajustes do leitor conservam os seletores atuais. Próximo passo no front-end: conferir essas telas lado a lado no Android. Nenhum dispositivo foi detectado pelo ADB. A revisão visual e o fechamento da Fase 4 seguem pendentes.
-
-- Verificação do mobile: ESLint, regras de arquitetura, TypeScript e diff check passaram. Jest passou em 222/222 na rodada final isolada. A rodada concorrente com o Expo havia falhado em dois casos de downloads após um timeout; as duas suítes direcionadas e a suíte completa passaram ao repetir. A exportação Expo gerou os bundles Hermes de Android e iOS com a arte original de abertura.
+- POCO X5 informado anteriormente. Aceite atual é geral: não inventar versão do
+  Android, voz, duração, URL ou resultado individual não relatado. S1 anterior
+  informou pt-br-x-ptd-local (Enhanced) com controles, avanço e troca/bloqueio;
+  iOS, interrupções, duração e vozes ausentes permanecem sem certificação específica.
+- Sem APK/IPA novo validado; spike Android encontrou limitação Maven. Bundles
+  Hermes/Jest não substituem esse build. Nenhum CI remoto usado como evidência.
+- Sem auth novo, jobs duráveis, voz paga, publicação/deploy ou importação pessoal.
+  Documentação final: README, VALIDACAO.md, MELHORIAS.md e TRADUCAO.md.
+- package.json/yarn.lock modificados e package-lock.json externo foram preservados
+  fora dos commits da entrega. Não declarar o working tree inteiro limpo ou o
+  wrapper global de candidatos aprovado: o lockfile local tinha caminho de máquina.
+  A entrega versionada usa o manifesto/lockfile já existente, sem novas bibliotecas
+  visuais. .env, modelos, logs, screenshots privados e _legacy seguem ignorados.
 
 ## Continuidade
 
-Ler AGENTS.md e este registro antes de qualquer ação em nova sessão. README, VALIDACAO.md e MELHORIAS.md são as entradas atuais; consultar ANALISE.md (contrato), PLANO_COMMITS.md, DECISIONS.md, WBS_STATUS.md, MOBILE.md, S1.md, API.md, PERSISTENCIA.md e IMPORTACAO.md para detalhes.
-
-Stack descartável local em .private/voxnovel-f3-supabase, sem chaves no mobile. Integrações criam e removem somente dados/schema/bucket sintéticos. RLS/ACL/advisors locais auditados em F3; sem alteração remota. _legacy somente leitura e ignorado. Manter o foco no necessário para uso/portfólio; extras ficam para depois.
-
-- Atenção a trabalho concorrente: diversas telas, UI compartilhada, splash/arte e teste da biblioteca possuem mudanças externas não commitadas. Não revertê-las, não atribuí-las ao diagnóstico e não incluí-las nos commits do tradutor. O staging anterior contém somente o diagnóstico backend/documentação; a implementação Azure iniciada foi retirada e não está no produto.
-
-- Spike local: arquivo oficial en_pb 1.9 baixado (66.179.201 bytes), SHA-256 1d1cd5e9540c6b38c258bed002a42d3b311b8a189acb74feaa311ef30d175c5b. Licença do OPUS de origem CC-BY 4.0, autores Jörg Tiedemann/Santhosh Thottingal; manter atribuição. Venv isolada tem CTranslate2 4.9.0, SentencePiece 0.2.3 e langdetect 1.0.9, sem PyTorch/Argos completo. Modelo e scripts não estão no produto/git.
-- Medição sintética de 9.678 caracteres/240 frases, uma thread CPU: beam 1/lote 8 = 27,70 s; beam 2/lote 8 = 42,16 s; pico 322,72 MiB, carga 0,66 s. Três frases traduzidas corretamente na inspeção, incluindo negação. Primeiro teste por frase foi lento e revelou marcadores de espaço; decoder deve seguir Argos decode_pieces().replace(▁, espaço), preservando byte fallback. Ainda falta capítulo real e medição backend+modelo; não declarar paridade nem hospedagem gratuita garantida.
-
-- C48/P36: API preparada com translate=false, preservando SSRF, limpeza e filtros; modo padrão traduzido mantido. Gate backend com destino local validado passou 199 testes (187 unitários + 12 integrações), Ruff/format/mypy/arquitetura. Uma execução anterior sem wrapper recusou destino remoto antes de qualquer escrita; repetição no ambiente descartável foi aprovada. Mobile com seletor em validação: 228 testes passaram, exportações em execução.
-
-- C49/P36: seletor original/português implementado na leitura e voz, com modo levado pela navegação; troca interrompe a sessão anterior, mantém capítulo/voz/velocidade e exige tocar Reproduzir. Cache original separado, sem ler/escrever downloads PT. Gate mobile: lint/20 casos, tipos, 29 suítes/228 testes e exportação Hermes Android/iOS passaram. Teste físico do novo seletor ainda pendente. C48 registrado no commit anterior; C50/modelo local é o próximo item.
-
-- C50/ADR-013: runtime local mínimo integrado, lazy e compartilhado por Resources; sem Argos completo/PyTorch/GPU/Docker de produto. Instalador explícito verifica SHA/metadados/tamanhos, preserva atribuição e recusa sobrescrever. CLI real aprovado em pasta temporária; modelo configurado instalado do arquivo oficial verificado. .env privado seleciona local/modelo e perfil de admissão, chaves mantidas intactas.
-- Gate C50: 215 backend (203 unitários + 12 integrações reais locais), Ruff/format/mypy/arquitetura/compileall passaram. Gate mobile atual sem mudanças após C49: 29 suítes/228 testes, lint/20 casos, tipos e Hermes Android/iOS. Scanner staged antes de registrar; limite global do yarn.lock externo continua separado.
-- API real local: original 200/11.327 caracteres em 1,44 s com modelo não carregado; traduzido 200/11.695 caracteres em 11,06 s, idioma PT, zero fallbacks; pico 322,72 MiB. Filtros sintéticos, sem persistência remota. Conteúdo e métricas detalhadas ignorados. Aceite literário/físico não presumido; inglês→PT-BR somente, PT intacto, demais idiomas preservados com evento fixo.
-- Configuração de carga: primeiro ensaio com duas vagas/espera de 60 s recebeu ocupado em cinco solicitações. Exemplo e .env privado ajustados para cinco vagas, espera 60 s e bloco 90 s, sem remover budgets ou duplicar modelo. Não alterar downloads em grupos de cinco nem apagar arquivos antigos para mascarar falhas.
-
-- Carga local aprovada no perfil documentado: cinco traduções concorrentes do texto autorizado já obtido, sem novas requisições nem persistência, concluídas em 42,99–50,16 s cada / 50,59 s totais, todas PT e zero fallbacks. Sem garantia sob qualquer carga/host. Para testar agora, reiniciar backend e recarregar app; não precisa criar conta nem instalar novamente o modelo neste ambiente.
+Ler AGENTS.md e este registro em nova sessão. Não reabrir aprovações recebidas
+nem marcar cenários ausentes como executados. Capturas pedidas pelo dono dependem
+da conexão ADB: o sistema reconheceu Xiaomi em MTP, mas a interface ADB ainda
+não apareceu após a autorização relatada. Continuar diagnóstico/captura sem
+mudar o app ou dados pessoais. Nunca publicar capturas pessoais automaticamente.

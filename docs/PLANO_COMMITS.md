@@ -213,3 +213,15 @@ Solicitações explícitas ADR-013/ADR-014; não é nova fase nem execução da 
 Não publicar nem escolher plano pago. Não sobrescrever mudanças de interface em andamento no working tree; integrar os controles necessários preservando o visual existente.
 
 Execução C48–C50: C48 c8fcd3f, C49 3d0e10f; C50 integra modelo local en_pb conforme ADR-013. Gate 215 backend/228 mobile; API real original/PT passou, sem fallback. Aceite físico de P36 e tradução mantém Fase 4 aberta, sem tag final.
+
+
+## Consolidação e fechamento aprovados
+
+- C51 — d63c677: interface e preferências aprovadas, P01/P17/P24/P27/P36/P37,
+  decisões ADR-015–020. Gate com 215 backend/233 mobile, lint/tipos/arquitetura,
+  Hermes Android/iOS e scanner staged aprovados.
+- C52 — documentação de aceite/fechamento e identificação de docs/spec como
+  referência histórica. Código do app não alterado nesta etapa documental.
+- Criar fase-4 sobre o fechamento que contém d63c677 e a documentação final.
+  Sem push/deploy ou dados pessoais no Git. Capturas solicitadas são artefatos
+  de apresentação separados do aceite da entrega Android.

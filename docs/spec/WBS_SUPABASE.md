@@ -1,4 +1,7 @@
 # WBS — Novel Reader App
+
+> **Referência de planejamento:** este documento inclui propostas que não foram implementadas. Consulte [o guia desta pasta](README.md), [o escopo aprovado](../ANALISE.md) e [o estado da WBS](../WBS_STATUS.md) antes de usá-lo como descrição do app.
+
 ## Adendo v2.1 — Migração para Supabase (Auth + Banco + Storage)
 
 > Este documento complementa o `WBS.md` original (v2.0). Não substitui a estrutura de fases —

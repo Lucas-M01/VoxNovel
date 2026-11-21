@@ -47,17 +47,41 @@ da comprovação em VALIDACAO.md; este documento não certifica testes ausentes.
 
 A tradução conserva blocos de 4.500 caracteres e fallback independente. Falha
 preserva o original. A troca posterior de motor foi autorizada em ADR-013: CTranslate2/SentencePiece com Argos en_pb, somente inglês→PT-BR; português passa intacto. Limpeza visual e de fala continuam com as
-diferenças observadas no protótipo. Preferências temporárias não ganharam
-persistência nova. Não foram introduzidos auth, Redis/ARQ, filas duráveis,
+diferenças observadas no protótipo. Preferências da sessão continuam ajustáveis; ADR-015 autorizou salvar padrões
+de leitura/voz no aparelho (P37), como exceção expressa. Não foram introduzidos auth, Redis/ARQ, filas duráveis,
 TrackPlayer, voz paga, glossário, estatísticas ou deploy.
 
 Pelo ADR-011, a versão inicial pode focar FreeWebNovel e os provedores que se
 mostrarem operacionais. Isso não transforma outros adaptadores em certificados,
 nem garante disponibilidade futura. A extração/metadados FreeWebNovel passaram
-no caso autorizado após a correção do cliente. A tradução local passou no teste real da API, sem fallback; o reteste físico e o aceite final permanecem pendentes; busca também encontrou algumas obras CentralNovel, sem certificar seus capítulos.
+no caso autorizado após a correção do cliente. A tradução local passou no teste real da API, sem fallback; o dono aprovou o reteste Android em 2026-11-21; a revisão visual foi consolidada em d63c677 e aprovada pelo dono; busca também encontrou algumas obras CentralNovel, sem certificar seus capítulos.
 
 
 ## Extensões aprovadas durante a validação
 
 - P36/ADR-014: seletor original/português na leitura e na voz, cache de memória separado e descarte da fala antiga ao trocar. Arquivos de downloads existentes permanecem intactos e no fluxo PT. Testes de cache, prefetch, voz e tela em text-mode*.test.*; API c8fcd3f, mobile 3d0e10f.
 - ADR-013: modelo local de tradução, sem chave/cartão, PyTorch, GPU ou serviço adicional. Instalação explícita com SHA-256 e atribuição preservada, carregamento sob demanda e um modelo compartilhado. API real traduziu o capítulo autorizado sem fallback. Limites de idiomas, qualidade, CPU/RAM e deploy documentados em TRADUCAO.md; hospedagem gratuita não foi garantida.
+
+
+## Aceite da versão funcional
+
+Em 2026-11-21, o dono concluiu o reteste solicitado e informou que está tudo
+certo. Registrado aceite geral no Android para a versão com tradução local e
+original/PT; não se presume execução individual de cenários não enumerados.
+Revisões visuais autorizadas em ADR-015–020 continuam no working tree e precisam
+ser consolidadas antes da tag final. Nenhuma alteração visual foi revertida ou
+incluída indevidamente nos commits do tradutor. Evidências em VALIDACAO.md.
+
+
+## Revisão visual aprovada e consolidada
+
+Commit d63c677 reúne as decisões ADR-015–020: biblioteca por capas, fonte ativa e
+contagem offline coerente, detalhes/fontes, leitor com Personalização, player
+com vozes agrupadas e limite de 2×, confirmações e estados de carregamento,
+preferências locais P37 e adaptação à horizontal. A retirada de Detalhes do
+player foi pedida pelo dono; estado/progresso permanecem visíveis. Ícones têm
+atribuição e licença em src/ui/icons. Nenhuma dependência visual foi adicionada.
+
+O dono aprovou o visual e o reteste funcional Android. Fechamento com 215 testes
+backend, 233 mobile, lint/tipos/arquitetura, exportações Hermes Android/iOS e
+scanner staged aprovados. Detalhamento e limites permanecem em VALIDACAO.md.

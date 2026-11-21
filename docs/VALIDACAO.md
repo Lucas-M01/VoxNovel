@@ -1,9 +1,10 @@
 # Validação de paridade — Fase 4
 
-Data: 2026-11-21. **Validação final aberta.** Implementação F1–F6 concluída.
-Após corrigir abertura/configuração, o dono confirmou no Android biblioteca,
-busca/cadastro, leitura, voz e downloads inclusive sem internet. Tradução falhou.
-Os detalhes não enumerados no relato e os limites físicos anteriores permanecem.
+Data: 2026-11-21. **Fase 4 concluída para a entrega Android aprovada.**
+O dono confirmou o reteste funcional e aprovou a revisão visual. O código da
+interface está consolidado em d63c677, após a tradução local/P36 em d369bae.
+Aceite geral não certifica individualmente cenários não enumerados, todos os
+provedores, iOS ou build nativo. Esses limites continuam registrados abaixo.
 
 ## Ambientes e método
 
@@ -69,7 +70,7 @@ dos arquivos desta correção e diff check passaram.
 | P28 | A | [download-range.test.ts](../apps/mobile/tests/download-range.test.ts): até 50, grupos de cinco, ordem, existentes e tentativas inclusive falhas. | Testar pequeno intervalo real disponível. |
 | P29 | A | Confirmação/cancelamento e limpeza remota não bloqueante; erro local não é sucesso falso. | Testar remoção no aparelho. |
 | P30 | A | Jornada real de rotas abre capítulo 2 escolhido em texto; prioridade explícito→fonte→obra coberta em voz. | Repetir texto/voz pelo download no aparelho. |
-| P31 | A | Estado e último log por sessão no player; teste de painel/estado. Mesmo papel observado no original. | Conferir leitura do painel no Android. |
+| P31 | A | Player conserva estado, capítulo, frases e progresso; a seção Detalhes/log foi retirada por decisão expressa ADR-019. | Revisão visual aprovada; não declarar o painel antigo preservado integralmente. |
 | P32 | A | [test_api_preferences_integration.py](../apps/backend/tests/test_api_preferences_integration.py): listar/substituir/limpar/termo/palavra/regex, rotas EN aprovadas. | Compatibilidade de capacidade, sem promessa de payload PT literal. |
 | P33 | A | Velocidade salva no banco e query inicial do player; tests API e controller. | Confirmar preferência no primeiro play real. |
 | P34 | A | [test_downloads.py](../apps/backend/tests/test_downloads.py): buffer fixo de 500, logs sem payload/credenciais; não persistente. | Sem telemetria nova. |
@@ -174,3 +175,54 @@ um fechamento enquanto esse aceite continuar pendente.
 - Roteiro restante: reiniciar backend para carregar configuração local, recarregar app, abrir capítulo em inglês sem download antigo, alternar modos e ouvir; selecionar voz inglesa para original. Para renovar um arquivo antigo com fallback em inglês, excluir e baixar somente esse capítulo usando os controles existentes. Não apagar biblioteca ou downloads em lote.
 
 - Carga do modelo: ensaio inicial com duas vagas/espera 60 s recebeu ocupado; perfil local documentado com cinco vagas/bloco 90 s concluiu cinco traduções do texto já obtido em 50,59 s totais, todas PT e zero fallbacks. Sem nova rede ou banco; não equivale a cinco downloads reais de ponta a ponta no aparelho.
+
+
+## Reteste aprovado pelo dono — 2026-11-21
+
+Resposta recebida após o roteiro final: **“Terminei e tá tudo certo agora”**.
+Aceite funcional geral no Android disponível (POCO X5 informado anteriormente).
+A pendência de tradução local/P36 no aparelho está resolvida para a entrega
+funcional. O roteiro incluía original/PT na leitura e voz, download novo/offline
+e conferência visual; não se atribuem resultados individuais além do aceite geral.
+As falhas de tradução e pedidos de reteste nas seções anteriores são históricos.
+
+Nenhum teste novo foi executado pelo agente nesta rodada documental. Mantêm-se
+as evidências automáticas anteriores e os limites de idiomas, provedores, iOS,
+build nativo e cenários de voz não enumerados. Não há confirmação de qualquer
+URL, idioma ou dispositivo além do que foi relatado.
+
+O fechamento formal da Fase 4 aguarda consolidar no Git as revisões visuais
+ADR-015–020 que estão no diretório de trabalho. HEAD d369bae contém a tradução e
+P36, mas não essas revisões; por isso a tag fase-4 não foi criada neste registro.
+Configurações e lockfiles externos foram preservados. Sem push/deploy.
+
+
+## Fechamento após aprovação visual — 2026-11-21
+
+O dono declarou que a parte visual está boa e autorizou prosseguir. A revisão
+ADR-015–020 foi consolidada em **d63c677**; a condição de código visual fora do
+Git citada nos registros anteriores foi resolvida. P36 e a tradução receberam
+aceite funcional geral no Android, e P37 rastreia as preferências locais e
+idiomas extras expressamente autorizados.
+
+Gate final desta versão:
+
+- Backend: Ruff/format/mypy/arquitetura/compileall e **215 testes**, dos quais
+  **12 integrações reais** no banco/Storage local descartável. Sem testes ou
+  escritas em projeto remoto.
+- Mobile: ESLint boundaries, 20 casos das regras, TypeScript strict, **29 suítes /
+  233 testes** e exportações Hermes Android/iOS.
+- Scanner staged e diff check aprovados antes dos commits; histórico Git
+  conferido com Gitleaks no fechamento. Configuração local package.json/yarn.lock
+  e package-lock.json externo foram preservados fora dos commits, sem declarar
+  esses arquivos locais revisados ou o wrapper global de candidatos aprovado.
+
+A tag fase-4 identifica a entrega versionada com a interface aprovada. Não há
+APK/IPA novo validado, execução remota do CI, publicação/deploy, garantia de
+hospedagem gratuita ou importação pessoal. iOS, duração/background/interrupções
+e cenários de voz não enumerados continuam limites conhecidos. O aceite é da
+entrega Android descrita, sem transformar teste ausente em teste executado.
+
+Capturas reais foram solicitadas para apresentação posterior e ficam fora do
+Git quando contêm biblioteca/progresso pessoal. A autorização ADB/captura é uma
+atividade de apresentação separada e não reabre o aceite funcional.

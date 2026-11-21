@@ -4,12 +4,11 @@ Leitor de webnovels para celular com leitura em texto, voz do próprio aparelho,
 progresso por fonte e capítulos salvos para uso offline. Reconstrução organizada
 do protótipo pessoal **Leitor Web em Voz Alta**.
 
-**Estado:** implementação integrada; validação final em andamento. Em 2026-11-21,
-o dono confirmou no Android biblioteca, busca/cadastro, leitura, voz e downloads
-inclusive sem internet. A busca também encontrou algumas obras no CentralNovel,
-além do FreeWebNovel. Após a falha de tradução, o modelo local inglês→português passou no teste real
-da API; o reteste no celular permanece aberto em [VALIDACAO.md](docs/VALIDACAO.md). O relato não certifica todos os sites,
-capítulos ou cenários de dispositivo.
+**Estado:** versão funcional aprovada pelo dono no Android em 2026-11-21.
+Tradução local, escolha original/português, leitura/voz, biblioteca, busca/cadastro
+e downloads/offline receberam aceite. A revisão visual foi aprovada e consolidada.
+A Fase 4 está concluída para essa entrega Android; evidências e limites em
+[VALIDACAO.md](docs/VALIDACAO.md). Isso não certifica todos os sites ou dispositivos.
 
 ## Funcionalidades implementadas
 
@@ -23,8 +22,10 @@ capítulos ou cenários de dispositivo.
 - Voz nativa por frases, pausa/retomada, voz/velocidade e avanço de capítulo.
 - Texto offline, downloads individuais e intervalos de até 50 em grupos de cinco.
 - Filtros globais de palavra, frase e expressão regular.
+- Preferências de leitura/voz salvas no aparelho e telas adaptadas à horizontal.
 
-O escopo acompanha o protótipo, com o seletor de idioma aprovado como extensão P36. Contrato e limites em
+O escopo acompanha o protótipo, com original/PT e preferências locais aprovados
+como extensões P36/P37. Contrato e limites em
 [ANALISE.md](docs/ANALISE.md); mudanças em [MELHORIAS.md](docs/MELHORIAS.md).
 
 ## Stack
@@ -164,8 +165,18 @@ Importação é opcional, manual e tem dry-run por padrão:
 
 [VALIDACAO.md](docs/VALIDACAO.md) distingue testes automáticos, comparação com o
 legado, evidência do harness e cenários ainda não executados no aplicativo real.
-[PROGRESS.md](docs/PROGRESS.md) registra o próximo passo. A validação final ainda
-não está encerrada.
+[PROGRESS.md](docs/PROGRESS.md) registra o fechamento e os próximos passos opcionais.
+Foram aprovados 215 testes backend, incluindo 12 integrações reais locais, e
+233 testes mobile; bundles Hermes Android/iOS passaram. Build nativo e cenários
+físicos não executados continuam identificados em VALIDACAO.md.
 
 A licença pública ainda não foi escolhida pelo dono. [LICENSE](LICENSE) registra
 a ausência de concessão; dependências mantêm suas próprias licenças.
+
+
+## Documentação de referência
+
+[docs/spec](docs/spec/README.md) preserva o planejamento histórico, incluindo
+propostas maiores que a versão entregue. Para entender o que foi implementado,
+use este README, [o escopo](docs/ANALISE.md), [as decisões](docs/DECISIONS.md) e
+[o estado da WBS](docs/WBS_STATUS.md).

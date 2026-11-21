@@ -1,4 +1,7 @@
 # WBS — Novel Reader App
+
+> **Referência de planejamento:** este documento inclui propostas que não foram implementadas. Consulte [o guia desta pasta](README.md), [o escopo aprovado](../ANALISE.md) e [o estado da WBS](../WBS_STATUS.md) antes de usá-lo como descrição do app.
+
 ## Adendo v2.2 — TTS no Front-end (expo-speech) em vez de Kokoro-82M no servidor
 
 > Este documento complementa o `WBS.md` (v2.0) e o `WBS_SUPABASE.md` (v2.1). Mesmo formato:

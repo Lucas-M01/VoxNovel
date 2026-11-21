@@ -1,5 +1,7 @@
 # Novel Reader App — Arquitetura Frontend (Mobile)
 
+> **Referência de planejamento:** este documento inclui propostas que não foram implementadas. Consulte [o guia desta pasta](README.md), [o escopo aprovado](../ANALISE.md) e [o estado da WBS](../WBS_STATUS.md) antes de usá-lo como descrição do app.
+
 > **React Native / Expo** | Documento de Referência Técnica v4.0
 >
 > Consolidado com revisões internas + ChatGPT (rodadas 1–3) + Gemini (rodadas 1–3).
