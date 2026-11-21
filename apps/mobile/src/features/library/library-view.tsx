@@ -18,7 +18,7 @@ export function LibraryView({ services = readerServices, onOpen, onSearch, onFil
   const [deleting, setDeleting] = useState<Novel | null>(null);
   const remove = useMutation({ mutationFn: (novel: Novel) => deleteLibraryNovel(client, novel, services), onSuccess: () => setDeleting(null) });
   const offline = connectivity === 'offline' || query.data?.offline === true;
-  const novels = (query.data?.novels ?? []).toSorted((a, b) => b.current_chapter - a.current_chapter);
+  const novels = [...(query.data?.novels ?? [])].sort((a, b) => b.current_chapter - a.current_chapter);
   return <View style={styles.page}>
     <FlatList data={novels} keyExtractor={novel => novel.id} contentContainerStyle={styles.content} refreshing={query.isRefetching} onRefresh={() => { void query.refetch(); void client.invalidateQueries({ queryKey: ['library-offline'] }); }}
       ListHeaderComponent={<View style={{ gap: 16, marginBottom: 20 }}>

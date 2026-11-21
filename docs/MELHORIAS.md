@@ -15,7 +15,7 @@ da comprovação em VALIDACAO.md; este documento não certifica testes ausentes.
 | Capítulo escolhido | Leitura/voz pelos downloads e player respeitam o capítulo explícito antes do progresso salvo. | C36/C44 e testes de jornada. |
 | Cache | Arquivos e memória identificam obra e fonte; dados antigos sem origem comprovada ficam preservados. | C28 e source-cache.test.ts. |
 | Fala | Mesmo recurso nativo expo-speech do original, com stop serializado e descarte de callbacks de sessões antigas. | Testes de corridas e relato S1 parcial; sem troca de motor. |
-| Interface | Biblioteca, busca, detalhes e navegação integrados com apresentação simples compartilhada, sem novas dependências visuais. | C40–C44; rotas reais nos testes. Android integrado ainda não testado pelo dono. |
+| Interface | Biblioteca, busca, detalhes e navegação integrados com apresentação simples compartilhada, sem novas dependências visuais. | C40–C44; rotas reais nos testes. Primeiro teste Android revelou crash na biblioteca, corrigido e aguardando reteste. |
 | Concorrência | Respostas antigas descartadas; cache escrito em sequência; prefetch e lotes limitados, sem jobs duráveis novos. | Biblioteca/prefetch/faixas e isolamento por fonte. |
 | Persistência | Escritas relacionadas atômicas, propriedade da fonte ativa, RLS e backend como cliente privilegiado. | Integrações reais locais de banco/Storage; sem auth de usuário novo. |
 | Migração | Importador explícito, dry-run, conflitos sem sobrescrita e backups privados. | C45, 12 integrações locais totais e testes de orquestração; nenhuma migração pessoal. |
@@ -30,6 +30,10 @@ da comprovação em VALIDACAO.md; este documento não certifica testes ausentes.
   SDK instalado. O erro foi observado com o cliente real, embora mocks anteriores
   passassem. A fixação usa RESOLVE, sem relaxar destino público, TLS, proxy ou
   redirects. O teste novo aplica opções ao libcurl real sem realizar rede.
+
+- P01/P02: abertura da biblioteca corrigida após TypeError relatado no Android.
+  Cópia + sort substitui toSorted indisponível; regressão executa sem esse método
+  e confere ordem e cache intacto. Reteste físico pendente.
 
 ## Limites mantidos
 

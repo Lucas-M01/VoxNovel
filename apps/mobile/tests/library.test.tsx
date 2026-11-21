@@ -67,6 +67,25 @@ test('late cancelled list response cannot replace the latest list or disk cache'
   } finally { release(); data.client.clear(); }
 });
 
+test('library renders without toSorted and sorts a copy of the query data', async () => {
+  const data = setup();
+  const later = { ...readerNovel, id: '33333333-3333-4333-8333-333333333333', title: 'Outro livro', slug: 'other', sources: [], active_source_id: null, current_chapter: 4 };
+  const descriptor = Object.getOwnPropertyDescriptor(Array.prototype, 'toSorted');
+  Object.defineProperty(Array.prototype, 'toSorted', { configurable: true, writable: true, value: undefined });
+  data.transport.mockImplementation(async () => jsonResponse([readerNovel, later]));
+  try {
+    await render(<QueryClientProvider client={data.client}><LibraryScreen services={data} onOpen={() => {}} onSearch={() => {}} onFilters={() => {}} /></QueryClientProvider>);
+    await screen.findByRole('button', { name: 'Abrir Outro livro' });
+    expect(screen.getAllByRole('button').filter(node => String(node.props.accessibilityLabel).startsWith('Abrir ')).map(node => node.props.accessibilityLabel)).toEqual(['Abrir Outro livro', `Abrir ${readerNovel.title}`]);
+    expect(data.client.getQueryData(keys.library())).toEqual({ novels: [readerNovel, later], offline: false });
+    await screen.unmount();
+  } finally {
+    data.client.clear();
+    if (descriptor) Object.defineProperty(Array.prototype, 'toSorted', descriptor);
+    else Reflect.deleteProperty(Array.prototype, 'toSorted');
+  }
+});
+
 test('empty saved library remains a usable offline result while missing cache remains an error', async () => {
   const data = setup(true);
   try {

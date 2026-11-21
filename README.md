@@ -5,8 +5,9 @@ progresso por fonte e capítulos salvos para uso offline. Reconstrução organiz
 do protótipo pessoal **Leitor Web em Voz Alta**.
 
 **Estado:** implementação integrada; validação final em andamento. A jornada tem
-testes automatizados, mas o app principal ainda não foi testado no Android pelo
-dono. A extração e os metadados FreeWebNovel passaram no caso fornecido pelo dono;
+testes automatizados; o primeiro teste do dono no Android revelou um crash na
+biblioteca, já corrigido e aguardando reteste. A extração e os metadados
+FreeWebNovel passaram no caso fornecido pelo dono;
 a tradução continua com impedimento externo registrado em
 [VALIDACAO.md](docs/VALIDACAO.md). Não é uma release certificada para todos os sites/dispositivos.
 

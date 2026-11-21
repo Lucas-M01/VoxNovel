@@ -1,7 +1,8 @@
 # Validação de paridade — Fase 4
 
 Data: 2026-11-20. **Validação final aberta.** Implementação F1–F6 concluída;
-Android integrado ainda não testado pelo dono. Evidência do harness S1 continua
+o primeiro teste Android integrado relatou crash ao abrir a biblioteca. Correção
+entregue, reteste pendente. Evidência do harness S1 continua
 válida somente para os cenários relatados. Não foi criado um aceite de release
 com base apenas em mocks ou bundles.
 
@@ -17,7 +18,7 @@ com base apenas em mocks ou bundles.
 - Verificações externas pontuais somente da URL fornecida pelo dono e de uma
   frase curta sintética para tradução. URL, relatórios e conteúdo pessoal ficam
   privados/ignorados. Não reproduzir texto do capítulo no repositório.
-- Sem execução física do app principal nesta fase, sem APK/IPA validado e sem
+- Sem execução física do app principal pelo agente, sem APK/IPA validado e sem
   execução remota dos workflows como evidência.
 
 **A** = comportamento coberto automaticamente no ambiente acima. **P** = há
@@ -26,7 +27,7 @@ A não significa que a jornada no aparelho foi executada. O contrato continua em
 [ANALISE.md](ANALISE.md); os critérios não foram reduzidos para caber nos testes.
 
 Gate atual: **192 testes backend** (180 unitários + 12 integrações locais),
-**220 testes mobile**, 20 casos das regras de lint, Ruff/format/mypy/arquitetura,
+**221 testes mobile**, 20 casos das regras de lint, Ruff/format/mypy/arquitetura,
 ESLint/tsc, bundles Hermes Android/iOS e varredura de segredos aprovados.
 
 ## Checklist com evidências
@@ -100,7 +101,10 @@ nem trocado o tradutor. Extração bem sucedida não comprova tradução para PT
 
 ## Evidência física e fechamento
 
-O dono respondeu **“Ainda não testei”** para o app principal integrado. O relato
+Após o registro inicial “Ainda não testei”, o dono iniciou o app integrado e
+relatou TypeError em toSorted na biblioteca. A lista agora ordena uma cópia via
+sort; regressão simula a ausência de toSorted e verifica que o cache não é
+alterado. Reteste no aparelho e restante da jornada pendentes. O relato
 anterior S1 foi POCO X5, voz pt-br-x-ptd-local (Enhanced), com sucesso em controles,
 avanço, troca de app/bloqueio, sem todos os metadados/durações. Limites detalhados
 em [S1.md](S1.md); dispensa de ADR-008 não aprova cenários ausentes.
