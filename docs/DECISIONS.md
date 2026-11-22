@@ -208,3 +208,16 @@ As escolhas de implementação, divisão de commits e tags constam de PLANO_COMM
 ### Correção da análise de caminho pessoal
 
 A verificação final distinguiu refs internas de checkpoints da história de desenvolvimento. O caminho pessoal do yarn.lock existia somente em checkpoint refs/codex, não em commit alcançável pela main ou pelas tags das fases. Os 63 commits foram preservados inclusive com seus hashes originais; nenhuma substituição ocorreu nos commits. Checkpoints internos foram excluídos da cópia de publicação. Os registros anteriores que atribuíram o caminho ao histórico da branch refletem o diagnóstico inicial e ficam corrigidos por este registro.
+
+## ADR-021 — Retornar do player à leitura e corrigir capítulos genéricos
+
+- Data: 2026-11-22.
+- Solicitação do dono: ao testar sua história publicada no GitHub Pages, relatou falta de acesso à leitura a partir do player e capítulos que repetiam a sinopse da página inicial.
+- Aplicação: botão Ler capítulo encerra a sessão de fala antes de substituir a rota por leitura, preservando capítulo atual e modo original/traduzido. A identificação genérica infere o padrão de capítulos numerados em links do mesmo protocolo/domínio/porta, incluindo arquivos chapter-N.html. Links inválidos ou externos são ignorados; famílias ambíguas não geram um padrão por adivinhação. Não há domínio novo hardcoded nem dependência adicional.
+- Capa: a página inicial publicada não contém imagem/og:image. O app conserva o placeholder. O autor pode publicar uma capa e indicá-la por og:image, já suportado, sem gerar/copiar imagens de terceiros.
+- Cadastros existentes conservam os metadados antigos; é preciso atualizar a fonte pela busca por URL. Downloads antigos com a sinopse também precisam ser removidos e baixados novamente. Nenhum dado do dono é alterado automaticamente.
+
+### Complemento de diagnóstico — 2026-11-22
+
+- O dono reproduziu sinopse no cadastro pela página inicial e apenas dois capítulos no cadastro pelo primeiro capítulo. Consulta somente de leitura à API configurada confirmou que o processo em execução ainda devolvia chapter_url_pattern vazio para ambas as URLs, apesar do código local já corrigido. A fonte salva também conservava padrão vazio e total dois. É necessário reiniciar o backend e atualizar a fonte; não confundir o teste do código novo com o processo antigo em execução.
+- A identificação a partir de chapter-N.html agora pode consultar um único link explícito para o índice da mesma pasta (Home/index.html). Só aproveita o índice se o padrão encontrado corresponder à família do capítulo informado. Isso permite recuperar total/título/capa da obra sem contar apenas os links Anterior/Próximo da página do capítulo. Sem crawling livre, domínio especial ou alteração das proteções HTTP/SSRF.
