@@ -196,3 +196,15 @@ As escolhas de implementação, divisão de commits e tags constam de PLANO_COMM
 - Pedido expresso posterior: “Lembra de colocar a licença do MIT”. LICENSE passa a conter MIT, copyright 2026 Lucas Montenegro; metadados do código usam MIT. As licenças/atribuições dos ícones e do modelo permanecem próprias.
 - Destino público: Lucas-M01/VoxNovel. Publicação feita por uma cópia isolada da árvore versionada, sem .env, modelos, capturas pessoais, _legacy ou alterações locais de dependências. O repositório original e suas tags permanecem preservados.
 - Referências a commits antigos nos documentos descrevem o histórico local de reconstrução e não fazem parte da linha pública que começa nesta publicação. Não reescrever nem enviar o histórico original por engano.
+
+
+## Integração do histórico completo — 2026-11-21
+
+- Após ver apenas dois commits no GitHub, o dono solicitou todos os commits. Essa decisão substitui a opção anterior de publicar apenas o snapshot.
+- Conferir uma cópia isolada do histórico, excluir checkpoints internos e preservar os 63 commits com seus hashes/mensagens/autores/datas. Incorporar na main por merge, preservando o repositório original e os dois commits públicos, sem force push.
+- A árvore atual do código é igual à já validada; a integração altera somente a genealogia e a documentação. Referências documentais aos commits de desenvolvimento permanecem válidas com os hashes originais. Tags das fases foram importadas, com fase-4 histórica sob reconstrucao-fase-4 para não sobrescrever a tag pública existente.
+
+
+### Correção da análise de caminho pessoal
+
+A verificação final distinguiu refs internas de checkpoints da história de desenvolvimento. O caminho pessoal do yarn.lock existia somente em checkpoint refs/codex, não em commit alcançável pela main ou pelas tags das fases. Os 63 commits foram preservados inclusive com seus hashes originais; nenhuma substituição ocorreu nos commits. Checkpoints internos foram excluídos da cópia de publicação. Os registros anteriores que atribuíram o caminho ao histórico da branch refletem o diagnóstico inicial e ficam corrigidos por este registro.

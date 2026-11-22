@@ -185,8 +185,13 @@ use este README, [o escopo](docs/ANALISE.md), [as decisões](docs/DECISIONS.md) 
 
 ## Histórico desta publicação
 
-Esta linha pública começa com a versão Android aprovada, publicada como um
-snapshot com histórico inicial limpo por decisão do dono. Os identificadores
-de commits de reconstrução citados nos documentos pertencem ao histórico local
-preservado e não estão nesta linha pública. A tag fase-4 identifica o snapshot
-publicado. Configurações privadas, modelos e screenshots pessoais ficaram fora.
+O histórico completo da reconstrução foi incorporado à `main`: 63 commits de
+desenvolvimento, com autores, datas e mensagens preservados, além dos dois commits
+da publicação inicial. A integração preserva o código atual validado e não usa
+force push. O histórico original continua preservado no computador do dono.
+
+A conferência distinguiu os commits de desenvolvimento dos checkpoints internos
+da ferramenta: o caminho pessoal encontrado estava somente em um checkpoint,
+que não foi importado. Os 63 commits e seus identificadores originais foram
+preservados. As tags das fases foram incluídas; `reconstrucao-fase-4` identifica
+a conclusão histórica, enquanto `fase-4` conserva o checkpoint já publicado.
