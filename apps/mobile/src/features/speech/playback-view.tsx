@@ -26,8 +26,8 @@ import { colors, presentation } from '@ui/presentation';
 
 export type PlaybackServices = ReaderServices & { driver: SpeechDriver; session: ReturnType<typeof createSpeechSession> };
 const defaults: PlaybackServices = { ...readerServices, driver: nativeSpeech, session: speechSession };
-type Props = { novel: Novel; services?: PlaybackServices | undefined; initialChapter?: number | undefined; initialMode?: TextMode | undefined };
-export function PlaybackView({ novel, services = defaults, initialChapter, initialMode }: Props) {
+type Props = { novel: Novel; services?: PlaybackServices | undefined; initialChapter?: number | undefined; initialMode?: TextMode | undefined; onRead?: ((chapter: number, mode: TextMode) => void) | undefined };
+export function PlaybackView({ novel, services = defaults, initialChapter, initialMode, onRead }: Props) {
   const client = useQueryClient();
   const { width, height } = useWindowDimensions();
   const wide = width > height && width >= 580;
@@ -78,6 +78,9 @@ export function PlaybackView({ novel, services = defaults, initialChapter, initi
         </View>
       </View>
       <OfflineNotice mode="speech" />
+      {onRead ? <Button title="Ler capítulo" icon="book-open-outline" onPress={() => {
+        void controller.destroy().catch(() => {}).then(() => onRead(state.chapter, state.mode));
+      }} /> : null}
       <TextModeChoice mode={state.mode} originalAvailable={controller.available(state.chapter, 'original')} onChange={selected => { void controller.setMode(selected); }} />
       {state.mode === 'original' ? <Text style={{ color: '#888888' }}>Escolha uma voz do idioma original em “Voz”.</Text> : null}
       {state.error ? <ErrorMessage message={state.error} onRetry={() => { void controller.start(); }} /> : null}

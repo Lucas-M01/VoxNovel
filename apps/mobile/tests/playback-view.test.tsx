@@ -4,6 +4,7 @@ import { createSpeechSession } from '@core/tts-service';
 import { createLocalStorage } from '@core/local-storage';
 import { createHttpResource } from '@core/http-resource';
 import SpeechScreen from '@screens/speech-screen';
+import type { TextMode } from '@core/text-mode';
 import { memoryFiles } from './local-files';
 import { speechDriver, voice } from './speech-driver';
 import { readerNovel, readerScope, readerQueryClient, jsonResponse } from './reader-fixture';
@@ -73,6 +74,31 @@ test('the player lists languages enabled in device preferences after the main la
     const languages = screen.getAllByRole('button', { expanded: false }).map(button => button.props.accessibilityLabel);
     expect(languages.slice(0, 2)).toEqual(['Português (Brasil)', 'Inglês (Estados Unidos)']);
     expect(languages.slice(2).sort()).toEqual(['Inglês (Reino Unido)', 'Português (Portugal)']);
+    await screen.unmount();
+  } finally { client.clear(); }
+});
+
+test.each<TextMode>(['original', 'translated'])('opening reading stops playback and forwards the current chapter and %s mode', async mode => {
+  const storage = createLocalStorage(memoryFiles().files); const client = readerQueryClient();
+  const fake = speechDriver(); const read = jest.fn();
+  const request = createHttpResource({ baseUrl: () => 'https://api.example', transport: async url => {
+    if (url.endsWith('/settings')) return jsonResponse({ speed: 1, updated_at: '2026-11-20T00:00:00Z' });
+    if (url.includes('/text')) return jsonResponse({ text: 'Chapter selected.', chapter: 2, url: 'https://example.org/chapter-2' });
+    return jsonResponse(readerNovel);
+  } });
+  await storage.saveChapter(readerScope, 2, 'Chapter selected.');
+  try {
+    await render(<QueryClientProvider client={client}><SpeechScreen novel={readerNovel} initialChapter={2} initialMode={mode} onRead={read} services={{ storage, request, driver: fake.driver, session: createSpeechSession(fake.driver) }} /></QueryClientProvider>);
+    await fireEvent.press(screen.getByRole('button', { name: 'Reproduzir' }));
+    await waitFor(() => expect(fake.current().text).toBe('Chapter selected.'));
+    const previous = fake.current().options;
+    jest.mocked(fake.driver.stop).mockClear();
+    await fireEvent.press(screen.getByRole('button', { name: 'Ler capítulo' }));
+    await waitFor(() => expect(read).toHaveBeenCalledWith(2, mode));
+    expect(fake.driver.stop).toHaveBeenCalled();
+    const calls = fake.utterances.length;
+    await act(async () => { previous.onDone(); });
+    expect(fake.utterances).toHaveLength(calls);
     await screen.unmount();
   } finally { client.clear(); }
 });

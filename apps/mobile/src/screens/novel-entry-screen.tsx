@@ -41,6 +41,6 @@ function ResolvedEntry({ destination, id, chapter, mode }: Props & { id: string;
       ? <ReadingScreen novel={novel} initialChapter={chapter} initialMode={mode} onBack={back} onListen={(value, selectedMode) => open('speech', novel, value, selectedMode)} />
       : <DownloadsScreen novel={novel} onBack={back} onRead={value => open('reading', novel, value)} onListen={value => open('speech', novel, value)} />}
   </SafeAreaView>;
-  if (destination === 'speech') return <SpeechScreen novel={novel} initialChapter={chapter} initialMode={mode} />;
+  if (destination === 'speech') return <SpeechScreen novel={novel} initialChapter={chapter} initialMode={mode} onRead={(value, selectedMode) => router.replace({ pathname: '/reading', params: { id: novel.id, chapter: String(value), mode: selectedMode } })} />;
   return <SearchScreen existing={novel} onOpen={selected => { client.setQueryData(keys.novel(selected.id), selected); router.replace({ pathname: '/speech', params: { id: selected.id } }); }} />;
 }

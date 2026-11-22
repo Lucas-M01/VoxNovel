@@ -45,6 +45,10 @@ test('real app routes connect library, details, text, voice and the chosen downl
   await fireEvent.press(screen.getByRole('button', { name: 'Ouvir capítulo' }));
   await waitFor(() => expect(screen).toHavePathname('/speech'));
   expect(screen).toHaveSearchParams({ id: appNovel.id, chapter: '1' });
+  await fireEvent.press(await screen.findByRole('button', { name: 'Texto original' }));
+  await fireEvent.press(screen.getByRole('button', { name: 'Ler capítulo' }));
+  await waitFor(() => expect(screen).toHavePathname('/reading'));
+  expect(screen).toHaveSearchParams({ id: appNovel.id, chapter: '1', mode: 'original' });
   await act(async () => { router.back(); });
   await act(async () => { router.back(); });
   await fireEvent.press(await screen.findByRole('button', { name: 'Downloads' }));
