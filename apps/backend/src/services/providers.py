@@ -64,6 +64,49 @@ def page_exists(soup: BeautifulSoup) -> bool:
     )
 
 
+def generic_chapters(soup: BeautifulSoup, base: str) -> tuple[int | None, str | None]:
+    """Infer one numbered chapter family from links on the same origin."""
+    origin = urlsplit(base)
+    families: dict[str, set[int]] = {}
+    for tag in soup.select("a[href]"):
+        try:
+            target = parse_url(urljoin(base, attribute(tag, "href") or ""))
+        except (BusinessError, ValueError):
+            continue
+        if (target.scheme, target.netloc) != (origin.scheme, origin.netloc):
+            continue
+        match = re.search(
+            r"(?:^|/)(chapter[-/])(\d+)(?:\.html?|/)?$", target.path, re.I
+        )
+        if not match or int(match.group(2)) < 1:
+            continue
+        start, end = match.span(2)
+        path = target.path[:start] + "{cap}" + target.path[end:]
+        pattern = target._replace(path=path, fragment="").geturl()
+        families.setdefault(pattern, set()).add(int(match.group(2)))
+    if len(families) != 1:
+        return None, None
+    pattern, numbers = next(iter(families.items()))
+    return max(numbers), pattern
+
+
+def generic_index(soup: BeautifulSoup, url: str) -> str | None:
+    """Follow an explicit sibling index link, never crawl arbitrary navigation."""
+    if not re.search(r"/chapter-\d+\.html?$", urlsplit(url).path, re.I):
+        return None
+    directory = urljoin(url, "./")
+    candidates = {directory, directory + "index.html", directory + "index.htm"}
+    for tag in soup.select("a[href]"):
+        try:
+            target = parse_url(urljoin(url, attribute(tag, "href") or ""))
+        except (BusinessError, ValueError):
+            continue
+        index_url = target._replace(fragment="").geturl()
+        if index_url in candidates:
+            return index_url
+    return None
+
+
 class MetadataService:
     def __init__(
         self, http: Fetcher, settings: Settings, limit: ProcessingLimit | None = None
@@ -215,19 +258,23 @@ class MetadataService:
             if exc.status == 400:
                 raise
             return result
+        index = generic_index(soup, url)
+        if index is not None:
+            try:
+                contents = self._soup(index)
+            except BusinessError as exc:
+                if exc.status == 400:
+                    raise
+            else:
+                _, pattern = generic_chapters(contents, index)
+                current = re.sub(r"chapter-\d+", "chapter-{cap}", url, flags=re.I)
+                if pattern == current:
+                    soup, url = contents, index
+                    result.url_base = HttpUrl(index)
         title = soup.find("title")
         result.title = title.get_text(strip=True) if title else url
         result.image_url = image_url(soup, url)
-        numbers = [
-            int(match.group(1))
-            for tag in soup.select("a[href]")
-            if (
-                match := re.search(
-                    r"chapter[-/](\d+)", attribute(tag, "href") or "", re.I
-                )
-            )
-        ]
-        result.total_chapters = max(numbers) if numbers and max(numbers) > 0 else None
+        result.total_chapters, result.chapter_url_pattern = generic_chapters(soup, url)
         return result
 
     def _identify(self, url: str) -> SourceMetadata:

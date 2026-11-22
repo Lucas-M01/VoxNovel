@@ -209,3 +209,83 @@ def test_generic_fallback_preserves_network_policy_failure() -> None:
         service.identify(url)
     with pytest.raises(BusinessError):
         service.identify("file:///private")
+
+
+def test_generic_static_story_resolves_relative_chapters_and_cover() -> None:
+    url = "https://author.example/story/"
+    page = """<title>Original story</title>
+      <meta property="og:image" content="cover.jpg">
+      <p>Synopsis, not a chapter.</p>
+      <a href="chapter-1.html">I</a><a href="chapter-2.html">II</a>
+      <a href="chapter-3.html#story">III</a>
+      <a href="https://other.example/chapter-99.html">Other story</a>
+      <a href="http://author.example/story/chapter-90.html">Other origin</a>
+      <a href="https://[broken/chapter-80.html">Malformed</a>
+      <a href="chapter-0.html">Invalid</a>"""
+    result = MetadataService(FixtureHttp({url: page}), Settings()).identify(url)
+    assert result.total_chapters == 3
+    assert result.chapter_url_pattern == url + "chapter-{cap}.html"
+    assert str(result.image_url) == url + "cover.jpg"
+
+
+def test_generic_does_not_guess_between_different_stories() -> None:
+    url = "https://author.example/"
+    page = '<a href="one/chapter-1.html">One</a><a href="two/chapter-2.html">Two</a>'
+    result = MetadataService(FixtureHttp({url: page}), Settings()).identify(url)
+    assert result.chapter_url_pattern is None
+    assert result.total_chapters is None
+
+
+def test_generic_chapter_uses_linked_index_instead_of_only_next_chapter() -> None:
+    root = "https://author.example/story/"
+    chapter = root + "chapter-1.html"
+    http = FixtureHttp(
+        {
+            chapter: '<title>Chapter I</title><a href="index.html#chapters">Home</a>'
+            '<a href="chapter-2.html">Next</a>',
+            root + "index.html": "<title>Original story</title>"
+            '<meta property="og:image" content="cover.jpg">'
+            '<a href="chapter-1.html">I</a><a href="chapter-2.html">II</a>'
+            '<a href="chapter-3.html">III</a>',
+        }
+    )
+    result = MetadataService(http, Settings()).identify(chapter)
+    assert result.title == "Original story"
+    assert result.total_chapters == 3
+    assert result.chapter_url_pattern == root + "chapter-{cap}.html"
+    assert str(result.image_url) == root + "cover.jpg"
+    assert http.calls == [chapter, root + "index.html"]
+
+
+@pytest.mark.parametrize("failure", [502, 400])
+def test_generic_chapter_index_failure_keeps_network_policy(failure: int) -> None:
+    root = "https://author.example/story/"
+    chapter = root + "chapter-1.html"
+    http = FixtureHttp(
+        {
+            chapter: '<a href="index.html">Home</a><a href="chapter-2.html">Next</a>',
+            root + "index.html": BusinessError("Unavailable", status=failure),
+        }
+    )
+    service = MetadataService(http, Settings())
+    if failure == 400:
+        with pytest.raises(BusinessError):
+            service.identify(chapter)
+    else:
+        result = service.identify(chapter)
+        assert result.total_chapters == 2
+        assert result.chapter_url_pattern == root + "chapter-{cap}.html"
+
+
+def test_generic_chapter_does_not_follow_external_or_unrelated_index() -> None:
+    chapter = "https://author.example/story/chapter-1.html"
+    http = FixtureHttp(
+        {
+            chapter: '<a href="https://other.example/index.html">Home</a>'
+            '<a href="https://[broken/index.html">Invalid</a>'
+            '<a href="../index.html">Other stories</a><a href="chapter-2.html">Next</a>'
+        }
+    )
+    result = MetadataService(http, Settings()).identify(chapter)
+    assert result.total_chapters == 2
+    assert http.calls == [chapter]
